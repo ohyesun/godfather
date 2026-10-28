@@ -507,10 +507,10 @@ static int run_malformed_case(void)
         output.raw_result.calls_continued32 == 8U &&
         output.raw_result.last_memory.address32 == 0x00030048U &&
         output.raw_result.last_memory.width32 == 16U &&
-        output.raw_result.xmm0.w0 == probe.current_xmm.w0 &&
-        output.raw_result.xmm0.w1 == probe.current_xmm.w1 &&
-        output.raw_result.xmm0.w2 == probe.current_xmm.w2 &&
-        output.raw_result.xmm0.w3 == probe.current_xmm.w3;
+        output.raw_result.xmm0.w0 == output.normal_records[7].normal_result.xmm0.w0 &&
+        output.raw_result.xmm0.w1 == output.normal_records[7].normal_result.xmm0.w1 &&
+        output.raw_result.xmm0.w2 == output.normal_records[7].normal_result.xmm0.w2 &&
+        output.raw_result.xmm0.w3 == output.normal_records[7].normal_result.xmm0.w3;
     printf("behavior malformed RESULT %s\n", ok ? "PASS" : "FAIL");
     return ok ? 0 : 1;
 }
