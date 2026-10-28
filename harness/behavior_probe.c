@@ -504,8 +504,13 @@ static int run_malformed_case(void)
         output.raw_result.state32 == ZG335_MEMORY_REPLY_INVALID &&
         output.raw_result.reason32 == ZG335_REASON_READ_INITIALIZATION &&
         output.raw_result.calls_dispatched32 == 8U &&
+        output.raw_result.calls_continued32 == 8U &&
         output.raw_result.last_memory.address32 == 0x00030048U &&
-        output.raw_result.last_memory.width32 == 16U;
+        output.raw_result.last_memory.width32 == 16U &&
+        output.raw_result.xmm0.w0 == probe.current_xmm.w0 &&
+        output.raw_result.xmm0.w1 == probe.current_xmm.w1 &&
+        output.raw_result.xmm0.w2 == probe.current_xmm.w2 &&
+        output.raw_result.xmm0.w3 == probe.current_xmm.w3;
     printf("behavior malformed RESULT %s\n", ok ? "PASS" : "FAIL");
     return ok ? 0 : 1;
 }

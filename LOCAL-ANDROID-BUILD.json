@@ -60,13 +60,13 @@
   "behaviorHarness": {
     "status": "LOCAL_HARNESS_AUTOMATED_GATE_PASS_BOTH_ABI",
     "output": "state=2 raw_state=12 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000; normal[0..7]=13",
-    "probeSha256": "f01a0137cea2a5c87ad1bfff0ec80bfb226b8d8dc4a1037dc4f683ef1842b411",
-    "sourceSha256": "e63ecc13661f5027ec8d05ea4e90f7e4e6f39cfbf9fa84e27b045673f0059e14",
+    "probeSha256": "46bc7e88d1be20715c7c7b4e3d584052ee0dd8243068a4f33fe013720c8548b4",
+    "sourceSha256": "f9a3b3c53bbb8438ded537170d84603f22eac5b1cc5bb61f074852c150f387b0",
     "scope": "one local x86_64 MuMu harness run; not ARM64/production/runtime/SDK/OS acceptance",
     "arm64ViaMuMuTranslation": {
       "status": "LOCAL_HARNESS_PATH_PASS",
       "binary": "out/behavior-probe-arm64-v8a",
-      "sha256": "d6a48523c7e834c89b7657b8fa1ca95746bb703c26676ed85874349b48306d2a",
+      "sha256": "40344f91fbf8c8ec7e88e9617026f53a4aceeb1bfb3e54c78e0e53605fdf2412",
       "output": "state=2 raw_state=12 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000; normal[0..7]=13",
       "scope": "x86_64 MuMu host running ARM64 binary via Android ARM translation; not physical ARM device"
     },
@@ -89,6 +89,6 @@
     },
     "memoryStop": "normal=4 MEMORY_STOPPED reason0; projected=2 LOWER_STOPPED reason0; raw=7 CALLEE_STOPPED reason0; counts 1/0/1",
     "staleContinuation": "normal RETURNED target2468ace0 cleanup4; projected LOWER_RETURNED returned_to2468ace0; raw RETURN_CONTROL_INVALID reason9; counts1/0/1",
-    "malformed16": "raw6 MEMORY_REPLY_INVALID reason5; 8 normal; last B+0x48 width16"
+    "malformed16": "raw6 reason5; 8 normal; continued8; last B+0x48 width16; raw XMM preserved"
   }
 }

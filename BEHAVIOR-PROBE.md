@@ -137,11 +137,11 @@ No frozen source, design, adapter, or A4 receipt was changed.
 ## Artifacts
 
 - `harness/behavior_probe.c`
-  SHA-256 `e63ecc13661f5027ec8d05ea4e90f7e4e6f39cfbf9fa84e27b045673f0059e14`
+  SHA-256 `f9a3b3c53bbb8438ded537170d84603f22eac5b1cc5bb61f074852c150f387b0`
 - binary `build-local-x86_64/zg335_behavior_probe`
-  SHA-256 `f01a0137cea2a5c87ad1bfff0ec80bfb226b8d8dc4a1037dc4f683ef1842b411`
+  SHA-256 `46bc7e88d1be20715c7c7b4e3d584052ee0dd8243068a4f33fe013720c8548b4`
 - binary `out/behavior-probe-arm64-v8a`
-  SHA-256 `d6a48523c7e834c89b7657b8fa1ca95746bb703c26676ed85874349b48306d2a`
+  SHA-256 `40344f91fbf8c8ec7e88e9617026f53a4aceeb1bfb3e54c78e0e53605fdf2412`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary
