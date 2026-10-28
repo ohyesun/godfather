@@ -12,13 +12,6 @@ workflows:
           if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
             if [ -f "$SDK/ndk/27.0.12077973/build/cmake/android.toolchain.cmake" ]; then
               NDK="$SDK/ndk/27.0.12077973"
-            elif [ -d "$SDK/ndk" ]; then
-              NDK_NAME="$(for candidate in "$SDK"/ndk/*; do
-                [ -f "$candidate/build/cmake/android.toolchain.cmake" ] && basename "$candidate"
-              done | sort -t. -k1,1n -k2,2n -k3,3n | tail -n 1)"
-              if [ -n "$NDK_NAME" ]; then
-                NDK="$SDK/ndk/$NDK_NAME"
-              fi
             fi
           fi
           if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
@@ -38,9 +31,19 @@ workflows:
         script: |
           set -eu
           SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
-          CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
-          if [ -z "$CMAKE_BIN" ] && [ -d "$SDK/cmake" ]; then
-            CMAKE_BIN="$(find "$SDK/cmake" -type f -path '*/bin/cmake' | head -1)"
+          CMAKE_BIN=""
+          if [ -x "$SDK/cmake/3.22.1/bin/cmake" ]; then
+            CMAKE_BIN="$SDK/cmake/3.22.1/bin/cmake"
+          elif [ -d "$SDK/cmake" ]; then
+            CMAKE_SDK_NAME="$(for candidate in "$SDK"/cmake/*; do
+              [ -x "$candidate/bin/cmake" ] && basename "$candidate"
+            done | sort -t. -k1,1nr -k2,2nr -k3,3nr | head -n 1)"
+            if [ -n "$CMAKE_SDK_NAME" ]; then
+              CMAKE_BIN="$SDK/cmake/$CMAKE_SDK_NAME/bin/cmake"
+            fi
+          fi
+          if [ -z "$CMAKE_BIN" ]; then
+            CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
           fi
           if [ -z "$CMAKE_BIN" ]; then
             if command -v brew >/dev/null 2>&1; then
@@ -81,7 +84,6 @@ workflows:
     artifacts:
       - out/android-arm64/**
       - build-android/CMakeCache.txt
-      - build-android/CMakeFiles/CMakeOutput.log
 
   ios-portable:
     name: iOS device portable static library
@@ -137,4 +139,3 @@ workflows:
     artifacts:
       - out/ios-device-arm64/**
       - build-ios/CMakeCache.txt
-      - build-ios/CMakeFiles/CMakeOutput.log
