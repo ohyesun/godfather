@@ -6,12 +6,19 @@ workflows:
     scripts:
       - name: Locate Android NDK
         script: |
-          set -e
+          set -eu
           SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
           NDK="${ANDROID_NDK_HOME:-${ANDROID_NDK_ROOT:-}}"
           if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
-            if [ -d "$SDK/ndk" ]; then
-              NDK="$(ls -d "$SDK"/ndk/* 2>/dev/null | sort -V | tail -1)"
+            if [ -f "$SDK/ndk/27.0.12077973/build/cmake/android.toolchain.cmake" ]; then
+              NDK="$SDK/ndk/27.0.12077973"
+            elif [ -d "$SDK/ndk" ]; then
+              NDK_NAME="$(for candidate in "$SDK"/ndk/*; do
+                [ -f "$candidate/build/cmake/android.toolchain.cmake" ] && basename "$candidate"
+              done | sort -t. -k1,1n -k2,2n -k3,3n | tail -n 1)"
+              if [ -n "$NDK_NAME" ]; then
+                NDK="$SDK/ndk/$NDK_NAME"
+              fi
             fi
           fi
           if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
@@ -27,11 +34,38 @@ workflows:
           test -f "$NDK/build/cmake/android.toolchain.cmake"
           printf 'NDK=%s\n' "$NDK" > "$CM_BUILD_DIR/ndk-path.env"
           "$NDK/ndk-build" --version >/dev/null 2>&1 || true
+      - name: Resolve CMake
+        script: |
+          set -eu
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
+          CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
+          if [ -z "$CMAKE_BIN" ] && [ -d "$SDK/cmake" ]; then
+            CMAKE_BIN="$(find "$SDK/cmake" -type f -path '*/bin/cmake' | head -1)"
+          fi
+          if [ -z "$CMAKE_BIN" ]; then
+            if command -v brew >/dev/null 2>&1; then
+              brew install cmake
+            fi
+            CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
+          fi
+          [ -n "$CMAKE_BIN" ] || { echo "cmake not found and brew install failed" >&2; exit 2; }
+          "$CMAKE_BIN" --version
+          CMAKE_VERSION="$("$CMAKE_BIN" --version | sed -n 's/^cmake version \([0-9][0-9.]*\).*/\1/p' | head -1)"
+          [ -n "$CMAKE_VERSION" ] || { echo "cannot parse cmake version" >&2; exit 2; }
+          CMAKE_MAJOR="${CMAKE_VERSION%%.*}"
+          CMAKE_REST="${CMAKE_VERSION#*.}"
+          CMAKE_MINOR="${CMAKE_REST%%.*}"
+          if [ "$CMAKE_MAJOR" -lt 3 ] || { [ "$CMAKE_MAJOR" -eq 3 ] && [ "$CMAKE_MINOR" -lt 16 ]; }; then
+            echo "cmake >= 3.16 required, found $CMAKE_VERSION" >&2
+            exit 2
+          fi
+          printf 'CMAKE_BIN=%s\n' "$CMAKE_BIN" > "$CM_BUILD_DIR/cmake-path.env"
       - name: Configure Android
         script: |
-          set -e
+          set -eu
           . "$CM_BUILD_DIR/ndk-path.env"
-          cmake -S design -B build-android \
+          . "$CM_BUILD_DIR/cmake-path.env"
+          "$CMAKE_BIN" -S design -B build-android \
             -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-24 \
@@ -41,8 +75,9 @@ workflows:
             -DZG_ADAPTER_ROOT="$CM_BUILD_DIR/vendor/adapter"
       - name: Build Android
         script: |
-          set -e
-          cmake --build build-android --target install
+          set -eu
+          . "$CM_BUILD_DIR/cmake-path.env"
+          "$CMAKE_BIN" --build build-android --target install
     artifacts:
       - out/android-arm64/**
       - build-android/CMakeCache.txt
@@ -53,10 +88,39 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     scripts:
+      - name: Resolve CMake
+        script: |
+          set -eu
+          CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
+          if [ -z "$CMAKE_BIN" ] && [ -x /opt/homebrew/bin/cmake ]; then
+            CMAKE_BIN=/opt/homebrew/bin/cmake
+          fi
+          if [ -z "$CMAKE_BIN" ] && [ -x /usr/local/bin/cmake ]; then
+            CMAKE_BIN=/usr/local/bin/cmake
+          fi
+          if [ -z "$CMAKE_BIN" ]; then
+            if command -v brew >/dev/null 2>&1; then
+              brew install cmake
+            fi
+            CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
+          fi
+          [ -n "$CMAKE_BIN" ] || { echo "cmake not found and brew install failed" >&2; exit 2; }
+          "$CMAKE_BIN" --version
+          CMAKE_VERSION="$("$CMAKE_BIN" --version | sed -n 's/^cmake version \([0-9][0-9.]*\).*/\1/p' | head -1)"
+          [ -n "$CMAKE_VERSION" ] || { echo "cannot parse cmake version" >&2; exit 2; }
+          CMAKE_MAJOR="${CMAKE_VERSION%%.*}"
+          CMAKE_REST="${CMAKE_VERSION#*.}"
+          CMAKE_MINOR="${CMAKE_REST%%.*}"
+          if [ "$CMAKE_MAJOR" -lt 3 ] || { [ "$CMAKE_MAJOR" -eq 3 ] && [ "$CMAKE_MINOR" -lt 16 ]; }; then
+            echo "cmake >= 3.16 required, found $CMAKE_VERSION" >&2
+            exit 2
+          fi
+          printf 'CMAKE_BIN=%s\n' "$CMAKE_BIN" > "$CM_BUILD_DIR/cmake-path.env"
       - name: Configure iOS device arm64
         script: |
-          set -e
-          cmake -S design -B build-ios \
+          set -eu
+          . "$CM_BUILD_DIR/cmake-path.env"
+          "$CMAKE_BIN" -S design -B build-ios \
             -DCMAKE_SYSTEM_NAME=iOS \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
             -DCMAKE_OSX_SYSROOT=iphoneos \
@@ -67,8 +131,9 @@ workflows:
             -DZG_ADAPTER_ROOT="$CM_BUILD_DIR/vendor/adapter"
       - name: Build iOS
         script: |
-          set -e
-          cmake --build build-ios --target install
+          set -eu
+          . "$CM_BUILD_DIR/cmake-path.env"
+          "$CMAKE_BIN" --build build-ios --target install
     artifacts:
       - out/ios-device-arm64/**
       - build-ios/CMakeCache.txt

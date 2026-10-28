@@ -19,9 +19,10 @@ UNVERIFIED.
 |---|---|---|
 | `codemagic.yaml` YAML syntax | PASS | PyYAML 6.0.3 `safe_load`; root mapping has `workflows` |
 | Required workflow fields | PASS | Both workflows have `name/instance_type/max_build_duration/scripts/artifacts` |
-| Android NDK/toolchain path | PASS (static) | `codemagic.yaml:10-41`; fallback checks `build/cmake/android.toolchain.cmake` |
-| iOS CMake parameters | PASS (static) | `codemagic.yaml:59-67`; iOS/arm64/iphoneos/deployment target |
-| Artifact paths | PASS (conditional) | install prefixes at `codemagic.yaml:39,65`; artifact patterns at `:47,73` |
+| Android NDK/toolchain path | PASS (static) | `codemagic.yaml:7-36`; exact NDK 27 preferred, portable numeric fallback, `sort -V` absent |
+| CMake discovery/version | PASS (static) | Android `:37-62`, iOS `:91-118`; command/SDK/Homebrew discovery and >=3.16 check |
+| iOS CMake parameters | PASS (static) | `codemagic.yaml:119-136`; iOS/arm64/iphoneos/deployment target |
+| Artifact paths | PASS (conditional) | install prefixes at `codemagic.yaml:73,129`; artifact patterns at `:82,138` |
 | Design CMake against frozen b7eeb8fa | PASS | `design/CMakeLists.txt` SHA-256 `293c754e...` equals freeze pin for `CMakeLists.draft.txt` |
 | Frozen design completeness | PASS after repair | `design/README.md`, `design/BUILD-PREFLIGHT.json`, `design/CMakeLists.draft.txt` restored |
 | Vendor 13 C files | PASS | 13/13 SHA-256 match `SOURCE-MANIFEST.json` |
@@ -43,19 +44,18 @@ Recommendation: replace the placeholder with the actual repository URL in the
 operator's copy, or document `export REPO_URL=...` and use `"$REPO_URL"`. No
 bundle source or frozen design change is needed.
 
-### F-02 WARN: Android NDK selection is not fully hermetic
+### F-02 RESOLVED: portable NDK selection
 
-`codemagic.yaml:13-15` picks the newest NDK already present under `$SDK/ndk`;
-the fallback later installs `27.0.12077973` (`:24`). If the image has multiple
-NDKs, a newer/incompatible NDK may be selected before the fallback.
-
-Recommendation: require the pinned version explicitly, for example select
-`$SDK/ndk/27.0.12077973` when present and fail with an actionable message when
-it is absent, or make the desired NDK version a workflow variable.
+The previous `sort -V` blocker is gone. `codemagic.yaml:13-18` now prefers the
+exact `27.0.12077973` NDK and uses POSIX numeric `sort -t. -k1,1n -k2,2n -k3,3n`
+for existing NDK directories. The fallback installs the same pinned NDK at
+`:24-32`. If the image has multiple NDKs and 27 is absent, the numeric fallback
+still chooses the highest installed version; pinning the workflow variable
+remains a reproducibility improvement, not a first-build blocker.
 
 ### F-03 WARN: optional CMake log artifact may not exist
 
-`codemagic.yaml:49,75` list `build-*/CMakeFiles/CMakeOutput.log`. CMake may not
+`codemagic.yaml:84,140` list `build-*/CMakeFiles/CMakeOutput.log`. CMake may not
 create `CMakeOutput.log` for every generator/configuration. This is normally an
 optional artifact warning, not a build failure.
 
@@ -64,11 +64,11 @@ acceptable, or remove it and retain `CMakeCache.txt`.
 
 ### F-04 WARN: image/tool versions are implicit
 
-Neither workflow has an `environment` block. CMake, Xcode, Android SDK and
-command-line tools therefore come from the selected `mac_mini_m2` image. The
-YAML fields are valid Codemagic fields (`instance_type`, `max_build_duration`,
-`scripts`, `artifacts`), but exact tool versions and image availability are not
-proven by this static audit.
+Neither workflow has an `environment` block. CMake is now explicitly discovered
+and required to be >=3.16, but Xcode, Android SDK and command-line tool versions
+still come from the selected `mac_mini_m2` image. The YAML fields are valid
+Codemagic fields (`instance_type`, `max_build_duration`, `scripts`, `artifacts`),
+but exact image availability is not proven by this static audit.
 
 Recommendation: when platform execution is authorized, pin/record the Codemagic
 image and tool versions in workflow metadata. Do not claim build acceptance
@@ -76,11 +76,21 @@ before that run.
 
 ### F-05 PASS with note: build directory and artifact relationship
 
-The install prefixes use `$CM_BUILD_DIR/out/...` (`codemagic.yaml:39,65`) while
-artifact patterns use `out/...` (`:47,73`). This is consistent when
+The install prefixes use `$CM_BUILD_DIR/out/...` (`codemagic.yaml:73,129`) while
+artifact patterns use `out/...` (`:82,138`). This is consistent when
 `CM_BUILD_DIR` is the cloned repository root, which is Codemagic's documented
 working directory semantics. No build was run to confirm the actual artifact
 resolution on the selected image.
+
+### Resolved first-build blockers
+
+- B1 CMake provisioning: both workflows now discover CMake from `PATH`, the
+  Android SDK CMake package (`codemagic.yaml:42-44`), Homebrew installation, or
+  an explicit iOS Homebrew path, then assert `cmake >= 3.16` and persist
+  `CMAKE_BIN` for later scripts.
+- B2 macOS NDK fallback: `sort -V` was replaced by the portable numeric sort at
+  `codemagic.yaml:16-18`; the exact NDK 27 path is preferred before that sort.
+- All embedded scripts pass `bash -n` static syntax checking (7/7 scripts).
 
 ## Bundle repairs applied during audit
 
@@ -101,13 +111,16 @@ modified.
 5. Updated the bundle README to describe the restored design metadata and
    generated vendor umbrella, and to say the remote URL placeholder must be
    replaced before push.
+6. Hardened `codemagic.yaml`: added explicit CMake discovery/version checks,
+   persisted `CMAKE_BIN`, preferred pinned NDK `27.0.12077973`, and replaced
+   macOS-incompatible `sort -V` with portable numeric sorting.
 
 ## Hash inventory
 
 | File | SHA-256 | Bytes |
 |---|---|---|
-| `codemagic.yaml` | `8ef42787e180ecd628969cd3c2fa4bb177dbb974f82eb72ca0e1c25a83cf59fa` | 3027 |
-| `README.md` | `587b2dd2df78d6bcb71a26a23569d5a51c5c953af63aa61984e227922f5f5f7e` | 2096 |
+| `codemagic.yaml` | `5fdf4047268fdf31da21e69416b80035041a12ba065d4b1937fffb9c7ee03a39` | 6292 |
+| `README.md` | `d5a815d836955c406478ead63d05993364b1fd21510fac69f048525ceae2be24` | 2436 |
 | `design/CMakeLists.txt` | `293c754e9b33133a6c7ed4a431916797aae2c92c7978aa703cbc6fc67d77271c` | 4862 |
 | `design/CMakeLists.draft.txt` | `293c754e9b33133a6c7ed4a431916797aae2c92c7978aa703cbc6fc67d77271c` | 4862 |
 | `design/SOURCE-MANIFEST.json` | `b7eeb8fac58603f0b1da9da84627ae34ec09f853943c447c011dd8bface203d4` | 11973 |

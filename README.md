@@ -16,17 +16,26 @@ headers, not an APK, AAR, IPA or app.
 
 ## Push to your Git repository
 
-From this directory, replace the placeholder repository URL before running the
-push commands:
+From this directory, set the real repository URL in `REPO_URL` before running
+the push commands. The guard fails early instead of silently using a placeholder:
 
 ```bash
+export REPO_URL=""
+test -n "$REPO_URL" || {
+  echo "Set REPO_URL to your actual repository before pushing" >&2
+  exit 1
+}
 git init
 git add .
 git commit -m "Add zg335 portable Codemagic build"
 git branch -M main
-git remote add origin <YOUR_GITHUB_OR_GITLAB_REPO_URL>
+git remote add origin "$REPO_URL"
 git push -u origin main
 ```
+
+If the repository already exists locally, skip `git init`/`git add`/`git commit`
+and only add the remote plus push. Do not push this bundle to
+`codemagic-sample-projects`.
 
 ## Run on Codemagic
 
