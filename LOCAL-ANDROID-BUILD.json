@@ -101,6 +101,13 @@
     "workflow": "iOS device portable static library",
     "commit": "4d7c66f",
     "duration": "10m28s",
-    "scope": "build artifact only; unsigned; no iOS device run"
+    "scope": "build artifact only; unsigned; no iOS device run",
+    "payloadFiles": 19,
+    "zipEntries": 28,
+    "zipRegularFiles": 20,
+    "zipDirectoryEntries": 8,
+    "extraRegularFile": "build-ios/CMakeCache.txt",
+    "objectMembers": 13,
+    "objectFormat": "Mach-O arm64 (13/13), zero ELF"
   }
 }
