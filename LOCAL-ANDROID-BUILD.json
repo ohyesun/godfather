@@ -1,0 +1,60 @@
+{
+  "schema": "WORKBUDDY_LOCAL_ANDROID_BUILD_V1",
+  "builtAt": "2026-10-28T20:45:00+08:00",
+  "status": "ANDROID_LOCAL_BUILD_PASS_IOS_UNVERIFIED",
+  "toolchain": {
+    "ndk": "D:/Android/android-ndk-r27d",
+    "ndkToolchain": "D:/Android/android-ndk-r27d/build/cmake/android.toolchain.cmake",
+    "clang": "18.0.4",
+    "cmake": "4.3.1-msvc1 (Visual Studio 18 Insiders)",
+    "ninja": "Visual Studio 18 Insiders"
+  },
+  "sourceRevision": {
+    "adapter": "normal116-four-lower-reuse-adapter-C11-author-20261028-v1-v2",
+    "change": "zg116la_e4_range.c:473 &f->bridge -> &f.bridge",
+    "a4Receipt": "ADAPTER-V2-A4-SOURCE-ACCEPTANCE.json",
+    "a4ReceiptSha256": "61927ac1c43ff73e3585b9cdf71c0da7b76c0ed7ee0f8c7a43405e1b0e341816",
+    "adapterStaticCheck": "48/48 +31/31",
+    "v1Modified": false
+  },
+  "artifacts": {
+    "android-x86_64": {
+      "library": "out/android-x86_64/lib/libzg335_portable.a",
+      "bytes": 543504,
+      "sha256": "b02467f2b561f6347714f3500de9a24b58a9c8eef7eda7dea24ecfa442e70ee0"
+    },
+    "android-arm64-v8a": {
+      "library": "out/android-arm64/lib/libzg335_portable.a",
+      "bytes": 669136,
+      "sha256": "ae300304ca8a506ef8cbbe658ecd7d2e4e335aca3a7f95c9aa26b41050b6a8db"
+    },
+    "mumuProbe": {
+      "binary": "build-local-x86_64/zg335_probe",
+      "bytes": 299360,
+      "sha256": "6f332dd83f2588cd04bbf6dfef817c4fcf1b65be27cb23e21cffc82c1919d56c",
+      "device": "emulator-5554",
+      "abi": "x86_64",
+      "output": [
+        "zg335_probe state=1 raw_present=0 normal_count=0 overflow=0",
+        "zg335_probe bind_null=0"
+      ],
+      "meaning": "link/ABI and exported-entry smoke only; state=1 is BAD_INTERFACE for a zeroed configuration"
+    }
+  },
+  "publicHeadersInstalled": 14,
+  "notGranted": [
+    "iOS build",
+    "Host execution",
+    "guest behavior",
+    "full composed C behavior",
+    "SDK/OS/native ABI acceptance",
+    "device behavior beyond the link/ABI smoke",
+    "signing/APK/AAB/IPA",
+    "whole game"
+  ],
+  "notes": [
+    "The design SOURCE-MANIFEST still records the v1 adapter pin; the bundle vendor uses the independently accepted v2 A4 receipt copied into this bundle.",
+    "The probe does not exercise a valid guest entry or memory/provider configuration.",
+    "Codemagic is not required for the Android artifacts in this report."
+  ]
+}

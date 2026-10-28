@@ -1,6 +1,14 @@
 # Local MuMu x86_64 probe result
 
-Status: **DIAGNOSTIC ONLY — NOT F4 SOURCE ACCEPTANCE**
+Status: **V2 A4 ACCEPTED; LOCAL ANDROID BUILD EVIDENCE — NOT F4 FULL/RUNTIME ACCEPTANCE**
+
+Update 2026-10-28: the one-line fix was carried into adapter v2 and independently
+accepted as `A4-SOURCE-ACCEPTANCE.json` (SHA-256
+`61927ac1c43ff73e3585b9cdf71c0da7b76c0ed7ee0f8c7a43405e1b0e341816`).
+`adapter_check.py` now passes 48/48 +31/31. The A4 receipt is copied into this
+bundle as `ADAPTER-V2-A4-SOURCE-ACCEPTANCE.json`.
+
+The original diagnostic wording below is retained as history.
 
 ## Toolchain
 

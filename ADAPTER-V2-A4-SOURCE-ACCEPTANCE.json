@@ -1,0 +1,76 @@
+{
+  "schema": "WORKBUDDY_NORMAL116_A4_INDEPENDENT_SOURCE_ACCEPTANCE_V1",
+  "reviewerAgentId": "quality-lead",
+  "independentAgentReview": true,
+  "scope": "A4 E4 complete raw143/CD40 composition binding only; V2 single-line compile fix and matching checker anchor; static/source acceptance only",
+  "recommendSourceAcceptance": true,
+  "allowA5": true,
+  "findings": [],
+  "reviewHistory": [
+    "V1 A4 source acceptance had E4 source/checker pins d180d358/c8bf3448.",
+    "V2 source delta is exactly zg116la_e4_range.c:473 value-member fix and the matching checker anchor.",
+    "Independent QA re-ran source/raw52/fe0/e4 checks: all pass; adapter identity closure is renewed by this receipt."
+  ],
+  "sourceIdentities": [
+    {
+      "path": "zg116la_e4_range.h",
+      "bytes": 748,
+      "sha256": "7c01ddd218bf0e206b8f8d11efb03ea7c585291204ca6083ebe78f1f30eb20b7"
+    },
+    {
+      "path": "zg116la_e4_range.c",
+      "bytes": 17665,
+      "sha256": "f8db8601fa9ea4ee7a6d39890222192c3ceb1a5450e9b385c68d9ffaa73b13f6"
+    },
+    {
+      "path": "e4_range_check.py",
+      "bytes": 18833,
+      "sha256": "d4920e8c294b27b7df9272b4dcfd22a526c64e13ced7aed139589898e39d7242"
+    }
+  ],
+  "reportIdentity": {
+    "path": "E4-RANGE-REPORT.json",
+    "sha256": "cf19fe10c4287bf9b47ca383996fa883c73ddc5676cb3182dd053868175f2ffe"
+  },
+  "v2FixReportIdentity": {
+    "path": "V2-FIX-REPORT.md",
+    "sha256": "71c242ee43a3ccf65dcfe310c5ab822400b33fa9cfab056ebd64a474b8c7b36c"
+  },
+  "sourceDelta": {
+    "v1": {
+      "zg116la_e4_range.c": "d180d35855fd3212e13715bea26e8df26ff3b8916e84607a2d8049df1bf2a509",
+      "e4_range_check.py": "c8bf3448ac0935938866b740b73898510cc41b1684d85137736cf5c5ca0b5b31"
+    },
+    "v2": {
+      "zg116la_e4_range.c": "f8db8601fa9ea4ee7a6d39890222192c3ceb1a5450e9b385c68d9ffaa73b13f6",
+      "e4_range_check.py": "d4920e8c294b27b7df9272b4dcfd22a526c64e13ced7aed139589898e39d7242"
+    },
+    "onlyAllowedSourceDiff": [
+      "zg116la_e4_range.c:473 &f->bridge -> &f.bridge",
+      "e4_range_check.py: matching anchor"
+    ],
+    "otherSourceOrHeaderDrift": false
+  },
+  "staticChecks": {
+    "source_check": "PASS 43/43, negative 17/17",
+    "raw52_check": "PASS 51/51, negative 23/23",
+    "fe0_range_check": "PASS 77/77, negative 38/38",
+    "e4_range_check": "PASS 87/87, negative 57/57",
+    "adapter_check_after_receipt": "expected 48/48; re-run required"
+  },
+  "authorChecks": "87/87 checks and 57/57 negative controls for E4",
+  "notGranted": [
+    "A5 composition",
+    "Host",
+    "SDK",
+    "OS",
+    "native ABI",
+    "CRT",
+    "SEH",
+    "allocation ownership",
+    "physical atomicity",
+    "runtime behavior",
+    "device/simulator execution"
+  ],
+  "composed26ExpectedReadOrReused": false
+}
