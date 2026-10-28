@@ -19,6 +19,8 @@ typedef struct Probe {
     uint32_t stop_read_width;
     int stop_read_armed;
     int stop_read_hit;
+    uint32_t stale_address;
+    uint32_t stale_value;
     zg116_xmm0 current_xmm;
 } Probe;
 
@@ -132,6 +134,9 @@ static void probe_machine(void *user, zg116la_machine_call request,
     zg116la_machine_reply *reply)
 {
     Probe *p = (Probe *)user;
+    if (p->stale_address != 0U && p->machine_count == 0U) {
+        put32(p, p->stale_address, p->stale_value);
+    }
     const uint32_t ordinal = ++p->machine_count;
     *reply = (zg116la_machine_reply){0};
     if (p->stop_state != 0U) {
@@ -369,6 +374,80 @@ static int run_memory_stop_case(void)
     return ok ? 0 : 1;
 }
 
+static int run_stale_case(void)
+{
+    static Probe probe;
+    zg335_entry entry;
+    zg335116_config configuration;
+    zg335116_output output;
+    zg116la_config machine;
+    uint32_t state;
+    const uint32_t stale = 0x2468ace0U;
+    int ok;
+
+    memset(&probe, 0, sizeof probe);
+    memset(&entry, 0, sizeof entry);
+    setup(&probe, &entry, 0);
+    probe.stale_address = 0x0000ffe0U;
+    probe.stale_value = stale;
+
+    memset(&configuration, 0, sizeof configuration);
+    configuration.version32 = ZG335116_VERSION;
+    configuration.memory.user = &probe;
+    configuration.memory.read = probe_read;
+    configuration.memory.write = probe_write;
+    machine.version32 = ZG116LA_VERSION;
+    machine.machine_user = &probe;
+    machine.machine_call = probe_machine;
+    if (!zg116la_bind_rich335(&configuration, &machine)) {
+        printf("behavior stale bind failed\n");
+        return 2;
+    }
+
+    memset(&output, 0, sizeof output);
+    state = zg335116_run(entry, &configuration, &output);
+    printf("behavior stale state=%u raw_state=%u raw_reason=%u dispatched=%u "
+        "continued=%u normal=%u overflow=%u final=%u\n",
+        (unsigned)state, (unsigned)output.raw_result.state32,
+        (unsigned)output.raw_result.reason32,
+        (unsigned)output.raw_result.calls_dispatched32,
+        (unsigned)output.raw_result.calls_continued32,
+        (unsigned)output.normal_count32,
+        (unsigned)output.record_overflow32,
+        (unsigned)output.raw_result.final_target_present);
+    if (output.normal_count32 > 0) {
+        printf("behavior stale normal0=%u normal_reason=%u final=%u target=%08x "
+            "cleanup=%u projected=%u projected_reason=%u returned_to=%08x\n",
+            (unsigned)output.normal_records[0].normal_result.state32,
+            (unsigned)output.normal_records[0].normal_result.reason32,
+            (unsigned)output.normal_records[0].normal_result.final_target_present,
+            (unsigned)output.normal_records[0].normal_result.final_target32,
+            (unsigned)output.normal_records[0].normal_result.final_cleanup32,
+            (unsigned)output.normal_records[0].projected_reply.state32,
+            (unsigned)output.normal_records[0].projected_reply.reason32,
+            (unsigned)output.normal_records[0].projected_reply.returned_to32);
+    }
+    ok = state == ZG335116_HOST_COMPLETED &&
+        output.normal_count32 == 1U &&
+        output.record_overflow32 == 0U &&
+        output.normal_records[0].normal_result.state32 == ZG116_RETURNED &&
+        output.normal_records[0].normal_result.reason32 == 0U &&
+        output.normal_records[0].normal_result.final_target_present == 1U &&
+        output.normal_records[0].normal_result.final_target32 == stale &&
+        output.normal_records[0].normal_result.final_cleanup32 == 4U &&
+        output.normal_records[0].projected_reply.state32 == ZG335_LOWER_RETURNED &&
+        output.normal_records[0].projected_reply.reason32 == 0U &&
+        output.normal_records[0].projected_reply.returned_to32 == stale &&
+        output.normal_records[0].projected_reply.ret_cleanup32 == 4U &&
+        output.raw_result.state32 == ZG335_RETURN_CONTROL_INVALID &&
+        output.raw_result.reason32 == ZG335_REASON_RETURN_TARGET &&
+        output.raw_result.calls_dispatched32 == 1U &&
+        output.raw_result.calls_continued32 == 0U &&
+        output.raw_result.final_target_present == 0U;
+    printf("behavior stale RESULT %s\n", ok ? "PASS" : "FAIL");
+    return ok ? 0 : 1;
+}
+
 int main(void)
 {
     static Probe probe;
@@ -448,5 +527,6 @@ int main(void)
     failed |= run_stop_case(ZG335_SERVICE_UNKNOWN, ZG335_CALLEE_UNKNOWN,
         ZG116_CALLEE_UNKNOWN, ZG335_LOWER_UNKNOWN);
     failed |= run_memory_stop_case();
+    failed |= run_stale_case();
     return failed;
 }

@@ -58,6 +58,24 @@ behavior memstop RESULT PASS
 This maps normal `MEMORY_STOPPED` (4), projected `LOWER_STOPPED` (2), and raw
 `CALLEE_STOPPED` (7), with 1 dispatched / 0 continued / 1 normal.
 
+## Stale continuation
+
+The first machine seam overwrites `S-0x20 = 0x0000ffe0` with
+`0x2468ace0`. Both ABIs pass:
+
+```text
+behavior stale state=2 raw_state=11 raw_reason=9 dispatched=1 continued=0 normal=1 overflow=0 final=0
+behavior stale normal0=13 normal_reason=0 final=1 target=2468ace0 cleanup=4 projected=1 projected_reason=0 returned_to=2468ace0
+behavior stale RESULT PASS
+```
+
+Mapping:
+
+- normal `RETURNED` (13), final target `0x2468ace0`, cleanup 4
+- projected `LOWER_RETURNED` (1), returned_to `0x2468ace0`
+- raw `RETURN_CONTROL_INVALID` (11), reason `RETURN_TARGET` (9)
+- raw final target absent; 1 dispatched / 0 continued / 1 normal
+
 This is the first local behavioral path pass for the x86_64 Android harness.
 
 The harness is now an automated gate, not just a print-only probe. It returns
@@ -105,11 +123,11 @@ No frozen source, design, adapter, or A4 receipt was changed.
 ## Artifacts
 
 - `harness/behavior_probe.c`
-  SHA-256 `adba7cdeddec1fdf4630878c01095916032cfc59768ed6353257087d8403ed0e`
+  SHA-256 `608ee1edbdb432a174d7e50165ae6266d8a68f8858341efee34ad4f15937fc2b`
 - binary `build-local-x86_64/zg335_behavior_probe`
-  SHA-256 `54fae2d4f1f760d2d8d8b29c77e31023bd6197c013f6b2027b11213f2dd72364`
+  SHA-256 `2c86eecf326e46f579f9e347f4ab4128025cce5e0b56d7847620de6ff15b806d`
 - binary `out/behavior-probe-arm64-v8a`
-  SHA-256 `cda63f143038aa725a790f941586f91d6ed5a3f3028aa884e05ef906c7e9a0c9`
+  SHA-256 `28c240f4e41cf1385875499e135a5142cd668b21585fe18e0694c98f582600fe`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary

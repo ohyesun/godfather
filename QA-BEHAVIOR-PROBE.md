@@ -3,86 +3,61 @@
 - Audit date: 2026-10-28
 - Scope: `harness/behavior_probe.c`, `BEHAVIOR-PROBE.md`, `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 - Mode: read-only static review; no compile, Host run, device run or push
-- Current source identity: `harness/behavior_probe.c` SHA-256 `4360e97fd7656784fe871aa5ec10fca08f3694e98631844297259d27a073d7bd` (15487 bytes), matching `BEHAVIOR-PROBE.md:108`
+- Current source identity: `harness/behavior_probe.c` SHA-256 `adba7cdeddec1fdf4630878c01095916032cfc59768ed6353257087d8403ed0e` (16187 bytes), matching `BEHAVIOR-PROBE.md:108`
 - Binary identities on disk match:
-  - x86_64 `build-local-x86_64/zg335_behavior_probe` SHA-256 `07df94abce3fc6c325a474523e5d5a426942c83b17c7931db018fad0b34c1818`
-  - arm64-v8a `out/behavior-probe-arm64-v8a` SHA-256 `1d3f1070b1de10f95958d09ffacf4912b272f9306ab7e5022755b7737f4d7718`
-- Documentation identity: `BEHAVIOR-PROBE.md` SHA-256 `9da83415e61955daffa787e2c4df76c41a9ff5ff1bf0cd51d1343c87b0d3d6cc`.
+  - x86_64 `build-local-x86_64/zg335_behavior_probe` SHA-256 `54fae2d4f1f760d2d8d8b29c77e31023bd6197c013f6b2027b11213f2dd72364`
+  - arm64-v8a `out/behavior-probe-arm64-v8a` SHA-256 `cda63f143038aa725a790f941586f91d6ed5a3f3028aa884e05ef906c7e9a0c9`
+- Documentation identity: `BEHAVIOR-PROBE.md` SHA-256 `d1b46b556352cddeb1fb60ae0341373ef4b0b32dafd42c7f915b817684c0e35d`.
 
 ## 1. Verdict
 
-**PASS for the current local automated harness gates; one non-blocking CONCERN about the memory-stop assertion completeness.**
+**PASS for the current local automated behavior gates; not a runtime or platform acceptance.**
 
-The harness retains the 8-normal empty/nonempty gates and the three forced machine nonreturn gates, and adds a memory-stop case. The reported MuMu x86_64 and ARM64-via-translation outputs are consistent with the source and documented matrices. This is not runtime, physical-ARM, SDK/OS or F4 full-runtime acceptance.
+The memory-stop concern is resolved: the read trigger is armed only after an allocate seam and requires RAM space, address `0x60000`, width 4, and a not-yet-hit guard; the memory-stop case now asserts raw/normal/projected reasons as well as states and counts. The existing normal and forced-machine-nonreturn gates remain intact.
 
-## 2. Normal-path gate retained
+## 2. Memory-stop trigger
 
-PASS:
+- `Probe` carries `stop_read_address`, `stop_read_width`, `stop_read_armed`, and `stop_read_hit` at `harness/behavior_probe.c:18-21`.
+- `run_memory_stop_case()` uses empty setup and sets `stop_read_address=0x00060000`, `stop_read_width=4` at lines 321-324.
+- `probe_machine()` arms the trigger only inside the `ZG116LA_SEAM_ALLOCATE` branch at lines 148-156; it is not armed for a generic/first read.
+- `probe_read()` triggers only when `space == ZG335_SPACE_RAM`, armed, address matches, width matches, and not previously hit at lines 72-78; it returns STOPPED with reason `0x7002`.
+- No production source or design file is substituted.
 
-- `main()` loops `nonempty=0/1` at `behavior_probe.c:364-375`.
-- The normal gate checks host COMPLETED, raw RETURNED, raw reason 0, EAX `0x00020000`, dispatched/continued/normal 8, overflow 0, and all eight normal states/reasons at current lines 409-423.
-- `RESULT PASS/FAIL` is printed after the checks and failure propagates through `failed`.
-- `allocate_index`, `allocated_count`, and `machine_count` remain independent at lines 13-19 and probe lines 123-139.
+## 3. Memory-stop assertions
 
-## 3. Forced machine nonreturn matrix
+- `run_memory_stop_case()` is at `behavior_probe.c:309-369`; it calls actual `zg335116_run` at line 340.
+- The gate checks host COMPLETED, raw `ZG335_CALLEE_STOPPED` (7), raw reason 0, dispatched 1, continued 0, normal 1, overflow 0, normal0 `ZG116_MEMORY_STOPPED` (4)/reason 0, and projected `ZG335_LOWER_STOPPED` (2)/reason 0 at lines 357-367.
+- `RESULT PASS/FAIL` is printed after the checks at line 368; the function returns 0 only on success at line 369.
+- `main()` ORs this result into `failed` at lines 450-451; no unconditional success.
+- Constants match the design headers: raw 7, normal 4, projected 2. The expected counts are 1/0/1.
 
-PASS for the three existing nonreturn cases:
+## 4. Normal and forced-machine gates retained
 
-`run_stop_case()` at `behavior_probe.c:241-301` seeds setup, sets `stop_state`, runs actual `zg335116_run`, and checks raw/normal/projected states, reasons, counts and overflow at lines 288-297. `main()` invokes STOPPED/INVALID/UNKNOWN at lines 430-435. The mappings remain:
+- Normal path: both empty/nonempty setup branches, actual `zg335116_run`, host/raw/reason/eax/counters/all eight normal state+reason checks at the current main block; result failures propagate.
+- Forced machine nonreturn: STOPPED/INVALID/UNKNOWN cases still assert raw/normal/projected states, reasons, counts, and overflow before returning PASS.
+- `allocate_index`, `allocated_count`, and `machine_count` remain independent; `probe_machine()` uses `machine_count` for the XMM ordinal and `allocate_index` for node selection.
 
-| service | raw | normal0 | projected | counts |
-|---|---|---|---|---|
-| STOPPED 2 | 7 | 8 | 2 | 1/0/1 |
-| INVALID 3 | 8 | 9 | 3 | 1/0/1 |
-| UNKNOWN 4 | 9 | 10 | 4 | 1/0/1 |
+Coverage note: the memory-stop case uses the empty setup only; the normal path covers both empty and nonempty setups. This is an explicit scope limitation, not a current failure.
 
-These use actual callback returns and fail non-zero; no canned output.
+## 5. Failure/echo and boundary
 
-## 4. Memory-stop case
+- No fabricated constants are used as output; all printed values come from `zg335116_run`/output structures.
+- The only early return is genuine bind failure; wrong state/count/reason values produce non-zero exit.
+- `BEHAVIOR-PROBE.md:3` labels the result a local automated-gate PASS, not runtime acceptance.
+- The ARM64 result is explicitly MuMu x86_64 + Android ARM translation, not physical ARM.
+- The README boundary excludes physical ARM64, production runtime, SDK/OS/native ABI, Host/F4 full runtime and iOS.
 
-PASS for the requested 0x60000 path, with a CONCERN:
-
-- `Probe` carries `stop_read_address` and `stop_read_hit` at `behavior_probe.c:17-19`.
-- `run_memory_stop_case()` clears the probe, uses `setup(...,0)`, sets `probe.stop_read_address = 0x00060000U` at lines 303-317, binds the real configuration, calls actual `zg335116_run` at line 333, and returns `ok ? 0 : 1` at lines 354-355.
-- `probe_read()` checks the first matching read at lines 70-75 and returns `ZG335_SERVICE_STOPPED` with reason `0x7002`, exactly once via `stop_read_hit`.
-- The expected constants match:
-  - `ZG335_CALLEE_STOPPED = 7` (`raw`)
-  - `ZG116_MEMORY_STOPPED = 4` (`normal0`)
-  - `ZG335_LOWER_STOPPED = 2` (`projected`)
-  - counts `1 dispatched / 0 continued / 1 normal`, overflow 0.
-- The `ok` predicate at lines 346-353 checks host COMPLETED, raw 7, dispatched 1, continued 0, normal 1, overflow 0, normal0 MEMORY_STOPPED, and projected LOWER_STOPPED.
-- `main()` ORs the result into `failed` at line 436 and returns it at line 437; there is no unconditional success.
-- No out-of-bounds access: `normal_records[0]` is within the fixed record array and the predicate requires `normal_count32 == 1` before using it.
-
-CONCERN: `run_stop_case` checks raw/normal/projected reasons, but `run_memory_stop_case` does not assert `output.raw_result.reason32`, `normal_records[0].normal_result.reason32`, or `projected_reply.reason32`. It also triggers solely by address `0x60000` without an explicit phase/space guard in `probe_read`. The current documented output (`raw=7`, normal0=4, projected=2, counts 1/0/1) supports the intended path, but the memory-stop case is less tightly asserted than the three machine-stop cases. This is a completeness concern, not evidence of a wrong result.
-
-## 5. Failure/echo integrity
-
-PASS:
-
-- The memory-stop and machine-stop paths use actual `zg335116_run` output.
-- `probe_machine()` only short-circuits when `stop_state` is set; the memory-stop case leaves it zero and uses the actual read callback.
-- `run_memory_stop_case()` and `run_stop_case()` return non-zero on failure; `main()` accumulates failures.
-- No hard-coded PASS output and no unconditional success return.
-
-## 6. Claim boundary
-
-PASS:
-
-- `BEHAVIOR-PROBE.md:3` labels the result local automated-gate PASS, not runtime acceptance.
-- `BEHAVIOR-PROBE.md:47-59` documents the memory-stop output and constants.
-- `BEHAVIOR-PROBE.md:115-127` excludes physical ARM64, production runtime, SDK/OS/native ABI, Host/F4 full runtime and iOS.
-- ARM64 is explicitly MuMu x86_64 + ARM translation, not physical ARM.
-
-## 7. Findings summary
+## 6. Findings summary
 
 | Item | Result |
 |---|---|
-| 0x60000 stop-read trigger | PASS; address-only trigger noted |
-| raw 7 / normal 4 / projected 2 | PASS |
-| counts 1/0/1 and overflow 0 | PASS |
-| reason assertions | CONCERN: memory-stop reasons not asserted |
+| `stop_read_armed` and allocate-seam trigger | PASS |
+| RAM/address/width/one-shot guard | PASS |
+| raw 7 / normal 4 / projected 2 and counts 1/0/1 | PASS |
+| raw/normal/projected reasons = 0 | PASS |
 | unconditional success / fabricated output | PASS: none |
-| physical ARM/runtime/SDK/OS/F4 boundary | PASS: not claimed |
+| normal and machine-nonreturn gates | PASS retained |
+| stop-case setup coverage | Empty-only; documented coverage note |
+| runtime/physical ARM/SDK/OS/F4 boundary | PASS: not claimed |
 
-Overall: **PASS (local automated behavior gates), with the memory-stop reason/phase assertion concern.** No compile, Host, device, push or runtime acceptance was performed.
+Overall: **PASS (local automated behavior gates), limited to the documented normal, forced-machine-nonreturn, and memory-stop paths.** No compile, Host, device, push or runtime acceptance was performed.
