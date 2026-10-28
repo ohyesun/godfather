@@ -3,80 +3,80 @@
 - Audit date: 2026-10-28
 - Scope: `harness/behavior_probe.c`, `BEHAVIOR-PROBE.md`, `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 - Mode: read-only static review; no compile, Host run, device run or push
-- Current source identity: `harness/behavior_probe.c` SHA-256 `42c48076d767c3577f3a8febaa1c6c7b185ffe43d84dc02f41dfe36fc9bbbd14` (9933 bytes), matching `BEHAVIOR-PROBE.md:80`
-- Binary identities on disk match the documentation:
-  - x86_64 `build-local-x86_64/zg335_behavior_probe` SHA-256 `49608d6328616c867db7bdefba5201dfda0afd7f94e7f5f9e8135978f40973bc`
-  - arm64-v8a `out/behavior-probe-arm64-v8a` SHA-256 `ffcc92281fd6ede812ec0e66d9d61480729b326806898c7d474369eeadbe92a0`
-- Documentation identity: `BEHAVIOR-PROBE.md` SHA-256 `346e1bfb726b7840b295ad6545b1e85f79ec998a2f4a0cdb6ad92ab22c7223f4`; diagnosis `d975bf67...`.
+- Current source identity: `harness/behavior_probe.c` SHA-256 `f92ccf5943de87dcb0010d1fca5bc9425a2921bbfca9d3f91a3ab6d35467791e` (12965 bytes), matching `BEHAVIOR-PROBE.md:94`
+- Binary identities on disk match:
+  - x86_64 `build-local-x86_64/zg335_behavior_probe` SHA-256 `f11cd7d06b11be01ccaa3e1578d7f53e6afabfc6f5976207d45a53d04bbd2766`
+  - arm64-v8a `out/behavior-probe-arm64-v8a` SHA-256 `cab32d4c7f1e6c9a774b76eb7947fb3250e8048441480d030cb7b7c30935fd22`
+- Documentation identity: `BEHAVIOR-PROBE.md` SHA-256 `cfa4a0a614be6915d88f1d85e6f0ff7ea93be9f6c983982f542e115361c70aa7`.
 
 ## 1. Verdict
 
-**PASS for the current local automated harness gate; not a runtime or platform acceptance.**
+**PASS for the current local automated harness gates; not a runtime or platform acceptance.**
 
-The current harness runs both `empty` and `nonempty` setup modes, executes the actual `zg335116_run`, verifies the requested host/raw/normal counters, raw `reason=0`/`eax=0x00020000`, and every normal record's `state=13`/`reason=0`; it prints `RESULT PASS/FAIL` and returns non-zero on failure. The reported MuMu x86_64 and ARM64-via-translation outputs are consistent with the source and are bounded as local harness results.
+The harness retains the 8-normal empty/nonempty checks and adds three nonreturn cases. The source checks are real data comparisons against `zg335116_run` output, not hard-coded PASS values. The observed MuMu x86_64/ARM64-translation results are consistent with the source and documented matrix.
 
-## 2. allocate_index and machine_count separation
+Coverage qualification: the stop matrix calls `setup(&probe, &entry, 0)` (`behavior_probe.c:245`), so it covers the empty setup only; both empty and nonempty setup branches are covered by the normal 8-record path. This is a scope limitation, not a current failure.
 
-PASS:
-
-- `Probe` has independent `allocated_count`, `allocate_index`, and `machine_count` at `harness/behavior_probe.c:13-16`.
-- `setup()` fills the node table and increments only `allocated_count` at lines 190-211; the per-mode `memset` resets `allocate_index` at line 242.
-- `probe_machine()` increments `machine_count` at line 122 and uses it for the XMM ordinal.
-- Allocate uses `p->allocate_index` and increments it at lines 132-134; it never uses `allocated_count` as the cursor.
-
-## 3. Memory setup and machine callback vs F4 Oracle
-
-PASS for both F4 normal setup branches:
-
-- `setup()` takes `nonempty` at line 151 and reproduces both F4 Oracle branches:
-  - empty: `Q->Q`, N0-only at lines 208-210;
-  - nonempty: `Q->C`, N0/N1 nodes, C fields and N1 zeroing at lines 190-207.
-  Compare F4 `fixture.cpp:396-437`.
-- `probe_machine()` at lines 118-149 mirrors the F4 Oracle normal branches: actual return image/continuation, allocate `eax`/`esp`, finish core return/cleanup, slot return target, length-error ESP, and `changed_xmm` with `ordinal+1`. Compare F4 `fixture.cpp:591-655`.
-- The harness calls the actual `zg335116_run` through `zg116la_bind_rich335` at `harness/behavior_probe.c:246-250`; it does not stub the library or write expected output.
-
-The harness does not reproduce F4's stop/reply-transform/error branches; those are outside this normal-path probe.
-
-## 4. Automated gate and output integrity
+## 2. Normal-path gate retained
 
 PASS:
 
-- `main()` runs both `nonempty=0/1` modes at lines 233-244.
-- It prints the actual returned state, raw result, counts, overflow, and all normal records at lines 261-275.
-- The `ok` predicate at lines 278-285 checks:
-  - `ZG335116_HOST_COMPLETED`
-  - `ZG335_RETURNED`
-  - raw `reason32 == 0`
-  - raw `regs.eax == 0x00020000`
-  - `calls_dispatched32 == 8`
-  - `calls_continued32 == 8`
-  - `normal_count32 == 8`
-  - `record_overflow32 == 0`
-- Lines 286-291 require all eight normal records to have `state32 == ZG116_RETURNED` and `reason32 == 0`.
-- `RESULT PASS/FAIL` is printed only after those checks at lines 293-294; any failure sets `failed` at lines 295-297 and is returned at lines 298-299.
-- There is no fabricated constant output and no unconditional success return. The only early return is the genuine bind failure at lines 254-256.
+- `main()` loops `nonempty=0/1` at `behavior_probe.c:300-311`.
+- The normal gate checks host COMPLETED, raw RETURNED, raw reason 0, EAX `0x00020000`, dispatched/continued/normal 8, overflow 0, and all eight normal states/reasons at lines 345-359.
+- `RESULT PASS/FAIL` is printed after the checks, and failure propagates through `failed`.
+- `allocate_index`, `allocated_count`, and `machine_count` remain independent at lines 13-17 and probe lines 123-139.
 
-The gate remains a normal-success-path probe: it does not check F4 stop/error/reply-transform behavior, and it does not replace a full field-by-field Oracle comparison.
+## 3. Nonreturn matrix checks
 
-## 5. Conclusion boundary
+PASS for the requested three cases:
+
+`run_stop_case()` is at `behavior_probe.c:232-292`; it seeds empty setup, sets `probe.stop_state`, calls actual `zg335116_run`, prints the actual output, and returns 0 only when all checks at lines 278-288 hold.
+
+`main()` invokes:
+
+- `run_stop_case(ZG335_SERVICE_STOPPED, ZG335_CALLEE_STOPPED, ZG116_CALLEE_STOPPED, ZG335_LOWER_STOPPED)` at lines 366-367.
+- `run_stop_case(ZG335_SERVICE_INVALID, ZG335_CALLEE_INVALID, ZG116_CALLEE_INVALID, ZG335_LOWER_INVALID)` at lines 368-369.
+- `run_stop_case(ZG335_SERVICE_UNKNOWN, ZG335_CALLEE_UNKNOWN, ZG116_CALLEE_UNKNOWN, ZG335_LOWER_UNKNOWN)` at lines 370-371.
+
+Constant mapping is correct against `design/include/zg335/zg_copy335_raw_normal_frame.h` and `zg_normal116_fullstate.h`:
+
+| service | raw expected | normal expected | projected expected | assert counts |
+|---|---|---|---|---|
+| STOPPED 2 | CALLEE_STOPPED 7 | CALLEE_STOPPED 8 | LOWER_STOPPED 2 | dispatched 1 / continued 0 / normal 1 |
+| INVALID 3 | CALLEE_INVALID 8 | CALLEE_INVALID 9 | LOWER_INVALID 3 | 1 / 0 / 1 |
+| UNKNOWN 4 | CALLEE_UNKNOWN 9 | CALLEE_UNKNOWN 10 | LOWER_UNKNOWN 4 | 1 / 0 / 1 |
+
+`run_stop_case()` checks `normal_records[0]` only after requiring `normal_count32 == 1` in the `ok` predicate; the fixed record slot 0 exists, so there is no out-of-bounds access. It also checks raw reason 0, normal reason 0, projected reason 0, and overflow 0. The stop path in `probe_machine()` is the genuine callback return at lines 125-128; no canned output is injected.
+
+## 4. Failure/echo integrity
 
 PASS:
 
-- `BEHAVIOR-PROBE.md:3` labels the result “LOCAL HARNESS AUTOMATED GATE PASS ... NOT RUNTIME ACCEPTANCE”.
-- `BEHAVIOR-PROBE.md:29-45` documents both empty and nonempty modes and the exact asserted criteria, including raw reason/eax and normal reasons.
-- `BEHAVIOR-PROBE.md:58-60` correctly identifies MuMu as x86_64 running the ARM64 binary through ARM translation, not a physical ARM device.
-- `BEHAVIOR-PROBE.md:87-99` excludes physical ARM64, production runtime, SDK/OS/native ABI, Host/F4 full runtime and iOS.
+- `probe_machine()` increments `machine_count` and returns `stop_state` when set; otherwise it runs the actual normal seam logic.
+- `run_stop_case()` returns 0 only on the full predicate; otherwise returns 1.
+- `main()` ORs each stop-case result into `failed` and returns `failed` at line 372.
+- There is no unconditional success return and no hard-coded state/count output. The printed values come from `output`.
+- The only early return is bind failure (`return 2`), which is a genuine setup failure.
+
+## 5. Claim boundary
+
+PASS:
+
+- `BEHAVIOR-PROBE.md:3` labels the result as a local automated-gate PASS, not runtime acceptance.
+- `BEHAVIOR-PROBE.md:33-45` documents the nonreturn matrix and its asserted counts/states/reasons.
+- `BEHAVIOR-PROBE.md:101-113` excludes physical ARM64, production runtime, SDK/OS/native ABI, Host/F4 full runtime and iOS.
+- ARM64 results are explicitly MuMu x86_64 + ARM translation, not physical ARM.
 
 ## 6. Findings summary
 
 | Item | Result |
 |---|---|
-| allocate_index/machine_count separation | PASS |
-| Empty and nonempty F4 Oracle setup alignment | PASS |
-| Actual run vs fabricated/constant output | PASS |
-| Early return / failed-result exit status | PASS; returns non-zero on failure |
-| Raw reason/eax and normal reason gates | PASS |
-| Normal counters and eight-record check | PASS |
-| Runtime/ARM64/SDK/OS/F4 acceptance boundary | PASS; correctly excluded |
+| STOPPED/INVALID/UNKNOWN mapping | PASS |
+| raw/normal/projected checks | PASS |
+| counts 1/0/1 and reasons | PASS |
+| out-of-bounds | PASS: record slot 0 valid; normal_count==1 required |
+| fabricated output/unconditional success | PASS: actual run and full predicates |
+| both setup branches | Normal path yes; stop matrix empty-only (coverage note) |
+| runtime/platform boundary | PASS: not claimed |
 
-Overall: **PASS (local automated harness gate), limited to the documented normal-success behavior.** No compile, Host, device, push or runtime acceptance was performed.
+Overall: **PASS (local automated behavior gates), with the stop-matrix empty-setup coverage note.** No compile, Host, device, push or runtime acceptance was performed.

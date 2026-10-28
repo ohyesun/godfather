@@ -15,6 +15,8 @@ typedef struct Probe {
     uint32_t allocate_index;
     uint32_t machine_count;
     uint32_t stop_state;
+    uint32_t stop_read_address;
+    int stop_read_hit;
     zg116_xmm0 current_xmm;
 } Probe;
 
@@ -65,6 +67,13 @@ static void probe_read(void *user, uint32_t space, uint32_t address,
     uint32_t i;
     int complete = width == 1 || width == 2 || width == 4 || width == 8 || width == 16;
     *reply = (zg335_read_reply){0};
+    if (p->stop_read_address != 0U && address == p->stop_read_address &&
+        !p->stop_read_hit) {
+        p->stop_read_hit = 1;
+        reply->state32 = ZG335_SERVICE_STOPPED;
+        reply->reason32 = 0x7002U;
+        return;
+    }
     for (i = 0; i < width; ++i) {
         uint8_t value = 0;
         if (!read_byte(p, space, address + i, &value)) {
@@ -291,6 +300,61 @@ static int run_stop_case(uint32_t service, uint32_t raw_expected,
     return ok ? 0 : 1;
 }
 
+static int run_memory_stop_case(void)
+{
+    static Probe probe;
+    zg335_entry entry;
+    zg335116_config configuration;
+    zg335116_output output;
+    zg116la_config machine;
+    uint32_t state;
+    int ok;
+
+    memset(&probe, 0, sizeof probe);
+    memset(&entry, 0, sizeof entry);
+    setup(&probe, &entry, 0);
+    /* N0(0) = 0x00060000: F4 stops the first NormalOuter read at this address. */
+    probe.stop_read_address = 0x00060000U;
+
+    memset(&configuration, 0, sizeof configuration);
+    configuration.version32 = ZG335116_VERSION;
+    configuration.memory.user = &probe;
+    configuration.memory.read = probe_read;
+    configuration.memory.write = probe_write;
+    machine.version32 = ZG116LA_VERSION;
+    machine.machine_user = &probe;
+    machine.machine_call = probe_machine;
+    if (!zg116la_bind_rich335(&configuration, &machine)) {
+        printf("behavior memstop bind failed\n");
+        return 2;
+    }
+
+    memset(&output, 0, sizeof output);
+    state = zg335116_run(entry, &configuration, &output);
+    printf("behavior memstop state=%u raw_state=%u dispatched=%u continued=%u "
+        "normal=%u overflow=%u\n",
+        (unsigned)state, (unsigned)output.raw_result.state32,
+        (unsigned)output.raw_result.calls_dispatched32,
+        (unsigned)output.raw_result.calls_continued32,
+        (unsigned)output.normal_count32,
+        (unsigned)output.record_overflow32);
+    if (output.normal_count32 > 0) {
+        printf("behavior memstop normal0=%u projected=%u\n",
+            (unsigned)output.normal_records[0].normal_result.state32,
+            (unsigned)output.normal_records[0].projected_reply.state32);
+    }
+    ok = state == ZG335116_HOST_COMPLETED &&
+        output.raw_result.state32 == ZG335_CALLEE_STOPPED &&
+        output.raw_result.calls_dispatched32 == 1U &&
+        output.raw_result.calls_continued32 == 0U &&
+        output.normal_count32 == 1U &&
+        output.record_overflow32 == 0U &&
+        output.normal_records[0].normal_result.state32 == ZG116_MEMORY_STOPPED &&
+        output.normal_records[0].projected_reply.state32 == ZG335_LOWER_STOPPED;
+    printf("behavior memstop RESULT %s\n", ok ? "PASS" : "FAIL");
+    return ok ? 0 : 1;
+}
+
 int main(void)
 {
     static Probe probe;
@@ -369,5 +433,6 @@ int main(void)
         ZG116_CALLEE_INVALID, ZG335_LOWER_INVALID);
     failed |= run_stop_case(ZG335_SERVICE_UNKNOWN, ZG335_CALLEE_UNKNOWN,
         ZG116_CALLEE_UNKNOWN, ZG335_LOWER_UNKNOWN);
+    failed |= run_memory_stop_case();
     return failed;
 }
