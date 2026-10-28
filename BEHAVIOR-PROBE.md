@@ -76,6 +76,20 @@ Mapping:
 - raw `RETURN_CONTROL_INVALID` (11), reason `RETURN_TARGET` (9)
 - raw final target absent; 1 dispatched / 0 continued / 1 normal
 
+## Malformed width16 vector
+
+The harness corrupts the first read of `B+0x48 = 0x00030048` to initialize only
+8 of 16 bytes. Both ABIs pass:
+
+```text
+behavior malformed state=2 raw_state=6 raw_reason=5 dispatched=8 continued=8 normal=8 overflow=0 last_addr=00030048 last_width=16
+behavior malformed RESULT PASS
+```
+
+- raw `MEMORY_REPLY_INVALID` (6), reason `READ_INITIALIZATION` (5)
+- 8 normal records retained
+- last memory event at `0x00030048`, width 16
+
 This is the first local behavioral path pass for the x86_64 Android harness.
 
 The harness is now an automated gate, not just a print-only probe. It returns
@@ -123,11 +137,11 @@ No frozen source, design, adapter, or A4 receipt was changed.
 ## Artifacts
 
 - `harness/behavior_probe.c`
-  SHA-256 `608ee1edbdb432a174d7e50165ae6266d8a68f8858341efee34ad4f15937fc2b`
+  SHA-256 `e63ecc13661f5027ec8d05ea4e90f7e4e6f39cfbf9fa84e27b045673f0059e14`
 - binary `build-local-x86_64/zg335_behavior_probe`
-  SHA-256 `2c86eecf326e46f579f9e347f4ab4128025cce5e0b56d7847620de6ff15b806d`
+  SHA-256 `f01a0137cea2a5c87ad1bfff0ec80bfb226b8d8dc4a1037dc4f683ef1842b411`
 - binary `out/behavior-probe-arm64-v8a`
-  SHA-256 `28c240f4e41cf1385875499e135a5142cd668b21585fe18e0694c98f582600fe`
+  SHA-256 `d6a48523c7e834c89b7657b8fa1ca95746bb703c26676ed85874349b48306d2a`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary

@@ -21,6 +21,9 @@ typedef struct Probe {
     int stop_read_hit;
     uint32_t stale_address;
     uint32_t stale_value;
+    uint32_t malformed_read_address;
+    uint32_t malformed_read_width;
+    int malformed_read_hit;
     zg116_xmm0 current_xmm;
 } Probe;
 
@@ -95,6 +98,12 @@ static void probe_read(void *user, uint32_t space, uint32_t address,
     }
     reply->state32 = ZG335_SERVICE_OK;
     reply->initialized_mask32 = width == 16 ? 0xffffU : ((1U << width) - 1U);
+    if (space == ZG335_SPACE_RAM && p->malformed_read_address != 0U &&
+        address == p->malformed_read_address && width == p->malformed_read_width &&
+        !p->malformed_read_hit) {
+        p->malformed_read_hit = 1;
+        reply->initialized_mask32 = width == 16 ? 0xffU : 0x0fU;
+    }
 }
 
 static void probe_write(void *user, uint32_t space, uint32_t address,
@@ -448,6 +457,59 @@ static int run_stale_case(void)
     return ok ? 0 : 1;
 }
 
+static int run_malformed_case(void)
+{
+    static Probe probe;
+    zg335_entry entry;
+    zg335116_config configuration;
+    zg335116_output output;
+    zg116la_config machine;
+    uint32_t state;
+    int ok;
+
+    memset(&probe, 0, sizeof probe);
+    memset(&entry, 0, sizeof entry);
+    setup(&probe, &entry, 0);
+    probe.malformed_read_address = 0x00030048U; /* B + 0x48 */
+    probe.malformed_read_width = 16U;
+
+    memset(&configuration, 0, sizeof configuration);
+    configuration.version32 = ZG335116_VERSION;
+    configuration.memory.user = &probe;
+    configuration.memory.read = probe_read;
+    configuration.memory.write = probe_write;
+    machine.version32 = ZG116LA_VERSION;
+    machine.machine_user = &probe;
+    machine.machine_call = probe_machine;
+    if (!zg116la_bind_rich335(&configuration, &machine)) {
+        printf("behavior malformed bind failed\n");
+        return 2;
+    }
+
+    memset(&output, 0, sizeof output);
+    state = zg335116_run(entry, &configuration, &output);
+    printf("behavior malformed state=%u raw_state=%u raw_reason=%u dispatched=%u "
+        "continued=%u normal=%u overflow=%u last_addr=%08x last_width=%u\n",
+        (unsigned)state, (unsigned)output.raw_result.state32,
+        (unsigned)output.raw_result.reason32,
+        (unsigned)output.raw_result.calls_dispatched32,
+        (unsigned)output.raw_result.calls_continued32,
+        (unsigned)output.normal_count32,
+        (unsigned)output.record_overflow32,
+        (unsigned)output.raw_result.last_memory.address32,
+        (unsigned)output.raw_result.last_memory.width32);
+    ok = state == ZG335116_HOST_COMPLETED &&
+        output.normal_count32 == 8U &&
+        output.record_overflow32 == 0U &&
+        output.raw_result.state32 == ZG335_MEMORY_REPLY_INVALID &&
+        output.raw_result.reason32 == ZG335_REASON_READ_INITIALIZATION &&
+        output.raw_result.calls_dispatched32 == 8U &&
+        output.raw_result.last_memory.address32 == 0x00030048U &&
+        output.raw_result.last_memory.width32 == 16U;
+    printf("behavior malformed RESULT %s\n", ok ? "PASS" : "FAIL");
+    return ok ? 0 : 1;
+}
+
 int main(void)
 {
     static Probe probe;
@@ -528,5 +590,6 @@ int main(void)
         ZG116_CALLEE_UNKNOWN, ZG335_LOWER_UNKNOWN);
     failed |= run_memory_stop_case();
     failed |= run_stale_case();
+    failed |= run_malformed_case();
     return failed;
 }
