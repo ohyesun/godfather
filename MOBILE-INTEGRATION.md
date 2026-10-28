@@ -31,6 +31,35 @@ $NDK/toolchains/llvm/prebuilt/windows-x86_64/bin/clang \
   your.c android-arm64/lib/libzg335_portable.a -o your_binary
 ```
 
+### Consumer smoke
+
+`consumer-smoke/` is a minimal CMake project that uses the installed package:
+
+```cmake
+find_package(zg335 CONFIG REQUIRED)
+target_link_libraries(zg335_consumer PRIVATE zg335::zg335_portable)
+```
+
+Configure with the installed package directory, because the Android NDK
+toolchain does not inherit an outer `CMAKE_PREFIX_PATH`:
+
+```bash
+cmake -S consumer-smoke -B build-cons-arm64 -G Ninja \
+  -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+  -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-24 \
+  -Dzg335_DIR=$ARTIFACTS/android-arm64/lib/cmake/zg335
+cmake --build build-cons-arm64
+```
+
+Both ABIs linked. The x86_64 binary ran on MuMu:
+
+```text
+consumer state=1 normal=0 overflow=0
+EXIT=0
+```
+
+`state=1` is `BAD_INTERFACE` for a zeroed configuration, as expected.
+
 ## iOS
 
 Add `ios-device-arm64/lib/libzg335_portable.a` to the Xcode target and add
