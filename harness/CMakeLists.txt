@@ -11,3 +11,8 @@ add_executable(zg335_probe probe.c)
 target_link_libraries(zg335_probe PRIVATE zg335_portable)
 target_include_directories(zg335_probe PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/../design/include/zg335")
+
+add_executable(zg335_behavior_probe behavior_probe.c)
+target_link_libraries(zg335_behavior_probe PRIVATE zg335_portable)
+target_include_directories(zg335_behavior_probe PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/../design/include/zg335")

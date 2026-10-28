@@ -56,5 +56,12 @@
     "The design SOURCE-MANIFEST still records the v1 adapter pin; the bundle vendor uses the independently accepted v2 A4 receipt copied into this bundle.",
     "The probe does not exercise a valid guest entry or memory/provider configuration.",
     "Codemagic is not required for the Android artifacts in this report."
-  ]
+  ],
+  "behaviorHarness": {
+    "status": "LOCAL_HARNESS_PATH_PASS_X86_64_MUMU",
+    "output": "state=2 raw_state=12 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000; normal[0..7]=13",
+    "probeSha256": "e59f154e49bc94bc56d009dde38d80bd2af656966c5e0474125bf7e0b2e34a44",
+    "sourceSha256": "bf90a27e4afd14270ddc26b036c3e364fa8c00c6a40770da74e6debcd663866f",
+    "scope": "one local x86_64 MuMu harness run; not ARM64/production/runtime/SDK/OS acceptance"
+  }
 }
