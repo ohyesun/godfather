@@ -1,0 +1,8 @@
+# Local probe build output is not source
+build-local-*/
+build-*/
+out/
+_stage/
+*.a
+*.o
+zg335_probe

@@ -470,7 +470,7 @@ void zg116la_e4_range(void *user, zg116_call request,
     ops.length_call = le4_length;
     result = zg_range101e0_raw_frame_normal(&ops, le4_to_w(request.entry));
     if (result.state != ZG_W154_RETURNED) {
-        if (zg116la_bridge_status(&f->bridge) == ZG116_SERVICE_OK) {
+        if (zg116la_bridge_status(&f.bridge) == ZG116_SERVICE_OK) {
             uint32_t state = ZG116_SERVICE_INVALID;
             if (result.state == ZG_W154_NONRETURN) { state = ZG116_SERVICE_STOPPED; }
             else if (result.state == ZG_W154_UNKNOWN ||

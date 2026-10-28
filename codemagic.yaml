@@ -4,138 +4,68 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     scripts:
-      - name: Locate Android NDK
-        script: |
-          set -eu
-          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
-          NDK="${ANDROID_NDK_HOME:-${ANDROID_NDK_ROOT:-}}"
-          if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
-            if [ -f "$SDK/ndk/27.0.12077973/build/cmake/android.toolchain.cmake" ]; then
-              NDK="$SDK/ndk/27.0.12077973"
-            fi
-          fi
-          if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
-            SDKMGR="$(command -v sdkmanager || true)"
-            if [ -z "$SDKMGR" ] && [ -d "$SDK/cmdline-tools" ]; then
-              SDKMGR="$(find "$SDK/cmdline-tools" -name sdkmanager -type f | head -1)"
-            fi
-            [ -n "$SDKMGR" ] || { echo "sdkmanager not found; cannot install NDK" >&2; exit 2; }
-            yes | "$SDKMGR" --licenses >/dev/null || true
-            "$SDKMGR" "ndk;27.0.12077973"
-            NDK="$SDK/ndk/27.0.12077973"
-          fi
-          test -f "$NDK/build/cmake/android.toolchain.cmake"
-          printf 'NDK=%s\n' "$NDK" > "$CM_BUILD_DIR/ndk-path.env"
-          "$NDK/ndk-build" --version >/dev/null 2>&1 || true
-      - name: Resolve CMake
-        script: |
-          set -eu
-          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
-          CMAKE_BIN=""
-          if [ -x "$SDK/cmake/3.22.1/bin/cmake" ]; then
-            CMAKE_BIN="$SDK/cmake/3.22.1/bin/cmake"
-          elif [ -d "$SDK/cmake" ]; then
-            CMAKE_SDK_NAME="$(for candidate in "$SDK"/cmake/*; do
-              [ -x "$candidate/bin/cmake" ] && basename "$candidate"
-            done | sort -t. -k1,1nr -k2,2nr -k3,3nr | head -n 1)"
-            if [ -n "$CMAKE_SDK_NAME" ]; then
-              CMAKE_BIN="$SDK/cmake/$CMAKE_SDK_NAME/bin/cmake"
-            fi
-          fi
-          if [ -z "$CMAKE_BIN" ]; then
-            CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
-          fi
-          if [ -z "$CMAKE_BIN" ]; then
-            if command -v brew >/dev/null 2>&1; then
-              brew install cmake
-            fi
-            CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
-          fi
-          [ -n "$CMAKE_BIN" ] || { echo "cmake not found and brew install failed" >&2; exit 2; }
-          "$CMAKE_BIN" --version
-          CMAKE_VERSION="$("$CMAKE_BIN" --version | sed -n 's/^cmake version \([0-9][0-9.]*\).*/\1/p' | head -1)"
-          [ -n "$CMAKE_VERSION" ] || { echo "cannot parse cmake version" >&2; exit 2; }
-          CMAKE_MAJOR="${CMAKE_VERSION%%.*}"
-          CMAKE_REST="${CMAKE_VERSION#*.}"
-          CMAKE_MINOR="${CMAKE_REST%%.*}"
-          if [ "$CMAKE_MAJOR" -lt 3 ] || { [ "$CMAKE_MAJOR" -eq 3 ] && [ "$CMAKE_MINOR" -lt 16 ]; }; then
-            echo "cmake >= 3.16 required, found $CMAKE_VERSION" >&2
-            exit 2
-          fi
-          printf 'CMAKE_BIN=%s\n' "$CMAKE_BIN" > "$CM_BUILD_DIR/cmake-path.env"
-      - name: Configure Android
-        script: |
-          set -eu
-          . "$CM_BUILD_DIR/ndk-path.env"
-          . "$CM_BUILD_DIR/cmake-path.env"
-          "$CMAKE_BIN" -S design -B build-android \
-            -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
-            -DANDROID_ABI=arm64-v8a \
-            -DANDROID_PLATFORM=android-24 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX="$CM_BUILD_DIR/out/android-arm64" \
-            -DZG_LEGACY_ROOT="$CM_BUILD_DIR/vendor/legacy" \
-            -DZG_ADAPTER_ROOT="$CM_BUILD_DIR/vendor/adapter"
-      - name: Build Android
-        script: |
-          set -eu
-          . "$CM_BUILD_DIR/cmake-path.env"
-          "$CMAKE_BIN" --build build-android --target install
-    artifacts:
-      - out/android-arm64/**
-      - build-android/CMakeCache.txt
+    - name: Locate Android NDK
+      script: "set -eu\nSDK=\"${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}\"\nNDK=\"${ANDROID_NDK_HOME:-${ANDROID_NDK_ROOT:-}}\"\nif [ -z \"$NDK\" ] || [ ! -f \"$NDK/build/cmake/android.toolchain.cmake\" ]; then\n  if [ -f \"$SDK/ndk/27.0.12077973/build/cmake/android.toolchain.cmake\" ]; then\n    NDK=\"$SDK/ndk/27.0.12077973\"\n  fi\nfi\nif [ -z \"$NDK\" ] || [ ! -f \"$NDK/build/cmake/android.toolchain.cmake\" ]; then\n  SDKMGR=\"$(command -v sdkmanager || true)\"\n  if [ -z \"$SDKMGR\" ] && [ -d \"$SDK/cmdline-tools\" ]; then\n    SDKMGR=\"$(find \"$SDK/cmdline-tools\" -name sdkmanager -type f | head -1)\"\n  fi\n  [ -n \"$SDKMGR\" ] || { echo \"sdkmanager not found; cannot install NDK\" >&2; exit 2; }\n  yes | \"$SDKMGR\" --licenses >/dev/null || true\n  \"$SDKMGR\" \"ndk;27.0.12077973\"\n  NDK=\"$SDK/ndk/27.0.12077973\"\nfi\ntest -f \"$NDK/build/cmake/android.toolchain.cmake\"\nprintf 'NDK=%s\\n' \"$NDK\" > \"$CM_BUILD_DIR/ndk-path.env\"\n\"$NDK/ndk-build\" --version\
+        \ >/dev/null 2>&1 || true\n"
+    - name: Resolve CMake
+      script: "set -eu\nSDK=\"${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}\"\nCMAKE_BIN=\"\"\nif [ -x \"$SDK/cmake/3.22.1/bin/cmake\" ]; then\n  CMAKE_BIN=\"$SDK/cmake/3.22.1/bin/cmake\"\nelif [ -d \"$SDK/cmake\" ]; then\n  CMAKE_SDK_NAME=\"$(for candidate in \"$SDK\"/cmake/*; do\n    [ -x \"$candidate/bin/cmake\" ] && basename \"$candidate\"\n  done | sort -t. -k1,1nr -k2,2nr -k3,3nr | head -n 1)\"\n  if [ -n \"$CMAKE_SDK_NAME\" ]; then\n    CMAKE_BIN=\"$SDK/cmake/$CMAKE_SDK_NAME/bin/cmake\"\n  fi\nfi\nif [ -z \"$CMAKE_BIN\" ]; then\n  CMAKE_BIN=\"$(command -v cmake 2>/dev/null || true)\"\nfi\nif [ -z \"$CMAKE_BIN\" ]; then\n  if command -v brew >/dev/null 2>&1; then\n    brew install cmake\n  fi\n  CMAKE_BIN=\"$(command -v cmake 2>/dev/null || true)\"\nfi\n[ -n \"$CMAKE_BIN\" ] || { echo \"cmake not found and brew install failed\" >&2; exit 2; }\n\"$CMAKE_BIN\" --version\nCMAKE_VERSION=\"$(\"$CMAKE_BIN\" --version | sed -n 's/^cmake version \\([0-9][0-9.]*\\).*/\\1/p'\
+        \ | head -1)\"\n[ -n \"$CMAKE_VERSION\" ] || { echo \"cannot parse cmake version\" >&2; exit 2; }\nCMAKE_MAJOR=\"${CMAKE_VERSION%%.*}\"\nCMAKE_REST=\"${CMAKE_VERSION#*.}\"\nCMAKE_MINOR=\"${CMAKE_REST%%.*}\"\nif [ \"$CMAKE_MAJOR\" -lt 3 ] || { [ \"$CMAKE_MAJOR\" -eq 3 ] && [ \"$CMAKE_MINOR\" -lt 16 ]; }; then\n  echo \"cmake >= 3.16 required, found $CMAKE_VERSION\" >&2\n  exit 2\nfi\nprintf 'CMAKE_BIN=%s\\n' \"$CMAKE_BIN\" > \"$CM_BUILD_DIR/cmake-path.env\"\n"
+    - name: Configure Android
+      script: "set -eu\n. \"$CM_BUILD_DIR/ndk-path.env\"\n. \"$CM_BUILD_DIR/cmake-path.env\"\n\"$CMAKE_BIN\" -S design -B build-android \\\n  -DCMAKE_TOOLCHAIN_FILE=\"$NDK/build/cmake/android.toolchain.cmake\" \\\n  -DANDROID_ABI=arm64-v8a \\\n  -DANDROID_PLATFORM=android-24 \\\n  -DCMAKE_BUILD_TYPE=Release \\\n  -DCMAKE_INSTALL_PREFIX=\"$CM_BUILD_DIR/out/android-arm64\" \\\n  -DZG_LEGACY_ROOT=\"$CM_BUILD_DIR/vendor/legacy\" \\\n  -DZG_ADAPTER_ROOT=\"$CM_BUILD_DIR/vendor/adapter\"\n"
+    - name: Build Android
+      script: 'set -eu
 
+        . "$CM_BUILD_DIR/cmake-path.env"
+
+        "$CMAKE_BIN" --build build-android --target install
+
+        '
+    artifacts:
+    - out/android-arm64/**
+    - build-android/CMakeCache.txt
   ios-portable:
     name: iOS device portable static library
     instance_type: mac_mini_m2
     max_build_duration: 60
     scripts:
-      - name: Resolve CMake
-        script: |
-          set -eu
-          CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
-          if [ -z "$CMAKE_BIN" ] && [ -x /opt/homebrew/bin/cmake ]; then
-            CMAKE_BIN=/opt/homebrew/bin/cmake
-          fi
-          if [ -z "$CMAKE_BIN" ] && [ -x /usr/local/bin/cmake ]; then
-            CMAKE_BIN=/usr/local/bin/cmake
-          fi
-          if [ -z "$CMAKE_BIN" ]; then
-            if command -v brew >/dev/null 2>&1; then
-              brew install cmake
-            fi
-            CMAKE_BIN="$(command -v cmake 2>/dev/null || true)"
-          fi
-          [ -n "$CMAKE_BIN" ] || { echo "cmake not found and brew install failed" >&2; exit 2; }
-          "$CMAKE_BIN" --version
-          CMAKE_VERSION="$("$CMAKE_BIN" --version | sed -n 's/^cmake version \([0-9][0-9.]*\).*/\1/p' | head -1)"
-          [ -n "$CMAKE_VERSION" ] || { echo "cannot parse cmake version" >&2; exit 2; }
-          CMAKE_MAJOR="${CMAKE_VERSION%%.*}"
-          CMAKE_REST="${CMAKE_VERSION#*.}"
-          CMAKE_MINOR="${CMAKE_REST%%.*}"
-          if [ "$CMAKE_MAJOR" -lt 3 ] || { [ "$CMAKE_MAJOR" -eq 3 ] && [ "$CMAKE_MINOR" -lt 16 ]; }; then
-            echo "cmake >= 3.16 required, found $CMAKE_VERSION" >&2
-            exit 2
-          fi
-          printf 'CMAKE_BIN=%s\n' "$CMAKE_BIN" > "$CM_BUILD_DIR/cmake-path.env"
-      - name: Configure iOS device arm64
-        script: |
-          set -eu
-          . "$CM_BUILD_DIR/cmake-path.env"
-          "$CMAKE_BIN" -S design -B build-ios \
-            -DCMAKE_SYSTEM_NAME=iOS \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DCMAKE_OSX_SYSROOT=iphoneos \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX="$CM_BUILD_DIR/out/ios-device-arm64" \
-            -DZG_LEGACY_ROOT="$CM_BUILD_DIR/vendor/legacy" \
-            -DZG_ADAPTER_ROOT="$CM_BUILD_DIR/vendor/adapter"
-      - name: Build iOS
-        script: |
-          set -eu
-          . "$CM_BUILD_DIR/cmake-path.env"
-          "$CMAKE_BIN" --build build-ios --target install
+    - name: Resolve CMake
+      script: "set -eu\nCMAKE_BIN=\"$(command -v cmake 2>/dev/null || true)\"\nif [ -z \"$CMAKE_BIN\" ] && [ -x /opt/homebrew/bin/cmake ]; then\n  CMAKE_BIN=/opt/homebrew/bin/cmake\nfi\nif [ -z \"$CMAKE_BIN\" ] && [ -x /usr/local/bin/cmake ]; then\n  CMAKE_BIN=/usr/local/bin/cmake\nfi\nif [ -z \"$CMAKE_BIN\" ]; then\n  if command -v brew >/dev/null 2>&1; then\n    brew install cmake\n  fi\n  CMAKE_BIN=\"$(command -v cmake 2>/dev/null || true)\"\nfi\n[ -n \"$CMAKE_BIN\" ] || { echo \"cmake not found and brew install failed\" >&2; exit 2; }\n\"$CMAKE_BIN\" --version\nCMAKE_VERSION=\"$(\"$CMAKE_BIN\" --version | sed -n 's/^cmake version \\([0-9][0-9.]*\\).*/\\1/p' | head -1)\"\n[ -n \"$CMAKE_VERSION\" ] || { echo \"cannot parse cmake version\" >&2; exit 2; }\nCMAKE_MAJOR=\"${CMAKE_VERSION%%.*}\"\nCMAKE_REST=\"${CMAKE_VERSION#*.}\"\nCMAKE_MINOR=\"${CMAKE_REST%%.*}\"\nif [ \"$CMAKE_MAJOR\" -lt 3 ] || { [ \"$CMAKE_MAJOR\" -eq 3 ] && [ \"$CMAKE_MINOR\" -lt 16 ]; }; then\n  echo \"cmake >= 3.16\
+        \ required, found $CMAKE_VERSION\" >&2\n  exit 2\nfi\nprintf 'CMAKE_BIN=%s\\n' \"$CMAKE_BIN\" > \"$CM_BUILD_DIR/cmake-path.env\"\n"
+    - name: Configure iOS device arm64
+      script: "set -eu\n. \"$CM_BUILD_DIR/cmake-path.env\"\n\"$CMAKE_BIN\" -S design -B build-ios \\\n  -DCMAKE_SYSTEM_NAME=iOS \\\n  -DCMAKE_OSX_ARCHITECTURES=arm64 \\\n  -DCMAKE_OSX_SYSROOT=iphoneos \\\n  -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \\\n  -DCMAKE_BUILD_TYPE=Release \\\n  -DCMAKE_INSTALL_PREFIX=\"$CM_BUILD_DIR/out/ios-device-arm64\" \\\n  -DZG_LEGACY_ROOT=\"$CM_BUILD_DIR/vendor/legacy\" \\\n  -DZG_ADAPTER_ROOT=\"$CM_BUILD_DIR/vendor/adapter\"\n"
+    - name: Build iOS
+      script: 'set -eu
+
+        . "$CM_BUILD_DIR/cmake-path.env"
+
+        "$CMAKE_BIN" --build build-ios --target install
+
+        '
     artifacts:
-      - out/ios-device-arm64/**
-      - build-ios/CMakeCache.txt
+    - out/ios-device-arm64/**
+    - build-ios/CMakeCache.txt
+  android-x86_64-probe:
+    name: Android x86_64 MuMu probe
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    scripts:
+    - name: Locate Android NDK
+      script: "set -eu\nSDK=\"${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}\"\nNDK=\"${ANDROID_NDK_HOME:-${ANDROID_NDK_ROOT:-}}\"\nif [ -z \"$NDK\" ] || [ ! -f \"$NDK/build/cmake/android.toolchain.cmake\" ]; then\n  if [ -f \"$SDK/ndk/27.0.12077973/build/cmake/android.toolchain.cmake\" ]; then\n    NDK=\"$SDK/ndk/27.0.12077973\"\n  fi\nfi\nif [ -z \"$NDK\" ] || [ ! -f \"$NDK/build/cmake/android.toolchain.cmake\" ]; then\n  SDKMGR=\"$(command -v sdkmanager || true)\"\n  if [ -z \"$SDKMGR\" ] && [ -d \"$SDK/cmdline-tools\" ]; then\n    SDKMGR=\"$(find \"$SDK/cmdline-tools\" -name sdkmanager -type f | head -1)\"\n  fi\n  [ -n \"$SDKMGR\" ] || { echo \"sdkmanager not found; cannot install NDK\" >&2; exit 2; }\n  yes | \"$SDKMGR\" --licenses >/dev/null || true\n  \"$SDKMGR\" \"ndk;27.0.12077973\"\n  NDK=\"$SDK/ndk/27.0.12077973\"\nfi\ntest -f \"$NDK/build/cmake/android.toolchain.cmake\"\nprintf 'NDK=%s\\n' \"$NDK\" > \"$CM_BUILD_DIR/ndk-path.env\"\n\"$NDK/ndk-build\" --version\
+        \ >/dev/null 2>&1 || true\n"
+    - name: Resolve CMake
+      script: "set -eu\nSDK=\"${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}\"\nCMAKE_BIN=\"\"\nif [ -x \"$SDK/cmake/3.22.1/bin/cmake\" ]; then\n  CMAKE_BIN=\"$SDK/cmake/3.22.1/bin/cmake\"\nelif [ -d \"$SDK/cmake\" ]; then\n  CMAKE_SDK_NAME=\"$(for candidate in \"$SDK\"/cmake/*; do\n    [ -x \"$candidate/bin/cmake\" ] && basename \"$candidate\"\n  done | sort -t. -k1,1nr -k2,2nr -k3,3nr | head -n 1)\"\n  if [ -n \"$CMAKE_SDK_NAME\" ]; then\n    CMAKE_BIN=\"$SDK/cmake/$CMAKE_SDK_NAME/bin/cmake\"\n  fi\nfi\nif [ -z \"$CMAKE_BIN\" ]; then\n  CMAKE_BIN=\"$(command -v cmake 2>/dev/null || true)\"\nfi\nif [ -z \"$CMAKE_BIN\" ]; then\n  if command -v brew >/dev/null 2>&1; then\n    brew install cmake\n  fi\n  CMAKE_BIN=\"$(command -v cmake 2>/dev/null || true)\"\nfi\n[ -n \"$CMAKE_BIN\" ] || { echo \"cmake not found and brew install failed\" >&2; exit 2; }\n\"$CMAKE_BIN\" --version\nCMAKE_VERSION=\"$(\"$CMAKE_BIN\" --version | sed -n 's/^cmake version \\([0-9][0-9.]*\\).*/\\1/p'\
+        \ | head -1)\"\n[ -n \"$CMAKE_VERSION\" ] || { echo \"cannot parse cmake version\" >&2; exit 2; }\nCMAKE_MAJOR=\"${CMAKE_VERSION%%.*}\"\nCMAKE_REST=\"${CMAKE_VERSION#*.}\"\nCMAKE_MINOR=\"${CMAKE_REST%%.*}\"\nif [ \"$CMAKE_MAJOR\" -lt 3 ] || { [ \"$CMAKE_MAJOR\" -eq 3 ] && [ \"$CMAKE_MINOR\" -lt 16 ]; }; then\n  echo \"cmake >= 3.16 required, found $CMAKE_VERSION\" >&2\n  exit 2\nfi\nprintf 'CMAKE_BIN=%s\\n' \"$CMAKE_BIN\" > \"$CM_BUILD_DIR/cmake-path.env\"\n"
+    - name: Configure Android x86_64 probe
+      script: "set -eu\n. \"$CM_BUILD_DIR/ndk-path.env\"\n. \"$CM_BUILD_DIR/cmake-path.env\"\n\"$CMAKE_BIN\" -S harness -B build-android-x86_64 \\\n  -DCMAKE_TOOLCHAIN_FILE=\"$NDK/build/cmake/android.toolchain.cmake\" \\\n  -DANDROID_ABI=x86_64 \\\n  -DANDROID_PLATFORM=android-24 \\\n  -DCMAKE_BUILD_TYPE=Release \\\n  -DCMAKE_INSTALL_PREFIX=\"$CM_BUILD_DIR/out/android-x86_64\" \\\n  -DZG_LEGACY_ROOT=\"$CM_BUILD_DIR/vendor/legacy\" \\\n  -DZG_ADAPTER_ROOT=\"$CM_BUILD_DIR/vendor/adapter\"\n"
+    - name: Build Android probe
+      script: 'set -eu
+
+        . "$CM_BUILD_DIR/cmake-path.env"
+
+        "$CMAKE_BIN" --build build-android-x86_64 --target zg335_probe
+
+        '
+    artifacts:
+    - out/android-x86_64/**
+    - build-android-x86_64/zg335_probe
+    - build-android-x86_64/CMakeCache.txt
