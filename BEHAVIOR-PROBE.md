@@ -30,6 +30,20 @@ The harness runs both F4 setup branches: `empty` and `nonempty`. The lead
 independently reran both modes on x86_64 and ARM64-under-MuMu-translation; both
 printed `behavior mode=<mode> RESULT PASS` and exited 0.
 
+## Nonreturn matrix
+
+The harness also forces the first machine callback to return each of the three
+nonreturn services. On both ABIs, all three cases pass:
+
+| service | raw state | normal[0] | projected | counts |
+|---|---|---|---|---|
+| STOPPED (2) | 7 CALLEE_STOPPED | 8 CALLEE_STOPPED | 2 LOWER_STOPPED | 1 dispatched / 0 continued / 1 normal |
+| INVALID (3) | 8 CALLEE_INVALID | 9 CALLEE_INVALID | 3 LOWER_INVALID | 1 / 0 / 1 |
+| UNKNOWN (4) | 9 CALLEE_UNKNOWN | 10 CALLEE_UNKNOWN | 4 LOWER_UNKNOWN | 1 / 0 / 1 |
+
+Each case exits 0 only when the host remains `COMPLETED`, raw reason is 0,
+normal/projected reasons are 0, counts are 1/0/1, and overflow is 0.
+
 This is the first local behavioral path pass for the x86_64 Android harness.
 
 The harness is now an automated gate, not just a print-only probe. It returns
@@ -77,11 +91,11 @@ No frozen source, design, adapter, or A4 receipt was changed.
 ## Artifacts
 
 - `harness/behavior_probe.c`
-  SHA-256 `42c48076d767c3577f3a8febaa1c6c7b185ffe43d84dc02f41dfe36fc9bbbd14`
+  SHA-256 `f92ccf5943de87dcb0010d1fca5bc9425a2921bbfca9d3f91a3ab6d35467791e`
 - binary `build-local-x86_64/zg335_behavior_probe`
-  SHA-256 `49608d6328616c867db7bdefba5201dfda0afd7f94e7f5f9e8135978f40973bc`
+  SHA-256 `f11cd7d06b11be01ccaa3e1578d7f53e6afabfc6f5976207d45a53d04bbd2766`
 - binary `out/behavior-probe-arm64-v8a`
-  SHA-256 `ffcc92281fd6ede812ec0e66d9d61480729b326806898c7d474369eeadbe92a0`
+  SHA-256 `cab32d4c7f1e6c9a774b76eb7947fb3250e8048441480d030cb7b7c30935fd22`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary

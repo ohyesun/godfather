@@ -14,6 +14,7 @@ typedef struct Probe {
     uint32_t allocated_count;
     uint32_t allocate_index;
     uint32_t machine_count;
+    uint32_t stop_state;
     zg116_xmm0 current_xmm;
 } Probe;
 
@@ -121,6 +122,10 @@ static void probe_machine(void *user, zg116la_machine_call request,
     Probe *p = (Probe *)user;
     const uint32_t ordinal = ++p->machine_count;
     *reply = (zg116la_machine_reply){0};
+    if (p->stop_state != 0U) {
+        reply->state32 = p->stop_state;
+        return;
+    }
     reply->state32 = ZG116_SERVICE_OK;
     reply->normal_abi_preserved = 1;
     reply->regs_present = 1;
@@ -224,6 +229,68 @@ static void setup(Probe *p, zg335_entry *entry, int nonempty)
     }
 }
 
+static int run_stop_case(uint32_t service, uint32_t raw_expected,
+    uint32_t normal_expected, uint32_t projected_expected)
+{
+    static Probe probe;
+    zg335_entry entry;
+    zg335116_config configuration;
+    zg335116_output output;
+    zg116la_config machine;
+    uint32_t state;
+    int ok;
+
+    memset(&probe, 0, sizeof probe);
+    memset(&entry, 0, sizeof entry);
+    setup(&probe, &entry, 0);
+    probe.stop_state = service;
+
+    memset(&configuration, 0, sizeof configuration);
+    configuration.version32 = ZG335116_VERSION;
+    configuration.memory.user = &probe;
+    configuration.memory.read = probe_read;
+    configuration.memory.write = probe_write;
+    machine.version32 = ZG116LA_VERSION;
+    machine.machine_user = &probe;
+    machine.machine_call = probe_machine;
+    if (!zg116la_bind_rich335(&configuration, &machine)) {
+        printf("behavior stop service=%u bind failed\n", (unsigned)service);
+        return 2;
+    }
+
+    memset(&output, 0, sizeof output);
+    state = zg335116_run(entry, &configuration, &output);
+    printf("behavior stop service=%u state=%u raw_state=%u reason=%u "
+        "dispatched=%u continued=%u normal=%u overflow=%u\n",
+        (unsigned)service, (unsigned)state,
+        (unsigned)output.raw_result.state32,
+        (unsigned)output.raw_result.reason32,
+        (unsigned)output.raw_result.calls_dispatched32,
+        (unsigned)output.raw_result.calls_continued32,
+        (unsigned)output.normal_count32,
+        (unsigned)output.record_overflow32);
+    if (output.normal_count32 > 0) {
+        printf("behavior stop service=%u normal0=%u projected=%u\n",
+            (unsigned)service,
+            (unsigned)output.normal_records[0].normal_result.state32,
+            (unsigned)output.normal_records[0].projected_reply.state32);
+    }
+    ok = state == ZG335116_HOST_COMPLETED &&
+        output.raw_result.state32 == raw_expected &&
+        output.raw_result.reason32 == 0U &&
+        output.raw_result.calls_dispatched32 == 1U &&
+        output.raw_result.calls_continued32 == 0U &&
+        output.normal_count32 == 1U &&
+        output.record_overflow32 == 0U &&
+        output.normal_records[0].normal_result.state32 == normal_expected &&
+        output.normal_records[0].normal_result.reason32 == 0U &&
+        output.normal_records[0].projected_reply.state32 == projected_expected &&
+        output.normal_records[0].projected_reply.reason32 == 0U;
+    printf("behavior stop service=%u RESULT %s\n", (unsigned)service,
+        ok ? "PASS" : "FAIL");
+    return ok ? 0 : 1;
+}
+
 int main(void)
 {
     static Probe probe;
@@ -296,5 +363,11 @@ int main(void)
             failed = 1;
         }
     }
+    failed |= run_stop_case(ZG335_SERVICE_STOPPED, ZG335_CALLEE_STOPPED,
+        ZG116_CALLEE_STOPPED, ZG335_LOWER_STOPPED);
+    failed |= run_stop_case(ZG335_SERVICE_INVALID, ZG335_CALLEE_INVALID,
+        ZG116_CALLEE_INVALID, ZG335_LOWER_INVALID);
+    failed |= run_stop_case(ZG335_SERVICE_UNKNOWN, ZG335_CALLEE_UNKNOWN,
+        ZG116_CALLEE_UNKNOWN, ZG335_LOWER_UNKNOWN);
     return failed;
 }
