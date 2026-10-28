@@ -1,6 +1,6 @@
 # Behavior probe result
 
-Status: **LOCAL HARNESS PATH PASS (x86_64 MuMu) — NOT RUNTIME ACCEPTANCE**
+Status: **LOCAL HARNESS PATH PASS (x86_64 + arm64 via MuMu translation) — NOT RUNTIME ACCEPTANCE**
 
 ## Result
 
@@ -28,6 +28,21 @@ Mapping:
 
 This is the first local behavioral path pass for the x86_64 Android harness.
 
+## ARM64 result
+
+The same `behavior_probe.c` was rebuilt for `aarch64-linux-android24` against
+`android-arm64/lib/libzg335_portable.a` and run on the same MuMu instance. Its
+output is identical:
+
+```text
+behavior state=2 raw_state=12 reason=0 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000
+normal[0..7] state=13 reason=0
+```
+
+MuMu is an x86_64 host running the ARM64 binary through Android ARM
+translation. This proves the arm64 library links and the same harness path
+completes under that translation layer; it is not a physical ARM device run.
+
 ## Root cause of the earlier early stop
 
 The first harness reused `allocated_count` as both the preloaded-node count and
@@ -49,13 +64,16 @@ No frozen source, design, adapter, or A4 receipt was changed.
   SHA-256 `bf90a27e4afd14270ddc26b036c3e364fa8c00c6a40770da74e6debcd663866f`
 - binary `build-local-x86_64/zg335_behavior_probe`
   SHA-256 `e59f154e49bc94bc56d009dde38d80bd2af656966c5e0474125bf7e0b2e34a44`
+- binary `out/behavior-probe-arm64-v8a`
+  SHA-256 `1f0b005075fb2590f7be0b861fc041212884bb380a974bff2dd4fc1080457d55`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary
 
-This is one local x86_64 emulator harness run. It does not prove:
+This is one local MuMu harness run for x86_64 and one ARM64 run under MuMu's
+translation layer. It does not prove:
 
-- ARM64 device behavior
+- physical ARM64 device behavior
 - production runtime
 - SDK/OS/native ABI acceptance
 - Host/F4 full runtime
