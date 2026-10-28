@@ -37,9 +37,10 @@ exit 0 only when all of these hold:
 
 - host state `COMPLETED`
 - raw state `RETURNED`
+- raw `reason=0` and `eax=0x00020000`
 - `dispatched=8`, `continued=8`, `normal=8`
 - `overflow=0`
-- every one of the eight normal records is `ZG116_RETURNED`
+- every one of the eight normal records is `ZG116_RETURNED` with `reason=0`
 
 Both ABI runs print `behavior RESULT PASS` and exit 0.
 
@@ -76,11 +77,11 @@ No frozen source, design, adapter, or A4 receipt was changed.
 ## Artifacts
 
 - `harness/behavior_probe.c`
-  SHA-256 `49ed3f412ae683cd86b6ff4c26752d6a7a25553c61f104cdae76076dbbd78562`
+  SHA-256 `42c48076d767c3577f3a8febaa1c6c7b185ffe43d84dc02f41dfe36fc9bbbd14`
 - binary `build-local-x86_64/zg335_behavior_probe`
-  SHA-256 `06d95f351d4281758bffca89992f98024810a059427b750fc5046f33ba13958c`
+  SHA-256 `49608d6328616c867db7bdefba5201dfda0afd7f94e7f5f9e8135978f40973bc`
 - binary `out/behavior-probe-arm64-v8a`
-  SHA-256 `dc98b8e01329577163add45fb3668ca98dd577ff2154db9cf7f6cbbf4cd10c2b`
+  SHA-256 `ffcc92281fd6ede812ec0e66d9d61480729b326806898c7d474369eeadbe92a0`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary

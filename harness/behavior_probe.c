@@ -277,13 +277,16 @@ int main(void)
 
         ok = state == ZG335116_HOST_COMPLETED &&
             output.raw_result.state32 == ZG335_RETURNED &&
+            output.raw_result.reason32 == 0U &&
+            output.raw_result.regs.eax == 0x00020000U &&
             output.raw_result.calls_dispatched32 == 8U &&
             output.raw_result.calls_continued32 == 8U &&
             output.normal_count32 == 8U &&
             output.record_overflow32 == 0U;
         for (i = 0; i < 8U; ++i) {
             if (i >= output.normal_count32 ||
-                output.normal_records[i].normal_result.state32 != ZG116_RETURNED) {
+                output.normal_records[i].normal_result.state32 != ZG116_RETURNED ||
+                output.normal_records[i].normal_result.reason32 != 0U) {
                 ok = 0;
             }
         }
