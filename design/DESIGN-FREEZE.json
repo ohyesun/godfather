@@ -1,0 +1,34 @@
+{
+  "schema": "WORKBUDDY_MOBILE_DESIGN_FREEZE_V1",
+  "frozenAt": "2026-10-28T17:45:00+08:00",
+  "status": "DESIGN_AND_STATIC_PREFLIGHT_ONLY",
+  "qaVerdict": "PASS",
+  "scope": "Android/iOS portable C11 integration design; no compile, no runtime, no SDK/OS/ABI acceptance",
+  "pins": {
+    "SOURCE-MANIFEST.json": "b7eeb8fac58603f0b1da9da84627ae34ec09f853943c447c011dd8bface203d4",
+    "CMakeLists.draft.txt": "293c754e9b33133a6c7ed4a431916797aae2c92c7978aa703cbc6fc67d77271c",
+    "README.md": "152f046f0e42a63490e380a7948038bfb41b7d744b99288474086802ac93fa20",
+    "BUILD-PREFLIGHT.json": "16e32ee65692c4f3f5638a26df5461a616e33d893dcd6c08a5cf27ec6b066257",
+    "include/zg335/zg335_portable.h": "311eb3ca49375546474cd073dc251f1b7a4cba08085e1dbdef70c1df2ffbbe48",
+    "cmake/zg335Config.cmake.in": "9338c78d88747d3b3d7f998e46e55d4ef6646402c5ba50645a8cce43b6910f0e"
+  },
+  "inventory": {
+    "sourceTranslationUnits": 13,
+    "packagedHeaders": 14,
+    "reviewedHeaderCopies": 13,
+    "generatedUmbrellas": 1
+  },
+  "buildState": {
+    "android": "UNVERIFIED",
+    "ios": "UNVERIFIED",
+    "toolchainsPresent": false,
+    "binaryProduced": false
+  },
+  "runtimeGapsInheritedFromF4": 5,
+  "runtimeAccepted": false,
+  "notes": [
+    "Two roots are mandatory: ZG_LEGACY_ROOT and ZG_ADAPTER_ROOT.",
+    "CMake install/export and find_package config are file-reviewed only; cmake is unavailable on this host.",
+    "No fixture wrapper or fixture macro redirection is part of the production source set."
+  ]
+}

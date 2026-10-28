@@ -1,0 +1,75 @@
+workflows:
+  android-portable:
+    name: Android portable static library
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    scripts:
+      - name: Locate Android NDK
+        script: |
+          set -e
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
+          NDK="${ANDROID_NDK_HOME:-${ANDROID_NDK_ROOT:-}}"
+          if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
+            if [ -d "$SDK/ndk" ]; then
+              NDK="$(ls -d "$SDK"/ndk/* 2>/dev/null | sort -V | tail -1)"
+            fi
+          fi
+          if [ -z "$NDK" ] || [ ! -f "$NDK/build/cmake/android.toolchain.cmake" ]; then
+            SDKMGR="$(command -v sdkmanager || true)"
+            if [ -z "$SDKMGR" ] && [ -d "$SDK/cmdline-tools" ]; then
+              SDKMGR="$(find "$SDK/cmdline-tools" -name sdkmanager -type f | head -1)"
+            fi
+            [ -n "$SDKMGR" ] || { echo "sdkmanager not found; cannot install NDK" >&2; exit 2; }
+            yes | "$SDKMGR" --licenses >/dev/null || true
+            "$SDKMGR" "ndk;27.0.12077973"
+            NDK="$SDK/ndk/27.0.12077973"
+          fi
+          test -f "$NDK/build/cmake/android.toolchain.cmake"
+          printf 'NDK=%s\n' "$NDK" > "$CM_BUILD_DIR/ndk-path.env"
+          "$NDK/ndk-build" --version >/dev/null 2>&1 || true
+      - name: Configure Android
+        script: |
+          set -e
+          . "$CM_BUILD_DIR/ndk-path.env"
+          cmake -S design -B build-android \
+            -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-24 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$CM_BUILD_DIR/out/android-arm64" \
+            -DZG_LEGACY_ROOT="$CM_BUILD_DIR/vendor/legacy" \
+            -DZG_ADAPTER_ROOT="$CM_BUILD_DIR/vendor/adapter"
+      - name: Build Android
+        script: |
+          set -e
+          cmake --build build-android --target install
+    artifacts:
+      - out/android-arm64/**
+      - build-android/CMakeCache.txt
+      - build-android/CMakeFiles/CMakeOutput.log
+
+  ios-portable:
+    name: iOS device portable static library
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    scripts:
+      - name: Configure iOS device arm64
+        script: |
+          set -e
+          cmake -S design -B build-ios \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$CM_BUILD_DIR/out/ios-device-arm64" \
+            -DZG_LEGACY_ROOT="$CM_BUILD_DIR/vendor/legacy" \
+            -DZG_ADAPTER_ROOT="$CM_BUILD_DIR/vendor/adapter"
+      - name: Build iOS
+        script: |
+          set -e
+          cmake --build build-ios --target install
+    artifacts:
+      - out/ios-device-arm64/**
+      - build-ios/CMakeCache.txt
+      - build-ios/CMakeFiles/CMakeOutput.log

@@ -1,0 +1,341 @@
+{
+  "schema": "WORKBUDDY_MOBILE_PORTABLE_SOURCE_MANIFEST_V2",
+  "status": "DESIGN_ONLY_UNVERIFIED_BUILD",
+  "cStandard": "C11",
+  "targets": [
+    "android-arm64-v8a",
+    "android-x86_64",
+    "ios-arm64"
+  ],
+  "roots": {
+    "legacy": "D:/zg/REA研究/zg-dat-20261017/animation-contract-20261021",
+    "adapter": "E:/zg-handoff-workbuddy/normal116-four-lower-reuse-adapter-C11-author-20261028-v1"
+  },
+  "rootSemantics": {
+    "ZG_LEGACY_ROOT": "exact frozen legacy component root",
+    "ZG_ADAPTER_ROOT": "exact A1-A5 adapter package directory, not its parent"
+  },
+  "publicHeaders": [
+    "zg335_portable.h",
+    "zg116la_adapter.h",
+    "zg116la_common.h",
+    "zg116la_raw52.h",
+    "zg116la_fe0_range.h",
+    "zg116la_e4_range.h",
+    "zg_copy335_rich116.h",
+    "zg_copy335_raw_normal_frame.h",
+    "zg_normal116_fullstate.h",
+    "zg_node_provider52_candidate.h",
+    "zg_node_copy32_candidate.h",
+    "zg_wrapper154_candidate.h",
+    "zg_range76e0.h",
+    "zg_range101e0_raw_frame.h"
+  ],
+  "publicHeaderPins": {
+    "zg335_portable.h": {
+      "path": "include/zg335/zg335_portable.h",
+      "sha256": "311eb3ca49375546474cd073dc251f1b7a4cba08085e1dbdef70c1df2ffbbe48",
+      "bytes": 597,
+      "generated": true
+    },
+    "zg116la_adapter.h": {
+      "path": "include/zg335/zg116la_adapter.h",
+      "sha256": "76545f5d42864d436f07b99daa618b1aeaf795e0232fdc5e8c03268f47cd8633",
+      "bytes": 760
+    },
+    "zg116la_common.h": {
+      "path": "include/zg335/zg116la_common.h",
+      "sha256": "2309c5d6a78d3a84f96688657461ffe0834794bac8d81647f6f609ebf8360bf9",
+      "bytes": 5089
+    },
+    "zg116la_raw52.h": {
+      "path": "include/zg335/zg116la_raw52.h",
+      "sha256": "d76c8be22a4a6de9120a28c6ebd54fb0fd4141ecde29894a66761a0defecc8ce",
+      "bytes": 730
+    },
+    "zg116la_fe0_range.h": {
+      "path": "include/zg335/zg116la_fe0_range.h",
+      "sha256": "3a36b1a5274246a9da2a67bc8882f5d828cd666e481bf7badc6a8f812eff0398",
+      "bytes": 712
+    },
+    "zg116la_e4_range.h": {
+      "path": "include/zg335/zg116la_e4_range.h",
+      "sha256": "7c01ddd218bf0e206b8f8d11efb03ea7c585291204ca6083ebe78f1f30eb20b7",
+      "bytes": 748
+    },
+    "zg_copy335_rich116.h": {
+      "path": "include/zg335/zg_copy335_rich116.h",
+      "sha256": "34aa6ea5669d14459a81a9a66d0e60cbc79af4f16af49e3321542e99d359205a",
+      "bytes": 3037
+    },
+    "zg_copy335_raw_normal_frame.h": {
+      "path": "include/zg335/zg_copy335_raw_normal_frame.h",
+      "sha256": "73f3a3c25456e8903bec8e2c9b4bfbf2162313a7b4cdd5ebe035d404d4abf441",
+      "bytes": 6374
+    },
+    "zg_normal116_fullstate.h": {
+      "path": "include/zg335/zg_normal116_fullstate.h",
+      "sha256": "63b29972fa10f32733a706ef1605ba469ab95067366b915e2c9c547937bb9afb",
+      "bytes": 6732
+    },
+    "zg_node_provider52_candidate.h": {
+      "path": "include/zg335/zg_node_provider52_candidate.h",
+      "sha256": "64b252c397a0778f36183cb47079cd75b7f87aff4456771a603b14ba30cc038b",
+      "bytes": 3123
+    },
+    "zg_node_copy32_candidate.h": {
+      "path": "include/zg335/zg_node_copy32_candidate.h",
+      "sha256": "502cb1ced91f32cb879d2400077ab9ac26b023162260ec4749be9698cc98ce29",
+      "bytes": 4072
+    },
+    "zg_wrapper154_candidate.h": {
+      "path": "include/zg335/zg_wrapper154_candidate.h",
+      "sha256": "bfa9ba5e22bc923fefc21058c4963dc84b2a9fcc50e4daba925033adf3b21eb4",
+      "bytes": 5377
+    },
+    "zg_range76e0.h": {
+      "path": "include/zg335/zg_range76e0.h",
+      "sha256": "81abfce69a7306010e22a92c2b7d2b4068ff830cd7f3e8f3e0eba5d297bc7b6c",
+      "bytes": 4650
+    },
+    "zg_range101e0_raw_frame.h": {
+      "path": "include/zg335/zg_range101e0_raw_frame.h",
+      "sha256": "cec671af111d39998ebfaa012933f70c5a284c961e9d1cd726e8ccda11677b1b",
+      "bytes": 9571
+    }
+  },
+  "excludedFromProduction": [
+    "fixture.cpp",
+    "fixture_check.py",
+    "fixture reports",
+    "source-specific fixture macro redirection",
+    "test wrappers and observed-trace generators"
+  ],
+  "sources": [
+    {
+      "role": "normal116-fullstate",
+      "file": "normal116-fullstate-clean-C11-author-20261027-v2/zg_normal116_fullstate.c",
+      "sha256": "40b3fa03de956390d6b9b522166a8fda57ea9901a38985260fcc99dde568f7f6",
+      "bytes": 18821,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "node-provider",
+      "file": "node-provider52-prospective-C11-SOURCE431-author-v1/zg_node_provider52_candidate.c",
+      "sha256": "681cf9245368abf3c8c8dd38627cbeab16da3e5ad2e313b0185430d02147ba74",
+      "bytes": 3561,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "node-copy",
+      "file": "node-copy32-prospective-C11-SOURCE431-author-v1/zg_node_copy32_candidate.c",
+      "sha256": "585da8b7c99021fc21760bbf4100a7102651f30d856b46cc32bbd86f1efb5c64",
+      "bytes": 8434,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "wrapper154",
+      "file": "wrapper154-portable-library-SOURCE453-author-v1/src/zg_wrapper154_candidate.c",
+      "sha256": "e30179a4a5fe9feb3738df26483d39a07f47173bdb0ef8662204423d9343077a",
+      "bytes": 10972,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "range76e0",
+      "file": "range76e0-C11-author-v1/zg_range76e0.c",
+      "sha256": "52d65734bdd4e1f6b3fdf346f62b42c76c3973c1b5b53216d0ff454954e8c59f",
+      "bytes": 6544,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "range101e0-raw-frame",
+      "file": "range101e0-raw-frame-C11-SOURCE-author-20261026-v1/zg_range101e0_raw_frame.c",
+      "sha256": "fd43142ecce3ca017f9e7f2f2eedc049385ca1056bb9591f259a43de191bd055",
+      "bytes": 14266,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "rich116",
+      "file": "normal116-rich-lower-raw335-clean-C11-author-20261027-v1/zg_copy335_rich116.c",
+      "sha256": "5b0ea3b03e9cb73a80917658504f306c7716728ac8feb3133b1474cfde57065f",
+      "bytes": 9344,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "raw-normal-frame",
+      "file": "copy335-raw-normal-frame-clean-C11-author-C-20261027-v1/zg_copy335_raw_normal_frame.c",
+      "sha256": "0ad2b2cf4108f5682b8a9b02d5992724a776857bcb06867bcbddc722a0ee5dad",
+      "bytes": 28631,
+      "rootRole": "legacy"
+    },
+    {
+      "role": "adapter-common",
+      "file": "zg116la_common.c",
+      "sha256": "3a94af4de21f363897685809774c44507b25171ea92eda4748b6aa175362975b",
+      "bytes": 9577,
+      "rootRole": "adapter"
+    },
+    {
+      "role": "adapter-raw52",
+      "file": "zg116la_raw52.c",
+      "sha256": "bc158f7a5b120de4f4e9714916279ba7bbda9c1cdccd2fe479c5e24f0fd15048",
+      "bytes": 11140,
+      "rootRole": "adapter"
+    },
+    {
+      "role": "adapter-fe0-range",
+      "file": "zg116la_fe0_range.c",
+      "sha256": "5c9ed17082c563b4f6ac542c27d9fc39cc72b42d633b598bc49fa938f1bf678e",
+      "bytes": 28055,
+      "rootRole": "adapter"
+    },
+    {
+      "role": "adapter-e4-range",
+      "file": "zg116la_e4_range.c",
+      "sha256": "d180d35855fd3212e13715bea26e8df26ff3b8916e84607a2d8049df1bf2a509",
+      "bytes": 17666,
+      "rootRole": "adapter"
+    },
+    {
+      "role": "adapter-bindings",
+      "file": "zg116la_adapter.c",
+      "sha256": "eb861cb818f08c32769b589072a1c8fbcdaaf129302ffe4e63a209f6475f786d",
+      "bytes": 1550,
+      "rootRole": "adapter"
+    }
+  ],
+  "unverified": [
+    "Android NDK build",
+    "iOS Xcode build",
+    "device/simulator execution",
+    "SDK/OS/native ABI acceptance"
+  ],
+  "installExport": {
+    "staticLibraryTarget": "zg335_portable",
+    "namespace": "zg335::",
+    "installHeadersDestination": "include/zg335",
+    "installArchiveDestination": "lib",
+    "exportFile": "zg335Targets.cmake",
+    "configFile": "zg335Config.cmake",
+    "configVersionFile": "zg335ConfigVersion.cmake",
+    "packageConfigSupported": true,
+    "publicHeadersUsePUBLIC_HEADER": true,
+    "buildInterfaceInclude": "include/zg335",
+    "installInterfaceInclude": "include/zg335"
+  },
+  "headerPinPolicy": {
+    "allTransitiveHeadersPackaged": true,
+    "pinRequiredForEveryReviewHeader": true,
+    "umbrellaGenerated": true,
+    "umbrellaDeclaresNewAbi": false
+  },
+  "headers": [
+    {
+      "file": "zg116la_adapter.h",
+      "rootRole": "adapter",
+      "relativePath": "",
+      "bytes": 760,
+      "sha256": "76545f5d42864d436f07b99daa618b1aeaf795e0232fdc5e8c03268f47cd8633"
+    },
+    {
+      "file": "zg116la_common.h",
+      "rootRole": "adapter",
+      "relativePath": "",
+      "bytes": 5089,
+      "sha256": "2309c5d6a78d3a84f96688657461ffe0834794bac8d81647f6f609ebf8360bf9"
+    },
+    {
+      "file": "zg116la_raw52.h",
+      "rootRole": "adapter",
+      "relativePath": "",
+      "bytes": 730,
+      "sha256": "d76c8be22a4a6de9120a28c6ebd54fb0fd4141ecde29894a66761a0defecc8ce"
+    },
+    {
+      "file": "zg116la_fe0_range.h",
+      "rootRole": "adapter",
+      "relativePath": "",
+      "bytes": 712,
+      "sha256": "3a36b1a5274246a9da2a67bc8882f5d828cd666e481bf7badc6a8f812eff0398"
+    },
+    {
+      "file": "zg116la_e4_range.h",
+      "rootRole": "adapter",
+      "relativePath": "",
+      "bytes": 748,
+      "sha256": "7c01ddd218bf0e206b8f8d11efb03ea7c585291204ca6083ebe78f1f30eb20b7"
+    },
+    {
+      "file": "zg_copy335_rich116.h",
+      "rootRole": "legacy",
+      "relativePath": "normal116-rich-lower-raw335-clean-C11-author-20261027-v1",
+      "bytes": 3037,
+      "sha256": "34aa6ea5669d14459a81a9a66d0e60cbc79af4f16af49e3321542e99d359205a"
+    },
+    {
+      "file": "zg_copy335_raw_normal_frame.h",
+      "rootRole": "legacy",
+      "relativePath": "copy335-raw-normal-frame-clean-C11-author-C-20261027-v1",
+      "bytes": 6374,
+      "sha256": "73f3a3c25456e8903bec8e2c9b4bfbf2162313a7b4cdd5ebe035d404d4abf441"
+    },
+    {
+      "file": "zg_normal116_fullstate.h",
+      "rootRole": "legacy",
+      "relativePath": "normal116-fullstate-clean-C11-author-20261027-v2",
+      "bytes": 6732,
+      "sha256": "63b29972fa10f32733a706ef1605ba469ab95067366b915e2c9c547937bb9afb"
+    },
+    {
+      "file": "zg_node_provider52_candidate.h",
+      "rootRole": "legacy",
+      "relativePath": "node-provider52-prospective-C11-SOURCE431-author-v1",
+      "bytes": 3123,
+      "sha256": "64b252c397a0778f36183cb47079cd75b7f87aff4456771a603b14ba30cc038b"
+    },
+    {
+      "file": "zg_node_copy32_candidate.h",
+      "rootRole": "legacy",
+      "relativePath": "node-copy32-prospective-C11-SOURCE431-author-v1",
+      "bytes": 4072,
+      "sha256": "502cb1ced91f32cb879d2400077ab9ac26b023162260ec4749be9698cc98ce29"
+    },
+    {
+      "file": "zg_wrapper154_candidate.h",
+      "rootRole": "legacy",
+      "relativePath": "wrapper154-portable-library-SOURCE453-author-v1/include",
+      "bytes": 5377,
+      "sha256": "bfa9ba5e22bc923fefc21058c4963dc84b2a9fcc50e4daba925033adf3b21eb4"
+    },
+    {
+      "file": "zg_range76e0.h",
+      "rootRole": "legacy",
+      "relativePath": "range76e0-C11-author-v1",
+      "bytes": 4650,
+      "sha256": "81abfce69a7306010e22a92c2b7d2b4068ff830cd7f3e8f3e0eba5d297bc7b6c"
+    },
+    {
+      "file": "zg_range101e0_raw_frame.h",
+      "rootRole": "legacy",
+      "relativePath": "range101e0-raw-frame-C11-SOURCE-author-20261026-v1",
+      "bytes": 9571,
+      "sha256": "cec671af111d39998ebfaa012933f70c5a284c961e9d1cd726e8ccda11677b1b"
+    },
+    {
+      "file": "zg335_portable.h",
+      "rootRole": "package-generated",
+      "relativePath": "include/zg335",
+      "bytes": 597,
+      "sha256": "311eb3ca49375546474cd073dc251f1b7a4cba08085e1dbdef70c1df2ffbbe48",
+      "generated": true,
+      "declaresNewAbi": false
+    }
+  ],
+  "configFiles": [
+    {
+      "file": "cmake/zg335Config.cmake.in",
+      "bytes": 105,
+      "sha256": "9338c78d88747d3b3d7f998e46e55d4ef6646402c5ba50645a8cce43b6910f0e"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "WORKBUDDY_MOBILE_BUILD_PREFLIGHT_V1",
+  "checkedAt": "2026-10-28T17:30:00+08:00",
+  "host": "Windows",
+  "toolchains": {
+    "cmake": "missing",
+    "ninja": "missing",
+    "clang": "missing",
+    "adb": "missing",
+    "ANDROID_NDK_HOME": "unset",
+    "ANDROID_NDK_ROOT": "unset",
+    "androidCompiler": "unavailable",
+    "iosCompiler": "unavailable",
+    "xcodebuild": "missing"
+  },
+  "targets": [
+    {
+      "target": "android-arm64-v8a",
+      "status": "UNVERIFIED",
+      "reason": "NDK and build tools unavailable"
+    },
+    {
+      "target": "android-x86_64",
+      "status": "UNVERIFIED",
+      "reason": "NDK and build tools unavailable; emulator-only optional target"
+    },
+    {
+      "target": "ios-arm64-device",
+      "status": "UNVERIFIED",
+      "reason": "Xcode unavailable on Windows host"
+    },
+    {
+      "target": "ios-arm64-simulator",
+      "status": "UNVERIFIED",
+      "reason": "Xcode unavailable; separate slice required"
+    },
+    {
+      "target": "ios-x86_64-simulator",
+      "status": "UNVERIFIED",
+      "reason": "Xcode unavailable; host-dependent separate slice"
+    }
+  ],
+  "sliceStrategy": {
+    "android": "one ABI per build directory; arm64-v8a required, x86_64 optional",
+    "ios": "build device arm64 and simulator slices separately; combine only at XCFramework packaging, not in portable source",
+    "noUniversalBinaryInCMake": true
+  },
+  "checks": {
+    "sourceManifestPresent": true,
+    "sourceCount": 13,
+    "reviewedHeaderCount": 13,
+    "packagedHeaderCount": 14,
+    "generatedUmbrella": "zg335_portable.h",
+    "allSourceHashesMatch": true,
+    "allHeaderCopiesMatch": true,
+    "allPackagedHeaderPinsPresent": true,
+    "transitiveIncludeClosureComplete": true,
+    "twoRootsDeclared": true,
+    "adapterRootExactPackageDirectory": true,
+    "fixtureSourcesExcluded": true,
+    "fixtureMacroRedirectionExcluded": true,
+    "platformSdkHardcoded": false,
+    "installExportRulesPresent": true,
+    "packageConfigFilePresent": true,
+    "packageConfigVersionFilePresent": true,
+    "publicHeaderInstallUsed": true,
+    "buildAttempted": false,
+    "binaryProduced": false,
+    "configTemplatePresent": true,
+    "configTemplateHashPinned": true
+  },
+  "limitations": [
+    "No compile or link was attempted.",
+    "No Android APK/AAR or iOS framework/archive was produced.",
+    "No device or simulator execution was performed.",
+    "CMake install/export syntax is file-reviewed only; cmake is unavailable.",
+    "Mobile SDK/OS/native ABI acceptance is not granted."
+  ]
+}
