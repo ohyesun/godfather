@@ -66,10 +66,15 @@
     "arm64ViaMuMuTranslation": {
       "status": "LOCAL_HARNESS_PATH_PASS",
       "binary": "out/behavior-probe-arm64-v8a",
-      "sha256": "500ab46e82da512190149b346c927e5ade0acba61e9f752ba5c3e8563273580d",
+      "sha256": "dc98b8e01329577163add45fb3668ca98dd577ff2154db9cf7f6cbbf4cd10c2b",
       "output": "state=2 raw_state=12 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000; normal[0..7]=13",
       "scope": "x86_64 MuMu host running ARM64 binary via Android ARM translation; not physical ARM device"
     },
-    "gate": "exit 0 only if COMPLETED/RETURNED/8 dispatched/8 continued/8 normal/0 overflow/all 8 normal RETURNED"
+    "gate": "exit 0 only if COMPLETED/RETURNED/8 dispatched/8 continued/8 normal/0 overflow/all 8 normal RETURNED",
+    "modes": [
+      "empty",
+      "nonempty"
+    ],
+    "bothModesPassBothAbi": true
   }
 }

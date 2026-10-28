@@ -3,62 +3,76 @@
 - Audit date: 2026-10-28
 - Scope: `harness/behavior_probe.c`, `BEHAVIOR-PROBE.md`, `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 - Mode: read-only static review; no compile, Host run, device run or push
-- Source identity checked: `harness/behavior_probe.c` SHA-256 `bf90a27e4afd14270ddc26b036c3e364fa8c00c6a40770da74e6debcd663866f` (8476 bytes), matching `BEHAVIOR-PROBE.md:64`
+- Current source identity: `harness/behavior_probe.c` SHA-256 `49ed3f412ae683cd86b6ff4c26752d6a7a25553c61f104cdae76076dbbd78562` (9755 bytes), matching `BEHAVIOR-PROBE.md:75`
+- Binary identities on disk match the documentation: x86_64 `06d95f35...`, arm64-v8a `500ab46e...`
 
 ## 1. Verdict
 
-**PASS for the local harness observation; CONCERNS on test-gate rigor and exact F4 setup equivalence.**
+**PASS for the current local automated harness gate; not a runtime or platform acceptance.**
 
-The reported x86_64/ARM64-via-MuMu `state=2/raw_state=12/dispatched=8/continued=8/normal=8/overflow=0` path is consistent with the current source and the printed actual output. This is not a runtime or platform acceptance; the report correctly keeps that boundary.
+The current harness runs both `empty` and `nonempty` setup modes, executes the actual `zg335116_run`, verifies the required host/raw/normal counters and all eight normal states, prints `RESULT PASS/FAIL`, and returns non-zero on failure. The reported MuMu x86_64 and ARM64-via-translation `state=2 / raw_state=12 / dispatched=8 / continued=8 / normal=8 / overflow=0 / normal[*]=13` path is consistent with the source and documentation.
+
+Remaining boundary: this is still a local normal-success behavior observation. It does not establish physical ARM64, production runtime, SDK/OS/native ABI, signing, device, Host/F4 full runtime or iOS acceptance. The docs keep that boundary.
 
 ## 2. allocate_index and machine_count separation
 
 PASS:
 
-- `Probe` declares separate `allocated_count`, `allocate_index`, and `machine_count` at `harness/behavior_probe.c:13-16`.
-- `setup()` fills the node table and increments only `allocated_count` at lines 191-192; it leaves `allocate_index` at zero.
-- `probe_machine()` increments `machine_count` independently at line 122.
+- `Probe` has independent `allocated_count`, `allocate_index`, and `machine_count` at `harness/behavior_probe.c:13-16`.
+- `setup()` fills the node table and increments only `allocated_count` at lines 190-211; `allocate_index` starts at zero after the per-mode `memset` at `harness/behavior_probe.c:242`.
+- `probe_machine()` increments `machine_count` at line 122 and uses it for the XMM ordinal.
 - Allocate uses `p->allocate_index` and increments it at lines 132-134; it never uses `allocated_count` as the cursor.
-- XMM ordinal uses `changed_xmm(p->current_xmm, ordinal)` at line 122/147, with `ordinal` derived from `machine_count`, not the allocation cursor.
-
-This directly addresses the earlier early-stop root cause described in `BEHAVIOR-PROBE-DIAGNOSIS.md:15-45`.
 
 ## 3. Memory setup and machine callback vs F4 Oracle
 
-PASS for the normal-success path, with a qualification:
+PASS for both F4 normal setup branches:
 
-- `setup()` lines 151-219 mirrors the F4 Oracle nonempty setup: `S/D/B`, `S`/`S+4`, nine iterations of `Q/C/N0/N1`, `C` fields, zeroed `N1+36`, B offsets `{0x48,0x58,0x64,0x74,0x80,0x90,0x9c,0xac}`, and widths `{16,8,16,8,16,8,16,8}`. Compare F4 `fixture.cpp:396-437`.
-- `probe_machine()` lines 118-149 mirrors the F4 Oracle normal branches: `request.entry`, continuation, allocate `eax`/`esp`, finish core return/cleanup, slot return target, length error ESP, and `changed_xmm` with `ordinal+1`. Compare F4 `fixture.cpp:591-655`.
-- The harness uses the actual `zg335116_run` through `zg116la_bind_rich335` (`behavior_probe.c:236-250`); it does not call a stub that writes the expected values.
-- The qualification: `setup()` is unconditionally the F4 `nonempty=true` branch. Some F4 normal tests use `Oracle::setup(false)`, which seeds `Q->Q` and only N0 nodes (`fixture.cpp:411-427`). The harness therefore matches the F4 Oracle structure and normal machine semantics, but it is not byte-for-byte equivalent to every F4 test setup. It is sufficient to exercise the observed eight-normal path; it should not be described as universal F4 Oracle equivalence.
-- The harness does not reproduce every F4 error/stop/reply_transform branch; those are outside the normal path and are not used by this probe.
+- `setup()` now takes `nonempty` at line 151 and reproduces both F4 Oracle branches:
+  - empty: `Q->Q`, N0-only nodes at lines 208-210;
+  - nonempty: `Q->C`, N0/N1 nodes, C fields and N1 zeroing at lines 190-207.
+  Compare F4 `fixture.cpp:396-437`.
+- `probe_machine()` lines 118-149 mirrors the F4 Oracle normal branches: return image/continuation, allocate `eax`/`esp`, finish core return/cleanup, slot return target, length-error ESP, and `changed_xmm` with `ordinal+1`. Compare F4 `fixture.cpp:591-655`.
+- The harness calls the actual `zg335116_run` through `zg116la_bind_rich335` at `harness/behavior_probe.c:246-250`; it does not stub the library or write expected output.
 
-## 4. Early return, fabricated output, or constant-only evidence
+The harness still does not reproduce F4's stop/reply-transform/error branches; those are outside this normal-path probe.
 
-PASS with a gate concern:
+## 4. Automated gate and output integrity
 
-- `main()` calls `zg335116_run` once at `behavior_probe.c:250` and prints the returned `state`, `raw_result`, `normal_count`, `overflow`, and each `normal_records[i]` at lines 251-265.
-- There is no early success return or hard-coded expected output. The only early return is `return 2` when `zg116la_bind_rich335` fails at lines 244-246; otherwise it prints actual returned structures.
-- Concern: `main()` returns `0` unconditionally after printing (`line 266`). It does not assert `state==2`, `raw_state==12`, `normal_count==8`, or the eight normal states. Thus the harness is an observational probe, not a machine-checkable PASS gate; a wrong output would still produce exit code 0 and require a human/report comparison. This matches its role, but it should not be used as an automated acceptance test without assertions or an output checker.
+PASS:
+
+- `main()` runs both `nonempty=0/1` modes at lines 233-244.
+- It prints the actual returned state, raw result, counts, overflow, and all normal records at lines 261-275.
+- The `ok` predicate at lines 278-283 checks:
+  - `ZG335116_HOST_COMPLETED`
+  - `ZG335_RETURNED`
+  - `calls_dispatched32 == 8`
+  - `calls_continued32 == 8`
+  - `normal_count32 == 8`
+  - `record_overflow32 == 0`
+- Lines 284-289 require all eight `normal_records[i].normal_result.state32` to be `ZG116_RETURNED`.
+- `RESULT PASS/FAIL` is printed only after those checks at lines 290-291; `failed` is set on any failure and returned at lines 292-296, so a wrong result exits non-zero.
+- There is no fabricated constant output and no unconditional success return. The only early return is the genuine bind failure at lines 254-256.
+
+Minor boundary note: the gate checks the requested normal states and counters, but not `reason==0` or the displayed `eax=00020000`; those are documentation output values, not part of the asserted gate. The documented PASS is therefore a valid local gate for its stated criteria, not a full field-by-field F4 equivalence check.
 
 ## 5. Conclusion boundary
 
 PASS:
 
-- `BEHAVIOR-PROBE.md:3` labels the result “LOCAL HARNESS PATH PASS ... NOT RUNTIME ACCEPTANCE”.
-- `BEHAVIOR-PROBE.md:71-83` explicitly excludes physical ARM64, production runtime, SDK/OS/native ABI, Host/F4 full runtime, and iOS.
-- `BEHAVIOR-PROBE.md:42-44` correctly identifies the ARM64 result as running on an x86_64 MuMu host via ARM translation, not a physical ARM device.
-- The diagnosis at `BEHAVIOR-PROBE-DIAGNOSIS.md:66-74` likewise limits the PASS to the local emulator and does not inherit F4 runtime gaps.
+- `BEHAVIOR-PROBE.md:3` labels the result “LOCAL HARNESS AUTOMATED GATE PASS ... NOT RUNTIME ACCEPTANCE”.
+- `BEHAVIOR-PROBE.md:82-95` excludes physical ARM64, production runtime, SDK/OS/native ABI, Host/F4 full runtime and iOS.
+- `BEHAVIOR-PROBE.md:53-55` correctly identifies MuMu as x86_64 running the ARM64 binary through ARM translation, not a physical ARM device.
+- Both setup modes are exercised; the earlier `main` always-return-0 concern is resolved.
 
 ## 6. Findings summary
 
 | Item | Result |
 |---|---|
 | allocate_index/machine_count separation | PASS |
-| Memory/machine normal-path F4 alignment | PASS with branch qualification |
-| Actual run vs fabricated/constant output | PASS; actual structures printed |
-| Early return / test-gate rigor | CONCERN: always returns0 and has no assertions |
-| ARM64 claim boundary | PASS: MuMu translation, not physical ARM |
-| Runtime/SDK/OS/F4 acceptance | Not claimed; correct |
+| Empty and nonempty F4 Oracle setup alignment | PASS |
+| Actual run vs fabricated/constant output | PASS |
+| Early return / failed-result exit status | PASS; returns non-zero on failure |
+| Normal gates and eight-record check | PASS |
+| Runtime/ARM64/SDK/OS/F4 acceptance boundary | PASS; correctly excluded |
 
-Overall: **PASS (local harness observation), with the non-blocking gate/equivalence concerns above.** No compile, Host, device, push or runtime acceptance was performed.
+Overall: **PASS (local automated harness gate), limited to the documented normal-success behavior.** No compile, Host, device, push or runtime acceptance was performed.

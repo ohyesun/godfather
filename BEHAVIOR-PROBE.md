@@ -26,6 +26,10 @@ Mapping:
 - `normal[*].state=13` = `ZG116_RETURNED`
 - `dispatched=8`, `continued=8`, `normal=8`, `overflow=0`
 
+The harness runs both F4 setup branches: `empty` and `nonempty`. The lead
+independently reran both modes on x86_64 and ARM64-under-MuMu-translation; both
+printed `behavior mode=<mode> RESULT PASS` and exited 0.
+
 This is the first local behavioral path pass for the x86_64 Android harness.
 
 The harness is now an automated gate, not just a print-only probe. It returns
@@ -76,7 +80,7 @@ No frozen source, design, adapter, or A4 receipt was changed.
 - binary `build-local-x86_64/zg335_behavior_probe`
   SHA-256 `06d95f351d4281758bffca89992f98024810a059427b750fc5046f33ba13958c`
 - binary `out/behavior-probe-arm64-v8a`
-  SHA-256 `500ab46e82da512190149b346c927e5ade0acba61e9f752ba5c3e8563273580d`
+  SHA-256 `dc98b8e01329577163add45fb3668ca98dd577ff2154db9cf7f6cbbf4cd10c2b`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary
