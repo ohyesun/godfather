@@ -58,17 +58,18 @@
     "Codemagic is not required for the Android artifacts in this report."
   ],
   "behaviorHarness": {
-    "status": "LOCAL_HARNESS_PATH_PASS_X86_64_MUMU",
+    "status": "LOCAL_HARNESS_AUTOMATED_GATE_PASS_BOTH_ABI",
     "output": "state=2 raw_state=12 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000; normal[0..7]=13",
-    "probeSha256": "e59f154e49bc94bc56d009dde38d80bd2af656966c5e0474125bf7e0b2e34a44",
-    "sourceSha256": "bf90a27e4afd14270ddc26b036c3e364fa8c00c6a40770da74e6debcd663866f",
+    "probeSha256": "06d95f351d4281758bffca89992f98024810a059427b750fc5046f33ba13958c",
+    "sourceSha256": "49ed3f412ae683cd86b6ff4c26752d6a7a25553c61f104cdae76076dbbd78562",
     "scope": "one local x86_64 MuMu harness run; not ARM64/production/runtime/SDK/OS acceptance",
     "arm64ViaMuMuTranslation": {
       "status": "LOCAL_HARNESS_PATH_PASS",
       "binary": "out/behavior-probe-arm64-v8a",
-      "sha256": "1f0b005075fb2590f7be0b861fc041212884bb380a974bff2dd4fc1080457d55",
+      "sha256": "500ab46e82da512190149b346c927e5ade0acba61e9f752ba5c3e8563273580d",
       "output": "state=2 raw_state=12 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000; normal[0..7]=13",
       "scope": "x86_64 MuMu host running ARM64 binary via Android ARM translation; not physical ARM device"
-    }
+    },
+    "gate": "exit 0 only if COMPLETED/RETURNED/8 dispatched/8 continued/8 normal/0 overflow/all 8 normal RETURNED"
   }
 }

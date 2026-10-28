@@ -148,7 +148,7 @@ static void probe_machine(void *user, zg116la_machine_call request,
     p->current_xmm = reply->xmm0_returned;
 }
 
-static void setup(Probe *p, zg335_entry *entry)
+static void setup(Probe *p, zg335_entry *entry, int nonempty)
 {
     uint32_t S = 0x00010000U;
     uint32_t D = 0x00020000U;
@@ -187,23 +187,28 @@ static void setup(Probe *p, zg335_entry *entry)
         uint32_t N1 = N0 + 0x100U;
         uint32_t x = 4U + 8U * i;
         put32(p, B + x, Q);
-        put32(p, Q, C);
-        p->allocated[p->allocated_count++] = N0;
-        p->allocated[p->allocated_count++] = N1;
-        put32(p, C, Q);
-        {
-            uint32_t offset;
-            for (offset = 0; offset < 36; offset += 4) {
-                put32(p, N1 + offset, 0);
+        if (nonempty) {
+            put32(p, Q, C);
+            p->allocated[p->allocated_count++] = N0;
+            p->allocated[p->allocated_count++] = N1;
+            put32(p, C, Q);
+            {
+                uint32_t offset;
+                for (offset = 0; offset < 36; offset += 4) {
+                    put32(p, N1 + offset, 0);
+                }
             }
+            put32(p, C + 8U, 0xabc00000U + i);
+            put32(p, C + 12U, 0);
+            put32(p, C + 16U, 0x88888888U);
+            put32(p, C + 20U, 0);
+            put32(p, C + 24U, 0x16161616U);
+            put32(p, C + 28U, 0x20202020U);
+            put32(p, C + 32U, 0);
+        } else {
+            put32(p, Q, Q);
+            p->allocated[p->allocated_count++] = N0;
         }
-        put32(p, C + 8U, 0xabc00000U + i);
-        put32(p, C + 12U, 0);
-        put32(p, C + 16U, 0x88888888U);
-        put32(p, C + 20U, 0);
-        put32(p, C + 24U, 0x16161616U);
-        put32(p, C + 28U, 0x20202020U);
-        put32(p, C + 32U, 0);
     }
     {
         const uint32_t offsets[8] = {0x48, 0x58, 0x64, 0x74, 0x80, 0x90, 0x9c, 0xac};
@@ -222,46 +227,71 @@ static void setup(Probe *p, zg335_entry *entry)
 int main(void)
 {
     static Probe probe;
-    zg335_entry entry;
-    zg335116_config configuration;
-    zg335116_output output;
-    zg116la_config machine;
-    uint32_t state;
-    uint32_t i;
+    int failed = 0;
+    int nonempty;
 
-    memset(&probe, 0, sizeof probe);
-    memset(&entry, 0, sizeof entry);
-    setup(&probe, &entry);
+    for (nonempty = 0; nonempty < 2; ++nonempty) {
+        zg335_entry entry;
+        zg335116_config configuration;
+        zg335116_output output;
+        zg116la_config machine;
+        uint32_t state;
+        uint32_t i;
+        int ok;
 
-    memset(&configuration, 0, sizeof configuration);
-    configuration.version32 = ZG335116_VERSION;
-    configuration.memory.user = &probe;
-    configuration.memory.read = probe_read;
-    configuration.memory.write = probe_write;
-    machine.version32 = ZG116LA_VERSION;
-    machine.machine_user = &probe;
-    machine.machine_call = probe_machine;
-    if (!zg116la_bind_rich335(&configuration, &machine)) {
-        printf("behavior bind failed\n");
-        return 2;
+        memset(&probe, 0, sizeof probe);
+        memset(&entry, 0, sizeof entry);
+        setup(&probe, &entry, nonempty);
+
+        memset(&configuration, 0, sizeof configuration);
+        configuration.version32 = ZG335116_VERSION;
+        configuration.memory.user = &probe;
+        configuration.memory.read = probe_read;
+        configuration.memory.write = probe_write;
+        machine.version32 = ZG116LA_VERSION;
+        machine.machine_user = &probe;
+        machine.machine_call = probe_machine;
+        if (!zg116la_bind_rich335(&configuration, &machine)) {
+            printf("behavior bind failed mode=%s\n", nonempty ? "nonempty" : "empty");
+            return 2;
+        }
+
+        memset(&output, 0, sizeof output);
+        state = zg335116_run(entry, &configuration, &output);
+        printf("behavior mode=%s state=%u raw_state=%u reason=%u dispatched=%u "
+            "continued=%u normal=%u overflow=%u eax=%08x\n",
+            nonempty ? "nonempty" : "empty",
+            (unsigned)state,
+            (unsigned)output.raw_result.state32,
+            (unsigned)output.raw_result.reason32,
+            (unsigned)output.raw_result.calls_dispatched32,
+            (unsigned)output.raw_result.calls_continued32,
+            (unsigned)output.normal_count32,
+            (unsigned)output.record_overflow32,
+            (unsigned)output.raw_result.regs.eax);
+        for (i = 0; i < output.normal_count32 && i < ZG335116_NORMAL_RECORD_SLOTS; ++i) {
+            printf("normal[%u] state=%u reason=%u\n", (unsigned)i,
+                (unsigned)output.normal_records[i].normal_result.state32,
+                (unsigned)output.normal_records[i].normal_result.reason32);
+        }
+
+        ok = state == ZG335116_HOST_COMPLETED &&
+            output.raw_result.state32 == ZG335_RETURNED &&
+            output.raw_result.calls_dispatched32 == 8U &&
+            output.raw_result.calls_continued32 == 8U &&
+            output.normal_count32 == 8U &&
+            output.record_overflow32 == 0U;
+        for (i = 0; i < 8U; ++i) {
+            if (i >= output.normal_count32 ||
+                output.normal_records[i].normal_result.state32 != ZG116_RETURNED) {
+                ok = 0;
+            }
+        }
+        printf("behavior mode=%s RESULT %s\n", nonempty ? "nonempty" : "empty",
+            ok ? "PASS" : "FAIL");
+        if (!ok) {
+            failed = 1;
+        }
     }
-
-    memset(&output, 0, sizeof output);
-    state = zg335116_run(entry, &configuration, &output);
-    printf("behavior state=%u raw_state=%u reason=%u dispatched=%u continued=%u "
-        "normal=%u overflow=%u eax=%08x\n",
-        (unsigned)state,
-        (unsigned)output.raw_result.state32,
-        (unsigned)output.raw_result.reason32,
-        (unsigned)output.raw_result.calls_dispatched32,
-        (unsigned)output.raw_result.calls_continued32,
-        (unsigned)output.normal_count32,
-        (unsigned)output.record_overflow32,
-        (unsigned)output.raw_result.regs.eax);
-    for (i = 0; i < output.normal_count32 && i < ZG335116_NORMAL_RECORD_SLOTS; ++i) {
-        printf("normal[%u] state=%u reason=%u\n", (unsigned)i,
-            (unsigned)output.normal_records[i].normal_result.state32,
-            (unsigned)output.normal_records[i].normal_result.reason32);
-    }
-    return 0;
+    return failed;
 }

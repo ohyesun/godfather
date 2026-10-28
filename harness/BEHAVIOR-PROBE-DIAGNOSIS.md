@@ -41,6 +41,11 @@ In `harness/behavior_probe.c`:
    `allocate_index`; it no longer uses `allocated_count` as the cursor.
 3. `probe_machine()` uses `machine_count` for the machine/XMM ordinal.
 4. `changed_xmm()` now applies F4's `ordinal + 1` multiplier.
+5. `setup()` now takes `nonempty` and reproduces both F4 branches:
+   `Q->Q`, N0-only for empty; `Q->C`, N0/N1, C fields for nonempty.
+6. `main()` runs both modes, asserts host/raw/dispatched/continued/normal/
+   overflow and all eight normal states, prints `RESULT PASS/FAIL`, and returns
+   non-zero on any failure.
 
 No production C, header, design or frozen source was changed.
 
@@ -49,11 +54,15 @@ No production C, header, design or frozen source was changed.
 Build directory: `build-local-x86_64` (Android NDK r27, x86_64).
 Run target: existing `emulator-5554` (x86_64, Android 12).
 
-Output after the fix, repeated twice:
+Output after the fix:
 
 ```text
-state=2 raw_state=12 reason=0 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000
+behavior mode=empty state=2 raw_state=12 reason=0 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000
 normal[0..7] state=13 reason=0
+behavior mode=empty RESULT PASS
+behavior mode=nonempty state=2 raw_state=12 reason=0 dispatched=8 continued=8 normal=8 overflow=0 eax=00020000
+normal[0..7] state=13 reason=0
+behavior mode=nonempty RESULT PASS
 ```
 
 State mapping:
@@ -65,9 +74,9 @@ State mapping:
 
 ## Conclusion boundary
 
-**Probe result: PASS on this local emulator.** The probe now reaches the normal
-success path with eight returned normal records, rather than stopping at
-CALLEE_INVALID.
+**Probe result: PASS on this local emulator.** Both `empty` and `nonempty`
+setups reach the normal success path with eight returned normal records, print
+`RESULT PASS`, and exit zero, rather than stopping at CALLEE_INVALID.
 
 **Not a runtime acceptance claim.** This is one local x86_64 emulator run of a
 harness. It does not establish production runtime, ARM64, SDK/OS, signing,

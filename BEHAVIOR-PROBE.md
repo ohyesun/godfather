@@ -1,6 +1,6 @@
 # Behavior probe result
 
-Status: **LOCAL HARNESS PATH PASS (x86_64 + arm64 via MuMu translation) — NOT RUNTIME ACCEPTANCE**
+Status: **LOCAL HARNESS AUTOMATED GATE PASS (x86_64 + arm64 via MuMu translation) — NOT RUNTIME ACCEPTANCE**
 
 ## Result
 
@@ -27,6 +27,17 @@ Mapping:
 - `dispatched=8`, `continued=8`, `normal=8`, `overflow=0`
 
 This is the first local behavioral path pass for the x86_64 Android harness.
+
+The harness is now an automated gate, not just a print-only probe. It returns
+exit 0 only when all of these hold:
+
+- host state `COMPLETED`
+- raw state `RETURNED`
+- `dispatched=8`, `continued=8`, `normal=8`
+- `overflow=0`
+- every one of the eight normal records is `ZG116_RETURNED`
+
+Both ABI runs print `behavior RESULT PASS` and exit 0.
 
 ## ARM64 result
 
@@ -61,11 +72,11 @@ No frozen source, design, adapter, or A4 receipt was changed.
 ## Artifacts
 
 - `harness/behavior_probe.c`
-  SHA-256 `bf90a27e4afd14270ddc26b036c3e364fa8c00c6a40770da74e6debcd663866f`
+  SHA-256 `49ed3f412ae683cd86b6ff4c26752d6a7a25553c61f104cdae76076dbbd78562`
 - binary `build-local-x86_64/zg335_behavior_probe`
-  SHA-256 `e59f154e49bc94bc56d009dde38d80bd2af656966c5e0474125bf7e0b2e34a44`
+  SHA-256 `06d95f351d4281758bffca89992f98024810a059427b750fc5046f33ba13958c`
 - binary `out/behavior-probe-arm64-v8a`
-  SHA-256 `1f0b005075fb2590f7be0b861fc041212884bb380a974bff2dd4fc1080457d55`
+  SHA-256 `500ab46e82da512190149b346c927e5ade0acba61e9f752ba5c3e8563273580d`
 - diagnosis `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 
 ## Boundary
