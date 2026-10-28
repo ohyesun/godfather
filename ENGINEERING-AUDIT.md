@@ -10,9 +10,9 @@ no network push. Frozen design snapshot was read only.
 The bundle is structurally usable as the input to Codemagic. YAML parses, the
 frozen CMake design hash matches, all 13 production C files and all 14 packaged
 headers are present and hash-identical to the frozen manifest after the bundle
-repairs recorded below. One documentation FAIL remains: the README Git push
-command contains a placeholder repository URL and therefore cannot be executed
-literally. Platform build, SDK/OS/native-ABI and runtime acceptance remain
+repairs recorded below. The README now fails fast when `REPO_URL` is empty
+instead of using a literal placeholder URL. No static first-build blocker
+remains; platform build, SDK/OS/native-ABI and runtime acceptance remain
 UNVERIFIED.
 
 | Area | Result | Evidence |
@@ -20,7 +20,7 @@ UNVERIFIED.
 | `codemagic.yaml` YAML syntax | PASS | PyYAML 6.0.3 `safe_load`; root mapping has `workflows` |
 | Required workflow fields | PASS | Both workflows have `name/instance_type/max_build_duration/scripts/artifacts` |
 | Android NDK/toolchain path | PASS (static) | `codemagic.yaml:7-36`; exact NDK 27 preferred, portable numeric fallback, `sort -V` absent |
-| CMake discovery/version | PASS (static) | Android `:37-62`, iOS `:91-118`; command/SDK/Homebrew discovery and >=3.16 check |
+| CMake discovery/version | PASS (static) | Android `:37-65`, iOS `:94-121`; prefers 3.22.1, otherwise highest SDK CMake, then PATH/Homebrew, >=3.16 check |
 | iOS CMake parameters | PASS (static) | `codemagic.yaml:119-136`; iOS/arm64/iphoneos/deployment target |
 | Artifact paths | PASS (conditional) | install prefixes at `codemagic.yaml:73,129`; artifact patterns at `:82,138` |
 | Design CMake against frozen b7eeb8fa | PASS | `design/CMakeLists.txt` SHA-256 `293c754e...` equals freeze pin for `CMakeLists.draft.txt` |
@@ -29,20 +29,16 @@ UNVERIFIED.
 | Vendor 14 headers | PASS after repair | 13 reviewed headers + generated umbrella; 14/14 SHA-256 match |
 | Design header closure | PASS | 14/14 pins match; all local includes resolve inside `design/include/zg335` |
 | Fixture wrappers/hooks absent | PASS | No fixture source, fixture macro redirection or observed-trace generator in CMake/YAML |
-| README command executability | **FAIL (documentation)** | `README.md:25` placeholder URL |
+| README command executability | PASS (operator input guard) | `README.md:19-27` requires non-empty `REPO_URL` and fails early |
 | Platform build/runtime | UNVERIFIED | No NDK/Xcode/Codemagic execution performed |
 
 ## Findings
 
-### F-01 FAIL (documentation): README push command is not directly executable
+### F-01 RESOLVED: README push command is guarded, not silently executable
 
-`README.md:25` uses `<YOUR_GITHUB_OR_GITLAB_REPO_URL>` as the remote URL. Running
-the block literally will fail at `git remote add`; `git push` is also outside
-this audit and must not be run here.
-
-Recommendation: replace the placeholder with the actual repository URL in the
-operator's copy, or document `export REPO_URL=...` and use `"$REPO_URL"`. No
-bundle source or frozen design change is needed.
+`README.md:19-27` now documents `REPO_URL` and exits with an actionable message
+when it is empty, before `git remote add`/`git push`. This is the correct
+operator-input guard; no remote URL is embedded in the bundle.
 
 ### F-02 RESOLVED: portable NDK selection
 
@@ -84,10 +80,10 @@ resolution on the selected image.
 
 ### Resolved first-build blockers
 
-- B1 CMake provisioning: both workflows now discover CMake from `PATH`, the
-  Android SDK CMake package (`codemagic.yaml:42-44`), Homebrew installation, or
-  an explicit iOS Homebrew path, then assert `cmake >= 3.16` and persist
-  `CMAKE_BIN` for later scripts.
+- B1 CMake provisioning: both workflows now discover CMake from the preferred
+  Android SDK 3.22.1 package, otherwise the highest installed SDK CMake, then
+  `PATH`/Homebrew (`codemagic.yaml:35-65`), with an explicit iOS Homebrew path;
+  both assert `cmake >= 3.16` and persist `CMAKE_BIN` for later scripts.
 - B2 macOS NDK fallback: `sort -V` was replaced by the portable numeric sort at
   `codemagic.yaml:16-18`; the exact NDK 27 path is preferred before that sort.
 - All embedded scripts pass `bash -n` static syntax checking (7/7 scripts).
@@ -119,7 +115,7 @@ modified.
 
 | File | SHA-256 | Bytes |
 |---|---|---|
-| `codemagic.yaml` | `5fdf4047268fdf31da21e69416b80035041a12ba065d4b1937fffb9c7ee03a39` | 6292 |
+| `codemagic.yaml` | `b6111dbc5de67555bc49d2c1e9cc35eb8d89afc07272a9deccc96f6d5ee9b1e1` | 6241 |
 | `README.md` | `d5a815d836955c406478ead63d05993364b1fd21510fac69f048525ceae2be24` | 2436 |
 | `design/CMakeLists.txt` | `293c754e9b33133a6c7ed4a431916797aae2c92c7978aa703cbc6fc67d77271c` | 4862 |
 | `design/CMakeLists.draft.txt` | `293c754e9b33133a6c7ed4a431916797aae2c92c7978aa703cbc6fc67d77271c` | 4862 |

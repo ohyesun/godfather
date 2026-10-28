@@ -1,0 +1,50 @@
+{
+  "schema": "WORKBUDDY_CODEMAGIC_BUNDLE_FREEZE_V1",
+  "frozenAt": "2026-10-28T19:12:00+08:00",
+  "status": "STATIC_PASS_BUILD_NOT_RUN",
+  "qaVerdict": "PASS",
+  "engineeringVerdict": "STATIC PASS WITH WARNINGS",
+  "targetRepo": "https://github.com/ohyesun/godfather",
+  "pins": {
+    "codemagic.yaml": {
+      "bytes": 6241,
+      "sha256": "b6111dbc5de67555bc49d2c1e9cc35eb8d89afc07272a9deccc96f6d5ee9b1e1"
+    },
+    "README.md": {
+      "bytes": 2436,
+      "sha256": "d5a815d836955c406478ead63d05993364b1fd21510fac69f048525ceae2be24"
+    },
+    "QA-CODEMAGIC-AUDIT.md": {
+      "bytes": 6176,
+      "sha256": "eb65783cfddbdf2cf21d440dec5ff957ad4a80f1007fc3058fec9ba4f30d5696"
+    },
+    "ENGINEERING-AUDIT.md": {
+      "bytes": 8457,
+      "sha256": "e3ba08a908100f4c930e6b15bd951934d455bd83fcfb3d3da4b536d9f4d7b684"
+    }
+  },
+  "verified": {
+    "yamlParsed": true,
+    "shellSyntaxChecks": "7/7",
+    "sourceCount": 13,
+    "publicHeaderCount": 14,
+    "fixtureSourcesAbsent": true,
+    "runtimeOrSigningClaims": false,
+    "cmakeResolution": "prefer Android SDK 3.22.1, else highest available, else PATH, else Homebrew; require >=3.16",
+    "ndkResolution": "pinned android-ndk 27.0.12077973; install via sdkmanager if absent",
+    "portableSort": "no sort -V; BSD-compatible numeric sort"
+  },
+  "buildState": {
+    "codemagicExecuted": false,
+    "binaryProduced": false,
+    "signingPerformed": false,
+    "deviceRun": false
+  },
+  "accessBlocker": {
+    "repoOwner": "ohyesun",
+    "loggedInGitHubAccount": "Ohyesuncn",
+    "accountsDiffer": true,
+    "deployKeyPageHttpStatus": 404,
+    "resolution": "Use a repository owned by Ohyesuncn, log in as ohyesun, or fork ohyesun/godfather into Ohyesuncn and point Codemagic at the fork."
+  }
+}
