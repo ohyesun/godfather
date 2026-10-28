@@ -3,72 +3,63 @@
 - Audit date: 2026-10-28
 - Scope: `harness/behavior_probe.c`, `BEHAVIOR-PROBE.md`, `harness/BEHAVIOR-PROBE-DIAGNOSIS.md`
 - Mode: read-only static review; no compile, Host run, device run or push
-- Current source identity: `harness/behavior_probe.c` SHA-256 `f9a3b3c53bbb8438ded537170d84603f22eac5b1cc5bb61f074852c150f387b0` (22711 bytes), matching `BEHAVIOR-PROBE.md:140`
-- Binary identities on disk:
-  - x86_64 `build-local-x86_64/zg335_behavior_probe` SHA-256 `46bc7e88d1be20715c7c7b4e3d584052ee0dd8243068a4f33fe013720c8548b4` (matches doc)
-  - arm64-v8a `out/behavior-probe-arm64-v8a` SHA-256 `a16b20c998d4beea380d213e67607590ada5bcf4ea81e1d46b202c9e4207eb7f` (**does not match `BEHAVIOR-PROBE.md:144`, which still pins `40344f91...`**)
-- Documentation identity: `BEHAVIOR-PROBE.md` SHA-256 `24f7a7f58e2c518264319b8a8c064ff4109f10c87ef9c42b85336dce9edccef7`.
+- Current source identity: `harness/behavior_probe.c` SHA-256 `4f91d2b185c23d8b1ec6cd6c10d7c9c4fe158bc82b632a6e88fdedcff6852015` (22815 bytes), matching `BEHAVIOR-PROBE.md:140`
+- Binary identities match the current file tree and documentation:
+  - x86_64 `build-local-x86_64/zg335_behavior_probe` SHA-256 `4a3b84e6a048d5af9bc03f1c9f5659f2c6bc5046a520be9d30f0102970609f31` (344344 bytes)
+  - arm64-v8a `out/behavior-probe-arm64-v8a` SHA-256 `515b2412734614a64fe24cb3aa15ccc104d474ca06228eb1f1ccb79ead499fad` (366560 bytes)
+- Documentation identity: `BEHAVIOR-PROBE.md` SHA-256 `e9a9957c3e764161269502b15ef53a155078f7f1f367cb124e2a8b068da17e0e`.
+- Previous hash conflict is resolved: `BEHAVIOR-PROBE.md:140-144` pin these exact source/x86/arm64 identities.
 
 ## 1. Verdict
 
-**PASS for the malformed-width16 execution path and the added continued/XMM checks; CONCERNS for exact F4 XMM coverage and a stale ARM64 artifact pin.**
+**PASS for the current local automated behavior gates; not a runtime or platform acceptance.**
 
-The current code adds `calls_continued32 == 8` and raw XMM comparisons. The malformed path is real, uses `zg335116_run`, and returns non-zero on failure. No fabricated output or unconditional success was found.
+The malformed-width16 path now closes both prior assertion concerns:
 
-## 2. Malformed trigger
+- `calls_continued32 == 8` at `behavior_probe.c:507`;
+- raw XMM compared to `normal_records[7].normal_result.xmm0` in all four words at lines 510-513, aligning with F4 `normals[7]` rather than the harness's internal `probe.current_xmm`.
 
-- `Probe` carries `malformed_read_address`, `malformed_read_width`, and `malformed_read_hit` at `harness/behavior_probe.c:24-26`.
-- `run_malformed_case()` sets:
-  - `malformed_read_address = 0x00030048U` (B+0x48) at line 473;
-  - `malformed_read_width = 16U` at line 474.
-- `probe_read()` applies the malformed initialized mask only when:
-  - `space == ZG335_SPACE_RAM`;
-  - address equals `malformed_read_address`;
-  - width equals `malformed_read_width`;
-  - `malformed_read_hit` is zero.
-  See lines 101-106; it sets `initialized_mask32 = 0xff` for width16 and sets the one-shot hit flag.
-- `run_malformed_case()` uses the empty setup at line 472 and calls actual `zg335116_run` at line 490.
+The malformed trigger remains a real one-shot read at B+0x48 with width16; the path uses actual `zg335116_run`; no fabricated output or unconditional success was found.
 
-## 3. Assertions added
+## 2. Malformed trigger and assertion
 
-`run_malformed_case()` is at `behavior_probe.c:460-515`; the predicate at lines 501-513 checks:
+- `malformed_read_address`, `malformed_read_width`, `malformed_read_hit` at `behavior_probe.c:24-26`.
+- `run_malformed_case()` sets `0x00030048` (B+0x48) and width16 at lines 473-474.
+- `probe_read()` applies the malformed initialized mask only for RAM/address/width/one-shot at lines 101-106; width16 mask is `0xff`.
+- The predicate at lines 501-513 checks:
+  - host `ZG335116_HOST_COMPLETED`;
+  - `normal_count32 == 8`, `record_overflow32 == 0`;
+  - raw `ZG335_MEMORY_REPLY_INVALID` (6), reason `ZG335_REASON_READ_INITIALIZATION` (5);
+  - dispatched 8 and continued 8;
+  - last memory address `0x00030048`, width 16;
+  - raw XMM equals `normal_records[7].normal_result.xmm0` on all four words.
+- `RESULT PASS/FAIL` is after the predicate; failure returns non-zero. `main()` ORs the result into `failed`.
 
-- host `ZG335116_HOST_COMPLETED`
-- `normal_count32 == 8`, `overflow == 0`
-- raw `ZG335_MEMORY_REPLY_INVALID` (6), reason `ZG335_REASON_READ_INITIALIZATION` (5)
-- dispatched 8 and **continued 8** (line 507)
-- last memory address `0x00030048`, width 16
-- raw XMM words equal `probe.current_xmm` words (lines 510-513)
+## 3. F4 `test_vector_malformed` coverage
 
-The result is printed at line 514 and returned as `ok ? 0 : 1` at line 515; `main()` ORs it into `failed` at line 598 and returns at line 599. There is no unconditional success.
+F4 `test_vector_malformed()` at `fixture.cpp:1732-1758` checks normal/dispatched, raw `MEMORY_REPLY_INVALID`/`READ_INITIALIZATION`, last address/width, and XMM preservation against `normals[7]`. The current harness covers the same normal/dispatched/raw/address/width fields, adds `continued8`, and uses the explicit `normal_records[7]` XMM reference. The prior XMM-reference concern is resolved.
 
-## 4. F4 `test_vector_malformed` coverage
+F4 also exercises width8; this task is width16, so width8 remains a scope note. The malformed case uses empty setup; the normal 8-record path covers empty/nonempty.
 
-F4 `test_vector_malformed()` at `fixture.cpp:1732-1758` checks normal/dispatched, raw state/reason, last address/width, and **XMM preserved** (`fixture.cpp:1752-1757`). The current harness covers the state/reason/count/address/width portion and now checks XMM, but with two qualifications:
+## 4. Integrity and boundary
 
-- **CONCERN 1 — XMM reference:** the harness compares `output.raw_result.xmm0` to `probe.current_xmm`, the harness's own callback state. F4 compares to `normals[7].result.xmm0` (or the initial B words for the width16 case). `probe.current_xmm` is not an independently pinned `normal_records[7]` value, so this is not yet a fully explicit F4-reference check.
-- **CONCERN 2 — stale documentation pin:** `BEHAVIOR-PROBE.md:144` still lists arm64-v8a `40344f91...`, while the actual file now hashes to `a16b20c9...`. Source and x86 pins match; the ARM64 artifact pin is stale. This is an evidence/provenance mismatch, not a behavior failure.
-- F4 also covers a width8 malformed vector; this task is width16, so width8 is a scope note.
-
-## 5. Integrity and boundary
-
-- The malformed mask is produced by the real one-shot read callback, not hard-coded output.
-- `malformed_read_hit` is reset by the per-case `memset`; the trigger is one-shot.
-- The case returns non-zero on any predicate failure and is ORed into `main`'s `failed`.
-- `BEHAVIOR-PROBE.md:3` labels the result a local automated-gate PASS, not runtime acceptance.
+- The malformed mask is produced by the real read callback, not hard-coded output.
+- `malformed_read_hit` is reset per case and makes the trigger one-shot.
+- The case returns non-zero on predicate failure and is accumulated by `main()`.
+- `BEHAVIOR-PROBE.md:3` labels the result local automated-gate PASS, not runtime acceptance.
 - `BEHAVIOR-PROBE.md:147-159` excludes physical ARM64, production runtime, SDK/OS/native ABI, Host/F4 full runtime and iOS.
 - ARM64 remains MuMu x86_64 + ARM translation, not physical ARM.
 
-## 6. Findings summary
+## 5. Findings summary
 
 | Item | Result |
 |---|---|
 | B+0x48 width16 one-shot trigger | PASS |
 | raw6 / reason5 / last addr/width | PASS |
 | dispatched8 / continued8 / normal8 | PASS |
-| XMM preservation check | CONCERN: compared to harness `probe.current_xmm`, not explicit F4 `normals[7]` |
-| ARM64 artifact pin | CONCERN: doc `40344f91...` vs actual `a16b20c9...` |
+| XMM == normal_records[7] four words | PASS |
+| documented artifact pins | PASS: source/x86/arm64 match current files |
 | fabricated output / unconditional success | PASS: none |
 | runtime/physical ARM/SDK/OS/F4 boundary | PASS: not claimed |
 
-Overall: **PASS for the malformed-width16 execution path; CONCERNS on exact F4 XMM-reference coverage and the stale ARM64 artifact pin.** No compile, Host, device, push or runtime acceptance was performed.
+Overall: **PASS (local automated behavior gates), limited to the documented normal, forced-machine-nonreturn, memory-stop, stale-continuation and malformed-width16 paths.** No compile, Host, device, push or runtime acceptance was performed.

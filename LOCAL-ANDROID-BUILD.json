@@ -90,5 +90,17 @@
     "memoryStop": "normal=4 MEMORY_STOPPED reason0; projected=2 LOWER_STOPPED reason0; raw=7 CALLEE_STOPPED reason0; counts 1/0/1",
     "staleContinuation": "normal RETURNED target2468ace0 cleanup4; projected LOWER_RETURNED returned_to2468ace0; raw RETURN_CONTROL_INVALID reason9; counts1/0/1",
     "malformed16": "raw6 reason5; 8 normal; continued8; last B+0x48 width16; raw XMM == normal_records[7] XMM"
+  },
+  "iosArtifact": {
+    "target": "ios-device-arm64",
+    "library": "lib/libzg335_portable.a",
+    "librarySha256": "d839e3bddb3d50dfab7519c99938fa5efbd9966808e7352b3839d5047b0930ce",
+    "zip": "godfather_1_artifacts.zip",
+    "zipSha256": "40bd0c34edf53b8548835aa4d2c252882ec8292f37ba8377194c7467dbfb72a9",
+    "buildId": "6ae1fdb1206ce93970c6dddb",
+    "workflow": "iOS device portable static library",
+    "commit": "4d7c66f",
+    "duration": "10m28s",
+    "scope": "build artifact only; unsigned; no iOS device run"
   }
 }
