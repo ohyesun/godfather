@@ -1,6 +1,7 @@
 # Android Host Smoke
 
-Standalone Android host APK for the `zg335_portable` static library.
+Installable Android host for `zg335_portable`, now also used as the WebView UI
+baseline for the mobile rewrite.
 
 ## Toolchain
 
@@ -20,91 +21,44 @@ export ANDROID_SDK_ROOT="D:/Android/sdk"
 ./gradlew assembleDebug
 ```
 
-The prebuilt libraries are project-relative copies:
+Import the legacy WebView assets first; they are intentionally not committed:
 
-```text
-prebuilt/x86_64/lib/libzg335_portable.a
-prebuilt/arm64-v8a/lib/libzg335_portable.a
-prebuilt/include/zg335/*.h
+```bash
+bash tools/import-legacy-assets.sh
+# default: D:/zg/apk114-bridge/output/apk114-minimal-r129b2-signed.apk
+# or:     bash tools/import-legacy-assets.sh /path/to/old.apk
 ```
 
-`app/src/main/cpp/CMakeLists.txt` selects
-`prebuilt/${ANDROID_ABI}/lib/libzg335_portable.a`; no absolute library path is
-embedded.
+This copies all `assets/` entries (1,783 files, ~85 MB) into
+`app/src/main/assets/`. The directory is git-ignored.
 
-## APK
+## Current APK
 
 - Path: `app/build/outputs/apk/debug/app-debug.apk`
-- Size: `59077` bytes
-- SHA-256: `abeea134853088491a0db15fcf50c69f2dcfb34366b6426dbe1e4b8cb6c6d6c6`
+- Size: `42 MB` with legacy assets
+- SHA-256: `392da36647e84d45a888e40ede04aa78090e4cb3d6d6a3beeb53520221448c46`
 - Native libraries:
-  - `lib/x86_64/libzg335host.so` (23328 bytes)
-  - `lib/arm64-v8a/libzg335host.so` (20896 bytes)
+  - `lib/x86_64/libzg335host.so`
+  - `lib/arm64-v8a/libzg335host.so`
+- JNI export: `Java_com_zg335_host_MainActivity_runProbe`
 
-Both shared libraries export:
+## WebView baseline
 
-```text
-T Java_com_zg335_host_MainActivity_runProbe
-```
-
-## Install and launch
-
-```text
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-Success
-adb shell am start -n com.zg335.host/.MainActivity
-Starting: Intent { cmp=com.zg335.host/.MainActivity }
-```
-
-The Activity is top-resumed and `dumpsys package` reports
-`primaryCpuAbi=x86_64`, `minSdk=24`, `targetSdk=34`.
-
-## Native probe
-
-`onCreate` invokes `runProbe()` and the button invokes it again:
-
-```text
-state=1 normal=0 overflow=0
-```
-
-Captured logcat:
+`MainActivity` loads `file:///android_asset/index.html` with JavaScript, DOM
+storage, file URL access, mixed content and hardware acceleration enabled. The
+legacy Three.js UI renders the game scene and HUD on MuMu; the native probe
+still logs:
 
 ```text
 I ZG335HOST: state=1 normal=0 overflow=0
 ```
 
-Tapping the `RUN ZG335 PROBE` button logs the same line again.
-
-`state=1` is `ZG335116_HOST_BAD_INTERFACE`, expected for the deliberately empty
-zero-initialized native entry/config.
-
-## Project structure
-
-```text
-android-host-smoke/
-  settings.gradle
-  build.gradle
-  gradle.properties
-  gradlew / gradlew.bat
-  gradle/wrapper/
-  app/
-    build.gradle
-    src/main/AndroidManifest.xml
-    src/main/java/com/zg335/host/MainActivity.java
-    src/main/cpp/CMakeLists.txt
-    src/main/cpp/jni_bridge.c
-  prebuilt/
-    include/zg335/*.h
-    x86_64/lib/libzg335_portable.a
-    arm64-v8a/lib/libzg335_portable.a
-```
-
-`local.properties` is machine-local SDK configuration and is excluded by
-`.gitignore`; it is not a source dependency.
+The UI is reused. The legacy **data path is not**: see
+`ANDROID-WEBVIEW-BRIDGE.md`.
 
 ## Scope
 
-This verifies APK installation, Activity lifecycle, JNI loading, and linkage to
-the static library on the local x86_64 emulator. It does not claim production
-runtime, physical ARM64, signing, store distribution, SDK/OS/ABI or whole-game
-acceptance.
+This verifies APK installation, Activity lifecycle, JNI loading, static library
+linkage, and that the legacy WebView UI can render on the new host. It does not
+claim production runtime, physical ARM64, signing, store distribution,
+SDK/OS/ABI or whole-game acceptance.

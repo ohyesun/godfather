@@ -1,13 +1,15 @@
 package com.zg335.host;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 public final class MainActivity extends Activity {
     static {
@@ -15,37 +17,60 @@ public final class MainActivity extends Activity {
     }
 
     private native String runProbe();
+    private WebView webView;
 
-    private void runAndShow(TextView result) {
+    private String probe() {
         String value = runProbe();
-        result.setText(value);
         Log.i("ZG335HOST", value);
+        return value;
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final TextView result = new TextView(this);
-        result.setText("ready");
-        result.setTextSize(18.0f);
-        result.setGravity(Gravity.CENTER_HORIZONTAL);
+        WebView.setWebContentsDebuggingEnabled(true);
 
-        Button run = new Button(this);
-        run.setText("Run ZG335 probe");
-        run.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                runAndShow(result);
-            }
-        });
+        webView = new WebView(this);
+        WebView web = webView;
+        WebSettings settings = web.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
+        settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(48, 48, 48, 48);
-        layout.addView(run);
-        layout.addView(result);
-        setContentView(layout);
-        runAndShow(result);
+        web.setWebViewClient(new WebViewClient());
+        web.setWebChromeClient(new WebChromeClient());
+        web.addJavascriptInterface(new Bridge(), "ZG335Host");
+
+        setContentView(web, new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT));
+
+        probe();
+        web.loadUrl("file:///android_asset/index.html");
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    public final class Bridge {
+        @JavascriptInterface
+        public String runProbe() {
+            return MainActivity.this.probe();
+        }
     }
 }
