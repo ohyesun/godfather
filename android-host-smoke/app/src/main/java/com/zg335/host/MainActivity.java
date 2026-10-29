@@ -62,21 +62,21 @@ public final class MainActivity extends Activity {
 
         probe();
         runBridgeByteBuffer();
-        runDebugTlsLoopback();
+        runDebugFrameFeed();
         web.loadUrl("file:///android_asset/index.html");
     }
 
-    private void runDebugTlsLoopback() {
+    private void runDebugFrameFeed() {
         boolean debuggable = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         if (!debuggable || bridge == null) {
             return;
         }
         try {
-            Class.forName("com.zg335.host.TlsLoopbackTest")
-                .getMethod("run", Activity.class, ZgBridge.class)
-                .invoke(null, this, bridge);
+            Class.forName("com.zg335.host.FrameFeedTest")
+                .getMethod("run", ZgBridge.class)
+                .invoke(null, bridge);
         } catch (Throwable error) {
-            Log.e("ZG335BRIDGE", "debug TLS hook unavailable", error);
+            Log.e("ZG335BRIDGE", "debug frame hook unavailable", error);
         }
     }
 

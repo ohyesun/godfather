@@ -21,6 +21,7 @@ target_include_directories(zg335host PRIVATE
     "${ZG_BRIDGE_DIR}/include")
 target_link_libraries(zg335host PRIVATE
     zg335_portable
+    z
     log)
 
 target_compile_features(zg335host PRIVATE c_std_11)
