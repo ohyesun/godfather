@@ -12,6 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /** Negative-offset pak fallback backed by the ZGMU/18008 client. */
 final class PakRemote {
@@ -20,9 +24,12 @@ final class PakRemote {
     private static final String[] CODE_EXT = {
         ".js", ".mjs", ".html", ".htm", ".css", ".svg"
     };
+    private static final int MAX_FETCHES = 12;
 
     private static volatile File cacheDir;
     private static volatile Config config;
+    private static final Semaphore FETCH_SLOTS = new Semaphore(MAX_FETCHES, true);
+    private static final Map<String, Object> PATH_LOCKS = new HashMap<>();
 
     private PakRemote() {
     }
@@ -36,6 +43,21 @@ final class PakRemote {
 
     static InputStream openRemote(AssetManager assets, String name, long storedLen,
         int flag) throws IOException {
+        Object lock;
+        synchronized (PATH_LOCKS) {
+            lock = PATH_LOCKS.get(name);
+            if (lock == null) {
+                lock = new Object();
+                PATH_LOCKS.put(name, lock);
+            }
+        }
+        synchronized (lock) {
+            return openRemoteLocked(assets, name, storedLen, flag);
+        }
+    }
+
+    private static InputStream openRemoteLocked(AssetManager assets, String name,
+        long storedLen, int flag) throws IOException {
         refuseCode(name);
         File dir = requireCacheDir();
         Config cfg = requireConfig(assets);
@@ -54,51 +76,107 @@ final class PakRemote {
         if (part.exists() && !part.delete()) {
             throw new IOException("cannot remove stale part");
         }
-        Zgmu client = null;
-        try {
-            client = new Zgmu(cfg.host, cfg.port, cfg.token,
-                cfg.connectTimeoutMs, cfg.readTimeoutMs);
-            final FileOutputStream out = new FileOutputStream(part);
+
+        boolean required = isRequired(name);
+        int attempts = required ? 3 : 1;
+        IOException lastIo = null;
+        for (int attempt = 1; attempt <= attempts; ++attempt) {
+            Zgmu client = null;
+            boolean slot = false;
             try {
-                final long[] received = {0};
-                client.get(id, 0, storedLen >= 0
-                    ? (int)Math.min(Integer.MAX_VALUE - 16, storedLen)
-                    : 0x7fffff00, new Zgmu.Sink() {
-                    @Override
-                    public void onData(long offset, byte[] buffer, int from,
-                        int length) throws IOException {
-                        out.write(buffer, from, length);
-                        received[0] += length;
+                if (!FETCH_SLOTS.tryAcquire(6, TimeUnit.SECONDS)) {
+                    throw new IOException("micro fetch slots busy");
+                }
+                slot = true;
+                client = new Zgmu(cfg.host, cfg.port, cfg.token,
+                    cfg.connectTimeoutMs, cfg.readTimeoutMs);
+                final FileOutputStream out = new FileOutputStream(part);
+                try {
+                    final long[] received = {0};
+                    client.get(id, 0, storedLen >= 0
+                        ? (int)Math.min(Integer.MAX_VALUE - 16, storedLen)
+                        : 0x7fffff00, new Zgmu.Sink() {
+                        @Override
+                        public void onData(long offset, byte[] buffer, int from,
+                            int length) throws IOException {
+                            out.write(buffer, from, length);
+                            received[0] += length;
+                        }
+                    });
+                    out.flush();
+                    out.getFD().sync();
+                    if (storedLen >= 0 && received[0] != storedLen) {
+                        throw new IOException("length mismatch");
                     }
-                });
-                out.flush();
-                out.getFD().sync();
-                if (storedLen >= 0 && received[0] != storedLen) {
-                    throw new IOException("length mismatch");
+                } finally {
+                    out.close();
                 }
+                if (!part.renameTo(cache)) {
+                    if (!cache.delete() || !part.renameTo(cache)) {
+                        throw new IOException("cannot commit cache");
+                    }
+                }
+                Log.i(TAG, "MICRO-OK path=" + name + " bytes=" + cache.length());
+                MicroStats.recordOk(name, cache.length());
+                return wrap(cache, flag);
+            } catch (Zgmu.ProtoError error) {
+                if (required && attempt < attempts && error.code == 0x30) {
+                    lastIo = error;
+                    logRetry(name, attempt + 1);
+                    sleep(attempt == 1 ? 100L : 300L);
+                    continue;
+                }
+                Log.e(TAG, "MICRO-FAIL path=" + name + " code=" + error.code);
+                MicroStats.recordFail(name, error.code);
+                throw error;
+            } catch (IOException error) {
+                lastIo = error;
+                if (required && attempt < attempts) {
+                    logRetry(name, attempt + 1);
+                    sleep(attempt == 1 ? 100L : 300L);
+                    continue;
+                }
+                Log.e(TAG, "MICRO-FAIL path=" + name + " code=io");
+                MicroStats.recordFail(name, 0x30);
+                throw error;
+            } catch (Throwable error) {
+                Log.e(TAG, "MICRO-FAIL path=" + name + " code=io");
+                MicroStats.recordFail(name, 0x30);
+                throw new IOException("micro fetch failed", error);
             } finally {
-                out.close();
-            }
-            if (!part.renameTo(cache)) {
-                if (!cache.delete() || !part.renameTo(cache)) {
-                    throw new IOException("cannot commit cache");
+                if (client != null) {
+                    client.close();
+                }
+                if (slot) {
+                    FETCH_SLOTS.release();
                 }
             }
-            Log.i(TAG, "MICRO-OK path=" + name + " bytes=" + cache.length());
-            MicroStats.recordOk(name, cache.length());
-            return wrap(cache, flag);
-        } catch (Zgmu.ProtoError error) {
-            Log.e(TAG, "MICRO-FAIL code=" + error.code + " path=" + name);
-            MicroStats.recordFail(name, error.code);
-            throw error;
-        } catch (Throwable error) {
-            Log.e(TAG, "MICRO-FAIL code=io path=" + name);
-            MicroStats.recordFail(name, 0x30);
-            throw new IOException("micro fetch failed", error);
-        } finally {
-            if (client != null) {
-                client.close();
-            }
+        }
+        if (lastIo != null) {
+            throw lastIo;
+        }
+        throw new IOException("micro fetch failed");
+    }
+
+    private static boolean isRequired(String name) {
+        if ("native107/textures/16777577.png".equals(name)
+            || "native107/textures/16786122.png".equals(name)) {
+            return true;
+        }
+        return name.startsWith("scenes/")
+            && (name.endsWith(".bin") || name.endsWith("/map.json"));
+    }
+
+    private static void logRetry(String name, int attempt) {
+        Log.i(TAG, "MICRO-RETRY path=" + name + " attempt=" + attempt
+            + " reason=io");
+    }
+
+    private static void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
         }
     }
 

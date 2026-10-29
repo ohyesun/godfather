@@ -171,6 +171,32 @@ Despite those failures, the UI entered the actual game scene (咸阳/听泉寨,
 prints the first `0a01`; no separate `05/0c`/`SCENE-OK` log was produced, so
 the scene claim is from the UI screenshot, not a fabricated log.
 
+## T80 bounded retry on required paths
+
+Required paths: `scenes/xianyangcheng/12_14.bin`, `13_13.bin`,
+`native107/textures/16777577.png`, `16786122.png`, and `scenes/**/*.bin` /
+`scenes/**/map.json`. Optional `scenes/sprites/*.webp` are not retried.
+
+Retry policy: only transient `io` / server E_IO, at most 2 retries, delays
+100/300ms. No retry for `E_NO_PACK`/`E_OFFSET`/`E_AUTH`/`E_PROTO`. Final
+failure is logged with path and code. Fetch concurrency is capped at 12; OK/
+bytes are counted only after a successful fetch.
+
+Clean single-run result:
+
+```text
+MICRO-RUN ok=796 bytes=24810993 uniquePaths=777 fail=24
+MICRO-RETRY path=scenes/xianyangcheng/11_13.bin attempt=2 reason=io
+```
+
+Required-path failures: **0**. The only retry was the required map block
+`11_13.bin`; it succeeded on attempt 2. The 24 final failures are optional
+`scenes/sprites/*.webp`, left visible without fabricating assets. UI still
+entered the real scene; screenshot `PHASE6-UI-T80.png`.
+
+This is not a claim that the total is 800: the single-run total is 796/24.8 MB,
+with required resources complete. The optional-sprite failures remain.
+
 ## Not yet connected
 
 UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
@@ -180,8 +206,8 @@ UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
-| `app-debug.apk` | 55,840,495 | `11cea06fe6f6c35449f03f2d99771fb087e87603904acc676e0255863d0ea0e1` |
-| `app-release-unsigned.apk` | 54,786,786 | `699150e4f9796acc8f733a0c26951e97445ad0ee67d72ab74836c319930d55fe` |
+| `app-debug.apk` | 55,842,319 | `425c90edde6b85fcac7c5f8a178edc9976f31afe3484e6ca50c94269899737c2` |
+| `app-release-unsigned.apk` | 54,786,786 | `504cbd3c2ce589f4546b4eb6d5c1746d51c8776d208657cfaa23dbfd1da64833` |
 
 Release keystore scan: 0 hits for `keystore|zg_test|.p12|.jks`; release remains
 unsigned.
@@ -192,7 +218,7 @@ unsigned.
 |---|---:|---|
 | `Zgmu.java` | 8395 | `39d15fd642a21102e421dd897af511b17768a6bdff7edf74f5a989b352f70882` |
 | `MicroProbe.java` | 4204 | `d4b2755dd6c7a0427f8a5f17149641ddc1dacb9439a6267e09a8b476ceedce31` |
-| `PakRemote.java` | 7223 | `aa55eb914d507807e2904ea7f9cff9d4dba1d4bc455d48bbf09e2288d128e5b2` |
+| `PakRemote.java` | 10238 | `2a41c9ee640a3b68e62d6c93ab32ea4dcd03adcb935b24e3f60c535530b3ec9d` |
 | `PackedAssetsPathHandler.java` | 9315 | `3334340dad142242cdb2d9d741053f6454558cb31d7739d8a31f9252aa29e3a1` |
 | `MicroStats.java` | 1410 | `acb7c629e71869d786fc44edce922a7d5e758be09b4d14137eb6e5133bb99e03` |
 | `MainActivity.java` | 15027 | `483093d502479fd76f824d41efcf8591c0bc3a7d566a45478a7d4b85ce7fbd1c` |
