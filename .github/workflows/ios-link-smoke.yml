@@ -48,7 +48,12 @@ jobs:
 
       - name: Record library identity
         run: |
-          shasum -a 256 out/ios-device-arm64/lib/libzg335_portable.a
+          LIB_SHA="$(shasum -a 256 out/ios-device-arm64/lib/libzg335_portable.a | awk '{print $1}')"
+          echo "::notice title=ios_lib_sha256::$LIB_SHA"
+          test "$LIB_SHA" = "d839e3bddb3d50dfab7519c99938fa5efbd9966808e7352b3839d5047b0930ce" || {
+            echo "::error title=ios_lib_sha256_mismatch::$LIB_SHA"
+            exit 1
+          }
           find out/ios-device-arm64 -type f | sort
 
       - name: Link consumer
