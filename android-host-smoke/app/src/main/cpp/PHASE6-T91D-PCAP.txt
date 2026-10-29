@@ -1,10 +1,14 @@
-T91D offline pcap replay (Linux SLL linktype 113, server port 6020)
-S2C len=23064
-PLAIN first=120000000a01c90200000c8be36a000000003420c117060000000a023c45be7f
-CMD off=0 cmd=0a01 len=18 flags=0
-SCENE-MAP MISSING
-SCENE-OK NOT_READY map=false self=false name= npc=0
+T91D offline pcap replay PASS (Linux SLL linktype 113; server port 6020)
+SEGMENTS=68
+S2C=23064
+MAP_FRAME map=2 file=xianyangcheng len=55
+SELF_FRAME uid=1 name_ok=true len=405
+FRAMES=514
+SELF_OK=true
+SCENE-MAP map=2 filename=xianyangcheng
+SCENE-OK map=2 self=烈火教父 npc=10
 
-Conclusion: first server frame decrypts correctly; next frame not parseable
-from raw capture-order concatenation (needs TCP sequence reassembly/stream
-completion). No map/self/npc claimed.
+The test reassembles TCP segments by sequence number before DES decryption,
+uses server frame size 4+length, inflates FLAG_ZLIB bodies, and reads self
+name at 05/01 payload@38 and unique npcID at 05/07 payload@6.
+No pcap/key/ticket is committed.

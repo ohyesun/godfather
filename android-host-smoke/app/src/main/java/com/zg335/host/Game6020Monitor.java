@@ -64,7 +64,7 @@ final class Game6020Monitor {
             if (length == 0 || length > 0xfffffb) {
                 break;
             }
-            int total = (4 + length + 7) & ~7;
+            int total = 4 + length;
             if (off + total > plain.length) {
                 break;
             }

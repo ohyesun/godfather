@@ -512,3 +512,20 @@ pcap linktype is Linux SLL (113), server port 6020, S2C 23064 bytes. First
 frame decrypts to `0a01 len=18`; next frame is not parseable from raw capture
 order, so `SCENE-MAP`/`SCENE-OK` are not claimed. Detail:
 `PHASE6-T91D-PCAP.txt`. No pcap/key/ticket committed.
+
+## T91D offline pcap replay PASS
+
+SLL(113) 6020 server stream reassembled by TCP seq (68 segments, 23064B);
+server frame size is 4+length (no padding); FLAG_ZLIB bodies inflated.
+
+```text
+FRAMES=514
+SCENE-MAP map=2 filename=xianyangcheng
+SELF_FRAME uid=1 name_ok=true
+SELF_OK=true
+SCENE-OK map=2 self=烈火教父 npc=10
+```
+
+Test code `app/src/test/java/com/zg335/host/PcapT91B.java` is committed; pcap,
+key and ticket are not. Console display of the GBK name is terminal-encoding
+mojibake, but `name.equals("烈火教父")` asserted true.
