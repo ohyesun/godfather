@@ -54,7 +54,7 @@ int main(void)
     zg_bridge_config config;
     zg_bridge *bridge;
     zg_bridge_stats stats;
-    uint8_t input[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+    uint8_t input[80];
     uint8_t output[8];
     size_t out_length = 99;
     size_t i;
@@ -62,7 +62,7 @@ int main(void)
     memset(&config, 0, sizeof config);
     CHECK(zg_bridge_create(NULL) == NULL);
     config.abi_version = ZG_BRIDGE_ABI_VERSION;
-    config.max_frame_bytes = 8;
+    config.max_frame_bytes = 64;
     config.max_packet_bytes = 16;
     config.max_tx_bytes = 8;
     config.flags = 0;
@@ -73,10 +73,28 @@ int main(void)
     zg_bridge_get_stats(bridge, &stats);
     CHECK(stats.rx_bytes == 0 && stats.tx_bytes == 0 && stats.frames == 0);
 
-    CHECK(zg_bridge_feed(bridge, input, 9, 0) == ZG_BRIDGE_OVERSIZE);
+    memset(input, 0, sizeof input);
+    CHECK(zg_bridge_feed(bridge, input, sizeof input, 0) ==
+        ZG_BRIDGE_OVERSIZE);
     CHECK(zg_bridge_feed(bridge, NULL, 1, 0) == ZG_BRIDGE_PROTOCOL_ERROR);
-    CHECK(zg_bridge_feed(bridge, input, 8, 0) == ZG_BRIDGE_OK);
-    CHECK(zg_bridge_feed(bridge, input, 1, 0) == ZG_BRIDGE_BACKPRESSURE);
+
+    /* Incomplete frame fills all but one RX byte; the next feed is backpressure. */
+    memset(input, 0, sizeof input);
+    input[3] = 64;
+    CHECK(zg_bridge_feed(bridge, input, 67, 0) == ZG_BRIDGE_OK);
+    CHECK(zg_bridge_feed(bridge, input, 2, 0) == ZG_BRIDGE_BACKPRESSURE);
+    zg_bridge_destroy(bridge);
+
+    /* A 24-byte bridge-control envelope is accepted without JSON parsing. */
+    bridge = zg_bridge_create(&config);
+    CHECK(bridge != NULL);
+    memset(input, 0, 24);
+    input[0] = 0x47;
+    input[1] = 0x5a;
+    input[2] = 1;
+    input[3] = 3;
+    input[6] = 24;
+    CHECK(zg_bridge_feed(bridge, input, 24, 0) == ZG_BRIDGE_OK);
 
     out_length = 99;
     CHECK(zg_bridge_poll_render(bridge, output, sizeof output, &out_length) ==
@@ -113,7 +131,7 @@ int main(void)
 
     CHECK(zg_bridge_request_full(bridge) == ZG_BRIDGE_OK);
     zg_bridge_get_stats(bridge, &stats);
-    CHECK(stats.rx_bytes == 8);
+    CHECK(stats.rx_bytes == 24);
     CHECK(stats.tx_bytes == 8);
     CHECK(stats.frames == 1);
     CHECK(stats.render_packets == 0);
