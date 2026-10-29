@@ -88,6 +88,48 @@ Java_com_zg335_host_ZgBridge_nativeStats(JNIEnv *env, jclass clazz,
     return 3;
 }
 
+JNIEXPORT jint JNICALL
+Java_com_zg335_host_ZgBridge_nativeRequestFull(JNIEnv *env, jclass clazz,
+    jlong handle)
+{
+    zg_bridge *bridge = (zg_bridge *)(intptr_t)handle;
+
+    (void)env;
+    (void)clazz;
+    if (bridge == NULL) {
+        return (jint)ZG_BRIDGE_PROTOCOL_ERROR;
+    }
+    return (jint)zg_bridge_request_full(bridge);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_zg335_host_ZgBridge_nativePollRender(JNIEnv *env, jclass clazz,
+    jlong handle, jobject destination, jint capacity)
+{
+    zg_bridge *bridge = (zg_bridge *)(intptr_t)handle;
+    void *address;
+    jlong buffer_capacity;
+    size_t out_length = 0;
+    zg_bridge_status status;
+
+    (void)clazz;
+    if (bridge == NULL || destination == NULL || capacity < 0) {
+        return (jint)ZG_BRIDGE_PROTOCOL_ERROR;
+    }
+    address = (*env)->GetDirectBufferAddress(env, destination);
+    buffer_capacity = (*env)->GetDirectBufferCapacity(env, destination);
+    if (address == NULL || buffer_capacity < 0 ||
+        (jlong)capacity > buffer_capacity) {
+        return (jint)ZG_BRIDGE_OVERSIZE;
+    }
+    status = zg_bridge_poll_render(bridge, (uint8_t *)address,
+        (size_t)capacity, &out_length);
+    if (status == ZG_BRIDGE_OK) {
+        return (jint)out_length;
+    }
+    return (jint)status;
+}
+
 JNIEXPORT void JNICALL
 Java_com_zg335_host_ZgBridge_nativeDestroy(JNIEnv *env, jclass clazz,
     jlong handle)

@@ -35,6 +35,17 @@ public final class ZgBridge implements AutoCloseable {
         return nativeStats(handle, out, out.length) == 3 ? out : null;
     }
 
+    public int requestFull() {
+        return handle == 0L ? 4 : nativeRequestFull(handle);
+    }
+
+    public int pollRender(ByteBuffer destination) {
+        if (handle == 0L || destination == null || !destination.isDirect()) {
+            return 4; /* ZG_BRIDGE_PROTOCOL_ERROR */
+        }
+        return nativePollRender(handle, destination, destination.capacity());
+    }
+
     public void destroy() {
         if (handle != 0L) {
             nativeDestroy(handle);
@@ -54,6 +65,11 @@ public final class ZgBridge implements AutoCloseable {
         long nowMs);
 
     private static native int nativeStats(long handle, int[] out, int capacity);
+
+    private static native int nativeRequestFull(long handle);
+
+    private static native int nativePollRender(long handle, ByteBuffer destination,
+        int capacity);
 
     private static native void nativeDestroy(long handle);
 }

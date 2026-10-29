@@ -15,6 +15,7 @@ import android.webkit.WebViewClient;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Locale;
 
 public final class MainActivity extends Activity {
     static {
@@ -63,7 +64,36 @@ public final class MainActivity extends Activity {
         probe();
         runBridgeByteBuffer();
         runDebugFrameFeed();
+        web.postDelayed(this::runDebugRender, 400);
         web.loadUrl("file:///android_asset/index.html");
+    }
+
+    private void runDebugRender() {
+        if (bridge == null) {
+            return;
+        }
+        int request = bridge.requestFull();
+        if (request != 0) {
+            Log.e("ZG335BRIDGE", "render request=" + request);
+            return;
+        }
+        ByteBuffer packet = ByteBuffer.allocateDirect(24)
+            .order(ByteOrder.LITTLE_ENDIAN);
+        int length = bridge.pollRender(packet);
+        if (length == 24) {
+            int magic = packet.getShort(0) & 0xffff;
+            int kind = packet.get(3) & 0xff;
+            int frame = packet.getInt(8);
+            Log.i("ZG335BRIDGE", String.format(Locale.US,
+                "render len=%d kind=%d frame=%d magic=%04X",
+                length, kind, frame, magic));
+        } else {
+            Log.i("ZG335BRIDGE", "render len=" + length);
+        }
+        ByteBuffer againPacket = ByteBuffer.allocateDirect(24)
+            .order(ByteOrder.LITTLE_ENDIAN);
+        int again = bridge.pollRender(againPacket);
+        Log.i("ZG335BRIDGE", "render again=" + again);
     }
 
     private void runDebugFrameFeed() {
