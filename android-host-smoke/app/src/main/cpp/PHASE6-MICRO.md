@@ -448,3 +448,18 @@ SCENE-OK=0 05/0c lines=0
 APK debug 55847057B SHA256=`8d6af67e1faa0de238fe026e893b00621a19d8440b3dcdab04c53db9e3e33162`;
 release 54791322B SHA256=`1672ecfbd98e40f21fbcdddd495c4e8c746f34bc82538b1a1c71257520e35911`;
 release keystore scan 0.
+
+## T91 SCENE-OK diagnostic (BLOCKED)
+
+Added `05/0c` byte scan in Game6020Monitor. Current cold run found:
+
+```text
+SCENE-FRAME offset=5434 hex=050ced6e4c7f00000000000002000000
+SCENE-NO 05c plain=48
+SCENE-NO 05c plain=64
+```
+
+No `SCENE-OK map=<id> self=<name> npc=<n>` was emitted; the candidate does not
+match the expected parseSceneInfo layout (mapId at expected offset is 0), so
+map/self/npc are not fabricated. Log: `PHASE6-COLD-RUN-T91.log`.
+This is a 6020 metadata-parser blocker, not a resource/HUD failure.
