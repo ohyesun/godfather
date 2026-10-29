@@ -499,3 +499,9 @@ filename=xianyangcheng`. No `SCENE-OK` is claimed. `05/01` probe showed name
 bytes at body offset 38 (`c1d2bbf0bdccb8b8` = 烈火教父), but a stable
 `SCENE-OK` has not been observed in the same run. Raw:
 `PHASE6-COLD-RUN-T91B.log`.
+
+## T91C aligned-frame cold (BLOCKED)
+
+Aligned frame size to `((4+length+7)&~7)` and kept frame-boundary dispatch.
+Latest cold had only one `GAME-CMD` (`0a01`) and no `SCENE-MAP`/`SCENE-OK`;
+no map/self/npc is claimed. Raw: `PHASE6-COLD-RUN-T91C.log`.
