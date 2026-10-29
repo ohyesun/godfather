@@ -1,0 +1,31 @@
+{
+  "swiftSources": [
+    "Zhanguo/Sources/App/AppDelegate.swift",
+    "Zhanguo/Sources/App/GameViewController.swift",
+    "Zhanguo/Sources/App/ZGConfiguration.swift",
+    "Zhanguo/Sources/Native/Assets/ZGAssetReader.swift",
+    "Zhanguo/Sources/Native/Assets/ZGAssetSchemeHandler.swift",
+    "Zhanguo/Sources/Native/Assets/ZGAssetStore.swift",
+    "Zhanguo/Sources/Native/Bridge/ZGScriptBridge.swift",
+    "Zhanguo/Sources/Native/Micro/ZGMicroClient.swift",
+    "Zhanguo/Sources/Native/Micro/ZGMicroFetcher.swift",
+    "Zhanguo/Sources/Native/Networking/ZGByteChannel.swift",
+    "Zhanguo/Sources/Native/Networking/ZGNativeNetworking.swift",
+    "Zhanguo/Sources/Native/Networking/ZGNetworkTypes.swift",
+    "Zhanguo/Sources/Native/Networking/ZGWireCodec.swift",
+    "Zhanguo/Sources/Native/Storage/ZGSecureStorage.swift"
+  ],
+  "swiftTests": [
+    "ZhanguoTests/Assets/ZGAssetStoreTests.swift",
+    "ZhanguoTests/Assets/ZGAssetWebViewSmokeTests.swift",
+    "ZhanguoTests/Host/ZGHostContractTests.swift",
+    "ZhanguoTests/Micro/ZGMicroClientTests.swift",
+    "ZhanguoTests/Networking/ZGNativeNetworkingTests.swift"
+  ],
+  "objectCount": 94,
+  "deploymentTarget": "16.4",
+  "swiftVersion": "5.0",
+  "libzLinked": true,
+  "xcodeCompilationExecuted": false,
+  "reason": "Generated and structurally validated on Windows; Apple SDK not available"
+}

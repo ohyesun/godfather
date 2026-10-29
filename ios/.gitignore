@@ -1,0 +1,10 @@
+DerivedData/
+build/
+*.xcarchive/
+*.ipa
+xcuserdata/
+Zhanguo/Resources/GameAssets/
+Zhanguo/Resources/GameOverlay/
+Zhanguo/Resources/NativeConfig.json
+Configuration/Local.xcconfig
+__pycache__/

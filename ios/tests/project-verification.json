@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "baseRevision": "r119",
+  "baseAPK_SHA256": "62a968e2d80bdaf95b6ddd80a038de3dd29622aa2e1f55cddde5f8e887800c44",
+  "directResourcesVerified": 1781,
+  "packedResourceRecords": 82344,
+  "visibleResourcePaths": 82403,
+  "overlayResourcesVerified": 4,
+  "swiftSourceFiles": 14,
+  "swiftTestFiles": 5,
+  "nativeConfigurationPresent": true,
+  "secretsLogged": false,
+  "appleCompilationExecuted": false,
+  "iPhoneExecutionVerified": false,
+  "remaining": "Run check_on_mac.sh with Xcode, then real-device login/scene/combat/movie/performance acceptance"
+}

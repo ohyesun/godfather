@@ -1,0 +1,1283 @@
+{
+  "sourceAPK_SHA256": "62a968e2d80bdaf95b6ddd80a038de3dd29622aa2e1f55cddde5f8e887800c44",
+  "overlay": {
+    "schemaVersion": 1,
+    "sourceAPK_SHA256": "62a968e2d80bdaf95b6ddd80a038de3dd29622aa2e1f55cddde5f8e887800c44",
+    "files": {
+      "client.js": [
+        18358623,
+        "29853289ab75fc2d1abe43021365bdb62aadaf6243d82d73b75b558843d08370"
+      ],
+      "index.html": [
+        262949,
+        "3f80d1564438ec6ea81dd9363acd29607a22cca77f5c74142a3cecb9e76519d4"
+      ],
+      "native-ios.js": [
+        6515,
+        "06c85444f363dd6e1aa7a5d2dfa514bc8197afb66d9a300430432da861bdaa88"
+      ],
+      "ios-startup.js": [
+        2535,
+        "3cda29a96f98b150aedb8c5875d7b7ace8c16d2c3f453d928d956587385567a7"
+      ]
+    },
+    "changes": [
+      "DirectJsonConnection instance-scoped connectionId and async-generation guards",
+      "index entry runtime checks before importing original game client",
+      "document-start native bridge resource; nonce injected by Swift host, never HTML"
+    ]
+  },
+  "scope": "Actual GameOverlay index/startup/client and manifest-verified frozen APK assets served over localhost. WK channel/native zone replies mocked; no external networking, game login, device or Swift execution. HTTP analogue does not establish custom-scheme WKWebView compatibility.",
+  "viewports": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "state": {
+        "audit": {
+          "ready": true,
+          "gbk": true,
+          "zlib": true,
+          "webgl2": true,
+          "secureRandom": true
+        },
+        "bridge": 1,
+        "request95": "function",
+        "oldSync": "undefined",
+        "stream": "undefined",
+        "user": true,
+        "password": true,
+        "fatal": false,
+        "aimDisplay": "none",
+        "posts": [
+          {
+            "kind": "request95",
+            "route": "/direct/zones"
+          }
+        ],
+        "text": "战国\n\n三端互通\n\n区服\n正在读取区服列表…\n账号\n密码\n登录\n注册\n\n区服配置读取失败：离线测试：未连接列表服务器"
+      },
+      "errors": [],
+      "external": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "state": {
+        "audit": {
+          "ready": true,
+          "gbk": true,
+          "zlib": true,
+          "webgl2": true,
+          "secureRandom": true
+        },
+        "bridge": 1,
+        "request95": "function",
+        "oldSync": "undefined",
+        "stream": "undefined",
+        "user": true,
+        "password": true,
+        "fatal": false,
+        "aimDisplay": "none",
+        "posts": [
+          {
+            "kind": "request95",
+            "route": "/direct/zones"
+          }
+        ],
+        "text": "战国\n\n三端互通\n\n区服\n正在读取区服列表…\n账号\n密码\n登录\n注册\n\n区服配置读取失败：离线测试：未连接列表服务器"
+      },
+      "errors": [],
+      "external": []
+    }
+  ],
+  "failures": [
+    {
+      "case": "missing-native-bridge",
+      "audit": {
+        "ready": false,
+        "code": "runtime_unavailable",
+        "message": "native bridge missing"
+      },
+      "title": "游戏暂时无法启动",
+      "clientImported": false
+    }
+  ],
+  "dynamicZones": {
+    "count": 7,
+    "selected": "离线测试7区",
+    "fixtureValuesOnly": true,
+    "noGameConnect": true
+  },
+  "packedAsset": {
+    "status": 200,
+    "encoding": null,
+    "bytes": 24153,
+    "width": 256,
+    "height": 256
+  },
+  "assetRequests": [
+    {
+      "name": "index.html",
+      "status": 200,
+      "bytes": 262949,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "style.css",
+      "status": 200,
+      "bytes": 8769,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "hud109.css",
+      "status": 200,
+      "bytes": 13581,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ui111.css",
+      "status": 200,
+      "bytes": 7215,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls110.css",
+      "status": 200,
+      "bytes": 4911,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ios-startup.js",
+      "status": 200,
+      "bytes": 2535,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "client.js",
+      "status": 200,
+      "bytes": 18358623,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "quality111.js",
+      "status": 200,
+      "bytes": 14441,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls111.js",
+      "status": 200,
+      "bytes": 15273,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls110.js",
+      "status": 200,
+      "bytes": 63953,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "panels110.js",
+      "status": 200,
+      "bytes": 283201,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "frame109.js",
+      "status": 200,
+      "bytes": 840,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "navigation109.js",
+      "status": 200,
+      "bytes": 6535,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/examples/jsm/loaders/GLTFLoader.js",
+      "status": 200,
+      "bytes": 114739,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107.js",
+      "status": 200,
+      "bytes": 9610,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "hud109.js",
+      "status": 200,
+      "bytes": 153026,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/build/three.module.js",
+      "status": 200,
+      "bytes": 603113,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "action-audio107.js",
+      "status": 200,
+      "bytes": 2114,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "music107.js",
+      "status": 200,
+      "bytes": 2034,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "audio107.js",
+      "status": 200,
+      "bytes": 4422,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "community107.js",
+      "status": 200,
+      "bytes": 5730,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ladder107.js",
+      "status": 200,
+      "bytes": 2581,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "crossplay95.js",
+      "status": 200,
+      "bytes": 3396,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "workshop94.js",
+      "status": 200,
+      "bytes": 3586,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "guild84.js",
+      "status": 200,
+      "bytes": 2237,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "social84.js",
+      "status": 200,
+      "bytes": 2742,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "season84.js",
+      "status": 200,
+      "bytes": 2870,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "view51.js",
+      "status": 200,
+      "bytes": 73098,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "systems52.js",
+      "status": 200,
+      "bytes": 17592,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "displacement114.js",
+      "status": 200,
+      "bytes": 2018,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "locomotion112.js",
+      "status": 200,
+      "bytes": 400,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "animation110.js",
+      "status": 200,
+      "bytes": 467,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "reaction111.js",
+      "status": 200,
+      "bytes": 491,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "particles107.js",
+      "status": 200,
+      "bytes": 9924,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/examples/jsm/utils/BufferGeometryUtils.js",
+      "status": 200,
+      "bytes": 35539,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "state110.js",
+      "status": 200,
+      "bytes": 641,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "visual-policy112.js",
+      "status": 200,
+      "bytes": 869,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "labels110.js",
+      "status": 200,
+      "bytes": 2479,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "spells107.js",
+      "status": 200,
+      "bytes": 12093,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "sprite-effects107.js",
+      "status": 200,
+      "bytes": 2560,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scene-art.js",
+      "status": 200,
+      "bytes": 23695,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scene-data.js",
+      "status": 200,
+      "bytes": 954,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/build/three.core.js",
+      "status": 200,
+      "bytes": 1403455,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "peer84.js",
+      "status": 200,
+      "bytes": 2461,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "visual-budget110.js",
+      "status": 200,
+      "bytes": 983,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "projectile107.js",
+      "status": 200,
+      "bytes": 793,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "spell-plan107.js",
+      "status": 200,
+      "bytes": 1872,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "electricity107.js",
+      "status": 200,
+      "bytes": 4890,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "skill-layout110.json",
+      "status": 200,
+      "bytes": 3724,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "audio107/footsteps.json",
+      "status": 200,
+      "bytes": 16420,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "audio107/actions.json",
+      "status": 200,
+      "bytes": 102016,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/model-aliases107.json",
+      "status": 200,
+      "bytes": 7244,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/bones.json",
+      "status": 200,
+      "bytes": 284758,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "animation110.json",
+      "status": 200,
+      "bytes": 851495,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "native107/electricity107.json",
+      "status": 200,
+      "bytes": 7896,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/particles107.json",
+      "status": 200,
+      "bytes": 1871408,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/spells/sprites/catalog.json",
+      "status": 200,
+      "bytes": 294018,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "spell-animation110.json",
+      "status": 200,
+      "bytes": 25219,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "native107/spells/catalog.json",
+      "status": 200,
+      "bytes": 1245551,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "audio107/catalog.json",
+      "status": 200,
+      "bytes": 323452,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "server-profile95.json",
+      "status": 200,
+      "bytes": 146,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scenes/catalogue.json",
+      "status": 200,
+      "bytes": 468218,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "index.html",
+      "status": 200,
+      "bytes": 262949,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "style.css",
+      "status": 200,
+      "bytes": 8769,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "hud109.css",
+      "status": 200,
+      "bytes": 13581,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls110.css",
+      "status": 200,
+      "bytes": 4911,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ui111.css",
+      "status": 200,
+      "bytes": 7215,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ios-startup.js",
+      "status": 200,
+      "bytes": 2535,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "client.js",
+      "status": 200,
+      "bytes": 18358623,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "quality111.js",
+      "status": 200,
+      "bytes": 14441,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls111.js",
+      "status": 200,
+      "bytes": 15273,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls110.js",
+      "status": 200,
+      "bytes": 63953,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "panels110.js",
+      "status": 200,
+      "bytes": 283201,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "frame109.js",
+      "status": 200,
+      "bytes": 840,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "navigation109.js",
+      "status": 200,
+      "bytes": 6535,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "native107.js",
+      "status": 200,
+      "bytes": 9610,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/examples/jsm/loaders/GLTFLoader.js",
+      "status": 200,
+      "bytes": 114739,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "hud109.js",
+      "status": 200,
+      "bytes": 153026,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "action-audio107.js",
+      "status": 200,
+      "bytes": 2114,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/build/three.module.js",
+      "status": 200,
+      "bytes": 603113,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "music107.js",
+      "status": 200,
+      "bytes": 2034,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "audio107.js",
+      "status": 200,
+      "bytes": 4422,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "community107.js",
+      "status": 200,
+      "bytes": 5730,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ladder107.js",
+      "status": 200,
+      "bytes": 2581,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "crossplay95.js",
+      "status": 200,
+      "bytes": 3396,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "workshop94.js",
+      "status": 200,
+      "bytes": 3586,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "guild84.js",
+      "status": 200,
+      "bytes": 2237,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "social84.js",
+      "status": 200,
+      "bytes": 2742,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "season84.js",
+      "status": 200,
+      "bytes": 2870,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "view51.js",
+      "status": 200,
+      "bytes": 73098,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "systems52.js",
+      "status": 200,
+      "bytes": 17592,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "displacement114.js",
+      "status": 200,
+      "bytes": 2018,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "locomotion112.js",
+      "status": 200,
+      "bytes": 400,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "animation110.js",
+      "status": 200,
+      "bytes": 467,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "reaction111.js",
+      "status": 200,
+      "bytes": 491,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "particles107.js",
+      "status": 200,
+      "bytes": 9924,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "state110.js",
+      "status": 200,
+      "bytes": 641,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/examples/jsm/utils/BufferGeometryUtils.js",
+      "status": 200,
+      "bytes": 35539,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "visual-policy112.js",
+      "status": 200,
+      "bytes": 869,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "labels110.js",
+      "status": 200,
+      "bytes": 2479,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "spells107.js",
+      "status": 200,
+      "bytes": 12093,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "sprite-effects107.js",
+      "status": 200,
+      "bytes": 2560,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scene-art.js",
+      "status": 200,
+      "bytes": 23695,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scene-data.js",
+      "status": 200,
+      "bytes": 954,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "peer84.js",
+      "status": 200,
+      "bytes": 2461,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/build/three.core.js",
+      "status": 200,
+      "bytes": 1403455,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "visual-budget110.js",
+      "status": 200,
+      "bytes": 983,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "projectile107.js",
+      "status": 200,
+      "bytes": 793,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "spell-plan107.js",
+      "status": 200,
+      "bytes": 1872,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "electricity107.js",
+      "status": 200,
+      "bytes": 4890,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "skill-layout110.json",
+      "status": 200,
+      "bytes": 3724,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "audio107/actions.json",
+      "status": 200,
+      "bytes": 102016,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "audio107/footsteps.json",
+      "status": 200,
+      "bytes": 16420,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/model-aliases107.json",
+      "status": 200,
+      "bytes": 7244,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/bones.json",
+      "status": 200,
+      "bytes": 284758,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "animation110.json",
+      "status": 200,
+      "bytes": 851495,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "native107/electricity107.json",
+      "status": 200,
+      "bytes": 7896,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/spells/sprites/catalog.json",
+      "status": 200,
+      "bytes": 294018,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/particles107.json",
+      "status": 200,
+      "bytes": 1871408,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/spells/catalog.json",
+      "status": 200,
+      "bytes": 1245551,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "spell-animation110.json",
+      "status": 200,
+      "bytes": 25219,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "audio107/catalog.json",
+      "status": 200,
+      "bytes": 323452,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "server-profile95.json",
+      "status": 200,
+      "bytes": 146,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scenes/catalogue.json",
+      "status": 200,
+      "bytes": 468218,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "index.html",
+      "status": 200,
+      "bytes": 262949,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "style.css",
+      "status": 200,
+      "bytes": 8769,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "hud109.css",
+      "status": 200,
+      "bytes": 13581,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls110.css",
+      "status": 200,
+      "bytes": 4911,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ui111.css",
+      "status": 200,
+      "bytes": 7215,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ios-startup.js",
+      "status": 200,
+      "bytes": 2535,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "client.js",
+      "status": 200,
+      "bytes": 18358623,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "quality111.js",
+      "status": 200,
+      "bytes": 14441,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls111.js",
+      "status": 200,
+      "bytes": 15273,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls110.js",
+      "status": 200,
+      "bytes": 63953,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "panels110.js",
+      "status": 200,
+      "bytes": 283201,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "frame109.js",
+      "status": 200,
+      "bytes": 840,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "navigation109.js",
+      "status": 200,
+      "bytes": 6535,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "native107.js",
+      "status": 200,
+      "bytes": 9610,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/examples/jsm/loaders/GLTFLoader.js",
+      "status": 200,
+      "bytes": 114739,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "hud109.js",
+      "status": 200,
+      "bytes": 153026,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/build/three.module.js",
+      "status": 200,
+      "bytes": 603113,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "action-audio107.js",
+      "status": 200,
+      "bytes": 2114,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "music107.js",
+      "status": 200,
+      "bytes": 2034,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "audio107.js",
+      "status": 200,
+      "bytes": 4422,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "community107.js",
+      "status": 200,
+      "bytes": 5730,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ladder107.js",
+      "status": 200,
+      "bytes": 2581,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "crossplay95.js",
+      "status": 200,
+      "bytes": 3396,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "workshop94.js",
+      "status": 200,
+      "bytes": 3586,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "guild84.js",
+      "status": 200,
+      "bytes": 2237,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "social84.js",
+      "status": 200,
+      "bytes": 2742,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "season84.js",
+      "status": 200,
+      "bytes": 2870,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "view51.js",
+      "status": 200,
+      "bytes": 73098,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "systems52.js",
+      "status": 200,
+      "bytes": 17592,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "displacement114.js",
+      "status": 200,
+      "bytes": 2018,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "locomotion112.js",
+      "status": 200,
+      "bytes": 400,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "animation110.js",
+      "status": 200,
+      "bytes": 467,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "reaction111.js",
+      "status": 200,
+      "bytes": 491,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "particles107.js",
+      "status": 200,
+      "bytes": 9924,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/examples/jsm/utils/BufferGeometryUtils.js",
+      "status": 200,
+      "bytes": 35539,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "visual-policy112.js",
+      "status": 200,
+      "bytes": 869,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "sprite-effects107.js",
+      "status": 200,
+      "bytes": 2560,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "labels110.js",
+      "status": 200,
+      "bytes": 2479,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "state110.js",
+      "status": 200,
+      "bytes": 641,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "spells107.js",
+      "status": 200,
+      "bytes": 12093,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scene-art.js",
+      "status": 200,
+      "bytes": 23695,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scene-data.js",
+      "status": 200,
+      "bytes": 954,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "peer84.js",
+      "status": 200,
+      "bytes": 2461,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "vendor/build/three.core.js",
+      "status": 200,
+      "bytes": 1403455,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "visual-budget110.js",
+      "status": 200,
+      "bytes": 983,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "projectile107.js",
+      "status": 200,
+      "bytes": 793,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "spell-plan107.js",
+      "status": 200,
+      "bytes": 1872,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "electricity107.js",
+      "status": 200,
+      "bytes": 4890,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "skill-layout110.json",
+      "status": 200,
+      "bytes": 3724,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "audio107/footsteps.json",
+      "status": 200,
+      "bytes": 16420,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "audio107/actions.json",
+      "status": 200,
+      "bytes": 102016,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/model-aliases107.json",
+      "status": 200,
+      "bytes": 7244,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/bones.json",
+      "status": 200,
+      "bytes": 284758,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "animation110.json",
+      "status": 200,
+      "bytes": 851495,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "native107/electricity107.json",
+      "status": 200,
+      "bytes": 7896,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "spell-animation110.json",
+      "status": 200,
+      "bytes": 25219,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "native107/particles107.json",
+      "status": 200,
+      "bytes": 1871408,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/spells/sprites/catalog.json",
+      "status": 200,
+      "bytes": 294018,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "audio107/catalog.json",
+      "status": 200,
+      "bytes": 323452,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/spells/catalog.json",
+      "status": 200,
+      "bytes": 1245551,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "server-profile95.json",
+      "status": 200,
+      "bytes": 146,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "scenes/catalogue.json",
+      "status": 200,
+      "bytes": 468218,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "native107/spells/textures/0008_3.png",
+      "status": 200,
+      "bytes": 24153,
+      "source": "frozen-apk-indexed-span"
+    },
+    {
+      "name": "index.html",
+      "status": 200,
+      "bytes": 262949,
+      "source": "ios-overlay"
+    },
+    {
+      "name": "style.css",
+      "status": 200,
+      "bytes": 8769,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "hud109.css",
+      "status": 200,
+      "bytes": 13581,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "controls110.css",
+      "status": 200,
+      "bytes": 4911,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ui111.css",
+      "status": 200,
+      "bytes": 7215,
+      "source": "frozen-apk-direct"
+    },
+    {
+      "name": "ios-startup.js",
+      "status": 200,
+      "bytes": 2535,
+      "source": "ios-overlay"
+    }
+  ],
+  "passed": true
+}

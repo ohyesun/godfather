@@ -1,0 +1,1637 @@
+{
+  "schemaVersion": 1,
+  "images": {
+    "194:3": {
+      "group": 194,
+      "imageId": 3,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00003/00000.png",
+          "width": 121,
+          "height": 187,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 3,
+            "frame": 0,
+            "frameHeaderOffset": 329472,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "30e3990b404fd5bd344f923d36c6818f5eefcbd0ff540f1bccc6807ecb969e45",
+          "logicalCanvas": [
+            121,
+            187
+          ],
+          "sourceRect": [
+            0,
+            0,
+            117,
+            187
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:4": {
+      "group": 194,
+      "imageId": 4,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00004/00000.png",
+          "width": 120,
+          "height": 323,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 4,
+            "frame": 0,
+            "frameHeaderOffset": 329512,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "b8bb53edf573be30c8111ed07f87a3e021b63d613a825495f6f098d07be27e6b",
+          "logicalCanvas": [
+            120,
+            323
+          ],
+          "sourceRect": [
+            0,
+            0,
+            117,
+            323
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:5": {
+      "group": 194,
+      "imageId": 5,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00005/00000.png",
+          "width": 271,
+          "height": 39,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 5,
+            "frame": 0,
+            "frameHeaderOffset": 329552,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "8d9c0ab057f5680a8f9cbef702d0ac74711e452ed8b842f57db289b0552c0554",
+          "logicalCanvas": [
+            271,
+            39
+          ],
+          "sourceRect": [
+            0,
+            0,
+            271,
+            39
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:6": {
+      "group": 194,
+      "imageId": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00006/00000.png",
+          "width": 152,
+          "height": 39,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 6,
+            "frame": 0,
+            "frameHeaderOffset": 329592,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "58ecffeeb30c893e971180c49e8a819ffd77a905a639394ab77972da81a9d971",
+          "logicalCanvas": [
+            152,
+            39
+          ],
+          "sourceRect": [
+            0,
+            0,
+            152,
+            39
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:7": {
+      "group": 194,
+      "imageId": 7,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00007/00000.png",
+          "width": 281,
+          "height": 39,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 7,
+            "frame": 0,
+            "frameHeaderOffset": 329632,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "db6e4744ed5a6697c4d623f97bd573215e9494998719f14992f5b2cda7ae10e7",
+          "logicalCanvas": [
+            281,
+            39
+          ],
+          "sourceRect": [
+            0,
+            0,
+            281,
+            39
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:8": {
+      "group": 194,
+      "imageId": 8,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00008/00000.png",
+          "width": 96,
+          "height": 36,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 8,
+            "frame": 0,
+            "frameHeaderOffset": 329672,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "65166c3ef3abe8ced41e777907a0fda68c9d5d322bd24d3254acffef818cfa68",
+          "logicalCanvas": [
+            96,
+            36
+          ],
+          "sourceRect": [
+            0,
+            0,
+            96,
+            36
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:9": {
+      "group": 194,
+      "imageId": 9,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00009/00000.png",
+          "width": 380,
+          "height": 41,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 9,
+            "frame": 0,
+            "frameHeaderOffset": 329712,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "96f5aade62d7b20c0e3e66e76658f4f02c919113b288dc1b500fbd1b2272474e",
+          "logicalCanvas": [
+            380,
+            41
+          ],
+          "sourceRect": [
+            78,
+            6,
+            219,
+            29
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:10": {
+      "group": 194,
+      "imageId": 10,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00010/00000.png",
+          "width": 380,
+          "height": 41,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 10,
+            "frame": 0,
+            "frameHeaderOffset": 329752,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "2f35e6b5aea67e810268330a42c593aa0483f7809ea07b95ef1f7f5cce8895cb",
+          "logicalCanvas": [
+            380,
+            41
+          ],
+          "sourceRect": [
+            77,
+            7,
+            221,
+            28
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:11": {
+      "group": 194,
+      "imageId": 11,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00011/00000.png",
+          "width": 380,
+          "height": 41,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 11,
+            "frame": 0,
+            "frameHeaderOffset": 329792,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "6a99fe362e403b20f1c117971dc8e112a09ae0da24dcfc6a058c48c9e52d194b",
+          "logicalCanvas": [
+            380,
+            41
+          ],
+          "sourceRect": [
+            6,
+            6,
+            368,
+            29
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:12": {
+      "group": 194,
+      "imageId": 12,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00012/00000.png",
+          "width": 380,
+          "height": 41,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 12,
+            "frame": 0,
+            "frameHeaderOffset": 329832,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "9f186fb2f68acac6611269400e1d275adfa167c4a81491c84294f40dbbcfcd17",
+          "logicalCanvas": [
+            380,
+            41
+          ],
+          "sourceRect": [
+            77,
+            7,
+            219,
+            27
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "194:13": {
+      "group": 194,
+      "imageId": 13,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00194/00013/00000.png",
+          "width": 380,
+          "height": 41,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 194,
+            "image": 13,
+            "frame": 0,
+            "frameHeaderOffset": 329872,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "efdd24fd1983b379f9a2adf5d4e55411c1d5ea7e3edc78dfe3e327a36943a4b6",
+          "logicalCanvas": [
+            380,
+            41
+          ],
+          "sourceRect": [
+            28,
+            6,
+            330,
+            29
+          ]
+        }
+      ],
+      "frameCount": 1,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    },
+    "141:9": {
+      "group": 141,
+      "imageId": 9,
+      "frames": [
+        {
+          "frame": 0,
+          "url": "novice114/00141/00009/00000.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 0,
+            "frameHeaderOffset": 271688,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "ca100432be1b6ecfd0e734837e4122caf9e32fadff97eece76d0b68fa5e48334",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            752,
+            331
+          ]
+        },
+        {
+          "frame": 1,
+          "url": "novice114/00141/00009/00001.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 1,
+            "frameHeaderOffset": 271708,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "30c1b63e38e60749547f235464f8c12fde40508fb7458330b48ac71c437db86b",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            754,
+            331
+          ]
+        },
+        {
+          "frame": 2,
+          "url": "novice114/00141/00009/00002.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 2,
+            "frameHeaderOffset": 271728,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "8d0aa8541784ae0788d1d3ff8050d2706b97c972eccec0acb7cb480381b31f18",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            756,
+            331
+          ]
+        },
+        {
+          "frame": 3,
+          "url": "novice114/00141/00009/00003.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 3,
+            "frameHeaderOffset": 271748,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "f9d7f11d4f82f1f5b3f7117e1e8518f510090c1ad0b9924733447a96c64b88ba",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            331
+          ]
+        },
+        {
+          "frame": 4,
+          "url": "novice114/00141/00009/00004.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 4,
+            "frameHeaderOffset": 271768,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "9027912a8efd22d4194b75913f391cf5cbc75aecc29d9877114d50bf1e5b7290",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            332
+          ]
+        },
+        {
+          "frame": 5,
+          "url": "novice114/00141/00009/00005.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 5,
+            "frameHeaderOffset": 271788,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "c27d6f4eb1bed8c09ddd16bc3e4dac71e25953c328e15ae14f657d417419910b",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            331
+          ]
+        },
+        {
+          "frame": 6,
+          "url": "novice114/00141/00009/00006.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 6,
+            "frameHeaderOffset": 271808,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "6ee3aafdbad34f0644befea2314dfdad25b4f67ac01cc64c071fece0a264ea61",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            331
+          ]
+        },
+        {
+          "frame": 7,
+          "url": "novice114/00141/00009/00007.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 7,
+            "frameHeaderOffset": 271828,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "9f09d86c449af5f828b76e149b0ea3692e2601128e63da41b3eac34c8a5a2ebe",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            332
+          ]
+        },
+        {
+          "frame": 8,
+          "url": "novice114/00141/00009/00008.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 8,
+            "frameHeaderOffset": 271848,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "e8d27a0edf1bd4b31cdda3835c34cc192565e3cdec43cce05e4ab571df15a0e1",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            332
+          ]
+        },
+        {
+          "frame": 9,
+          "url": "novice114/00141/00009/00009.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 9,
+            "frameHeaderOffset": 271868,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "f979c1ea8badc3fc7b63fc07e2e11cdf048fe19e02171ca8ef502e3994bd1fa3",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            332
+          ]
+        },
+        {
+          "frame": 10,
+          "url": "novice114/00141/00009/00010.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 10,
+            "frameHeaderOffset": 271888,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "c3d8798319714baa4ae1f6593c214be2c982a07c886f4d86bd1715d31ff753d0",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            333
+          ]
+        },
+        {
+          "frame": 11,
+          "url": "novice114/00141/00009/00011.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 11,
+            "frameHeaderOffset": 271908,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "b8e75b48a4d4a34ba227f4d7c67f9438c545b47f12a540bf9581b0ffa58b86b7",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            334
+          ]
+        },
+        {
+          "frame": 12,
+          "url": "novice114/00141/00009/00012.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 12,
+            "frameHeaderOffset": 271928,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "6de86e0f8c5cc47b20a4f941bc8d08048d3c38f3c4a9a03ef219027274ba12a9",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            335
+          ]
+        },
+        {
+          "frame": 13,
+          "url": "novice114/00141/00009/00013.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 13,
+            "frameHeaderOffset": 271948,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "13fbbbccb27144f8be58e97b910ee91ba418daa7d3feb36f8b960c8149fa738b",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            334
+          ]
+        },
+        {
+          "frame": 14,
+          "url": "novice114/00141/00009/00014.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 14,
+            "frameHeaderOffset": 271968,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "a55504d2fd624e5795ff6f6866d78f10084b177cc837c3e90bd04cf2000029f2",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            335
+          ]
+        },
+        {
+          "frame": 15,
+          "url": "novice114/00141/00009/00015.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 15,
+            "frameHeaderOffset": 271988,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "b35e4b7d667b9ec62bff3643af06d2f8b590b90ea8e4d07215539bf475b7393e",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            333
+          ]
+        },
+        {
+          "frame": 16,
+          "url": "novice114/00141/00009/00016.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 16,
+            "frameHeaderOffset": 272008,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "0919666a0b80f2679faf0c953c28af13128397528c37590ca9aa9273a231ef0b",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            747,
+            333
+          ]
+        },
+        {
+          "frame": 17,
+          "url": "novice114/00141/00009/00017.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 17,
+            "frameHeaderOffset": 272028,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "c989b01bcf89f2b92de5102fae09b4ce620835e847a3bcc9c427c4e661b3bddc",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            746,
+            332
+          ]
+        },
+        {
+          "frame": 18,
+          "url": "novice114/00141/00009/00018.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 18,
+            "frameHeaderOffset": 272048,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "b852bc5e7b9975288b6912c8f4cf6e7944da37427ef8ef7b3c5507290c3c79ff",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            745,
+            332
+          ]
+        },
+        {
+          "frame": 19,
+          "url": "novice114/00141/00009/00019.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 19,
+            "frameHeaderOffset": 272068,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "76028ea0c12b4adeef6276d75f6a8cd22ebac2d9f461fb785cd0a3eaf67d3a7d",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            746,
+            331
+          ]
+        },
+        {
+          "frame": 20,
+          "url": "novice114/00141/00009/00020.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 20,
+            "frameHeaderOffset": 272088,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "b96a3ef6d9fd7b3625f8e4f4554ff461c4d0b0b12805f4b2ed9349da1f797704",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            748,
+            331
+          ]
+        },
+        {
+          "frame": 21,
+          "url": "novice114/00141/00009/00021.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 21,
+            "frameHeaderOffset": 272108,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "73fea1828a956a252dc9e6d5e91163cf1cdefa15039385e7800ee42a3cd601eb",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            750,
+            331
+          ]
+        },
+        {
+          "frame": 22,
+          "url": "novice114/00141/00009/00022.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 22,
+            "frameHeaderOffset": 272128,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "13c317fe22c2eb369c0fbb0d1c808d1d4bd5f3d7f7d1fcfaf2a3ee9284a22c9c",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            755,
+            331
+          ]
+        },
+        {
+          "frame": 23,
+          "url": "novice114/00141/00009/00023.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 23,
+            "frameHeaderOffset": 272148,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "f5cd39f648f6386b00421df1316c85c7336a24ceebe9fd4b286897e8779eca25",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            757,
+            331
+          ]
+        },
+        {
+          "frame": 24,
+          "url": "novice114/00141/00009/00024.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 24,
+            "frameHeaderOffset": 272168,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "e3fbb8f0afee9cc7334aa59117ea0807a38bec1ac9894992d7eb7197024864d3",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            332
+          ]
+        },
+        {
+          "frame": 25,
+          "url": "novice114/00141/00009/00025.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 25,
+            "frameHeaderOffset": 272188,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "6ab0e98d00b600f7bee68f0c0551af59d4f8592449aed73e430c5511edcb9261",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            754,
+            331
+          ]
+        },
+        {
+          "frame": 26,
+          "url": "novice114/00141/00009/00026.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 26,
+            "frameHeaderOffset": 272208,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "6d0613e3f3387665bf1d9ee732100d84b2a7e409f8c26cd47111e9df3fff650c",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            757,
+            331
+          ]
+        },
+        {
+          "frame": 27,
+          "url": "novice114/00141/00009/00027.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 27,
+            "frameHeaderOffset": 272228,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "98d19afa197927de44b2679e66f2fb36c52efd386ba2c9e45c06cf892f99f796",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            332
+          ]
+        },
+        {
+          "frame": 28,
+          "url": "novice114/00141/00009/00028.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 28,
+            "frameHeaderOffset": 272248,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "7e1071ce764b73900ed924ba9304a6920b1f80092f8ac19ffde45ec1b062cfd2",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            332
+          ]
+        },
+        {
+          "frame": 29,
+          "url": "novice114/00141/00009/00029.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 29,
+            "frameHeaderOffset": 272268,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "35d75e69e6b463aad7eaf61cbc8b195ddab48905b822a5fa4793b89885fce898",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            332
+          ]
+        },
+        {
+          "frame": 30,
+          "url": "novice114/00141/00009/00030.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 30,
+            "frameHeaderOffset": 272288,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "87db6d37384a1b2338c3d9e4ff55c5ff3034c4a93f046989b9d8d2801d6b53b5",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            332
+          ]
+        },
+        {
+          "frame": 31,
+          "url": "novice114/00141/00009/00031.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 31,
+            "frameHeaderOffset": 272308,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "d0b798c5d35208f665df7859596581e06544b77a84a80f264c2189c57bd3e038",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            332
+          ]
+        },
+        {
+          "frame": 32,
+          "url": "novice114/00141/00009/00032.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 32,
+            "frameHeaderOffset": 272328,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "3923efc0f36b671ae68f7fe908d01263054be79eebf116336bfccc0b2c85b8e0",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            333
+          ]
+        },
+        {
+          "frame": 33,
+          "url": "novice114/00141/00009/00033.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 33,
+            "frameHeaderOffset": 272348,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "85b3c09ae8be6f72f674b78b8efaf85415e74168d6baf342b8dbc83b0db60dbe",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            334
+          ]
+        },
+        {
+          "frame": 34,
+          "url": "novice114/00141/00009/00034.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 34,
+            "frameHeaderOffset": 272368,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "0993b02d36e844b66d44d229d8ae3f619d2211b31ebdd29cc888d5ad7cdd7fe8",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            335
+          ]
+        },
+        {
+          "frame": 35,
+          "url": "novice114/00141/00009/00035.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 35,
+            "frameHeaderOffset": 272388,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "2b42fc0e83e816dba36be9fb8220c5ab742a4f57642fee710317fb80a977576d",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            759,
+            334
+          ]
+        },
+        {
+          "frame": 36,
+          "url": "novice114/00141/00009/00036.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 36,
+            "frameHeaderOffset": 272408,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "4bd904b068a9261d74339d2ec417f2547f659a652a3a5f2be455347a6ac38ce3",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            334
+          ]
+        },
+        {
+          "frame": 37,
+          "url": "novice114/00141/00009/00037.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 37,
+            "frameHeaderOffset": 272428,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "19b8ed99d6104d24ffdb95148cf398667e9d4a231df0f3c2a651cc2b9b769527",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            333
+          ]
+        },
+        {
+          "frame": 38,
+          "url": "novice114/00141/00009/00038.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 38,
+            "frameHeaderOffset": 272448,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "54cdaf80a0e18c05ee9ebbd400d71b79cd7c19d452edb9fe341c996c7e39a807",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            758,
+            333
+          ]
+        },
+        {
+          "frame": 39,
+          "url": "novice114/00141/00009/00039.png",
+          "width": 800,
+          "height": 400,
+          "source": {
+            "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+            "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+            "group": 141,
+            "image": 9,
+            "frame": 39,
+            "frameHeaderOffset": 272468,
+            "pixelDecode": "native DXT5 + frame rect + per-256-block trim offsets; full logical canvas"
+          },
+          "copiedSha256": "95aaceba44dae2ef914e071283935429d5286d9b765aea4338175dcd3e09ec8d",
+          "logicalCanvas": [
+            800,
+            400
+          ],
+          "sourceRect": [
+            0,
+            0,
+            752,
+            332
+          ]
+        }
+      ],
+      "frameCount": 40,
+      "mapping": "literal PC group/image directory; complete logical canvas and native trim offsets",
+      "mappingVerified": true
+    }
+  },
+  "rollImage141": {
+    "available": true,
+    "mappingVerified": true,
+    "args": [
+      141,
+      0,
+      30,
+      1000,
+      0
+    ],
+    "group": 141,
+    "imageId": 0,
+    "url": "novice114/00141/00000/00000.png",
+    "width": 5509,
+    "height": 768,
+    "frameCount": 1,
+    "bytes": 3362075,
+    "decodedRGBA8Bytes": 16923648,
+    "playback": {
+      "direction": "left",
+      "speedPixelsPerSecond": 30,
+      "initialX": [
+        0,
+        5509
+      ],
+      "repeatedCopies": 2,
+      "verticalPosition": "(nativeCanvasHeight - imageHeight) / 2",
+      "nativeScale": [
+        1,
+        1
+      ],
+      "fadeInMs": 1000,
+      "fadeInAlpha": [
+        0,
+        255
+      ],
+      "stopArgs": [
+        255,
+        0,
+        1500,
+        500
+      ],
+      "stopFadeMs": 1500,
+      "stopHoldMs": 500,
+      "stopAlpha": [
+        255,
+        0
+      ],
+      "serverCallbackGeneratedByRoll": false
+    },
+    "sha256": "e7c6e01d84970ee3e4ac8d0569e9fe4be36be01964e1ffd807a301ba0c71fe3a",
+    "source": {
+      "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+      "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+      "group": 141,
+      "image": 0,
+      "frame": 0,
+      "correctDecode": "original DXT5 + frame rectangle + per256 block trim; full canvas; no second crop"
+    },
+    "browserDecodeVerified": true
+  },
+  "audio": {
+    "MonsterA_Show_Music": {
+      "available": true,
+      "mappingVerified": true,
+      "url": "novice114/audio/monster-a-show-music.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 266400,
+      "sha256": "2344772c537c99f4f17a8cc2acb34ee075af75d01198205aca42c2a2616d73f3",
+      "sampleRate": 48000,
+      "channels": 2,
+      "sampleFrames": 639360,
+      "durationSeconds": 13.32,
+      "loop": false,
+      "volume": 1,
+      "nativeFEVEventPath": "Sound/Music/MonsterA_Show_Music",
+      "nativeFEVEventIndex": 19,
+      "transcoded": false,
+      "losslessContainerExtraction": true,
+      "source": {
+        "bank": "D:\\zg\\apk114-bridge\\local-test\\direct-acceptance-r114\\novice-native\\audio\\monster_showupmusic.fsb",
+        "bankSHA256": "c0127bfd610bf3fa1a2d759753b87c2c028fa7ab85689ba5e9317a6cd17a448c",
+        "subsoundIndex": 0,
+        "sampleName": "FLHS-Gwdc-01",
+        "MPEGFrames": 555,
+        "codec": 11,
+        "mappingEvidence": "Original FMOD4.44.14 NOSOUND FEV event resolves exact bank and unique PCM length matching this native named subsound."
+      },
+      "browserDecodeVerified": true
+    },
+    "MonsterB_Show_Music": {
+      "available": true,
+      "mappingVerified": true,
+      "url": "novice114/audio/monster-b-show-music.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 394080,
+      "sha256": "1282c843138cf533dcd398c0652a7fc5c7545b615e36e95ea2c4c05bdc7190dd",
+      "sampleRate": 48000,
+      "channels": 2,
+      "sampleFrames": 945792,
+      "durationSeconds": 19.704,
+      "loop": false,
+      "volume": 1,
+      "nativeFEVEventPath": "Sound/Music/MonsterB_Show_Music",
+      "nativeFEVEventIndex": 20,
+      "transcoded": false,
+      "losslessContainerExtraction": true,
+      "source": {
+        "bank": "D:\\zg\\apk114-bridge\\local-test\\direct-acceptance-r114\\novice-native\\audio\\monster_showupmusic.fsb",
+        "bankSHA256": "c0127bfd610bf3fa1a2d759753b87c2c028fa7ab85689ba5e9317a6cd17a448c",
+        "subsoundIndex": 1,
+        "sampleName": "MonsterBShowUpMusic",
+        "MPEGFrames": 821,
+        "codec": 11,
+        "mappingEvidence": "Original FMOD4.44.14 NOSOUND FEV event resolves exact bank and unique PCM length matching this native named subsound."
+      },
+      "browserDecodeVerified": true
+    }
+  },
+  "limits": [
+    "Original PC PAK pixels decoded with both native trim offsets; no graphics redrawn.",
+    "Original141:0 scroll mapping, speed and fade are proven in original PC code; no substitute image.",
+    "Only original Movie8/21 music aliases are recovered from their native FEV bank; no re-encoding. Other PC audio is outside this export.",
+    "Audio and image browser decoding verified offline; actual device playback remains part of live acceptance."
+  ],
+  "imageDecode": {
+    "revision": 118,
+    "source": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+    "sourceSha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+    "frameCount": 51,
+    "imageKeys": 12,
+    "canvasPreserved": true,
+    "frameRectRestored": true,
+    "blockTrimRestored": true
+  },
+  "rollImages": {
+    "141:0": {
+      "available": true,
+      "mappingVerified": true,
+      "args": [
+        141,
+        0,
+        30,
+        1000,
+        0
+      ],
+      "group": 141,
+      "imageId": 0,
+      "url": "novice114/00141/00000/00000.png",
+      "width": 5509,
+      "height": 768,
+      "frameCount": 1,
+      "bytes": 3362075,
+      "decodedRGBA8Bytes": 16923648,
+      "playback": {
+        "direction": "left",
+        "speedPixelsPerSecond": 30,
+        "initialX": [
+          0,
+          5509
+        ],
+        "repeatedCopies": 2,
+        "verticalPosition": "(nativeCanvasHeight - imageHeight) / 2",
+        "nativeScale": [
+          1,
+          1
+        ],
+        "fadeInMs": 1000,
+        "fadeInAlpha": [
+          0,
+          255
+        ],
+        "stopArgs": [
+          255,
+          0,
+          1500,
+          500
+        ],
+        "stopFadeMs": 1500,
+        "stopHoldMs": 500,
+        "stopAlpha": [
+          255,
+          0
+        ],
+        "serverCallbackGeneratedByRoll": false
+      },
+      "sha256": "e7c6e01d84970ee3e4ac8d0569e9fe4be36be01964e1ffd807a301ba0c71fe3a",
+      "source": {
+        "path": "D:\\zg\\战国完整端0904\\Data\\interfaces.pak",
+        "sha256": "7cf1c8af7ee1ec125855c417d1adc8fec623a17992608928d2071df328402e1c",
+        "group": 141,
+        "image": 0,
+        "frame": 0,
+        "correctDecode": "original DXT5 + frame rectangle + per256 block trim; full canvas; no second crop"
+      },
+      "browserDecodeVerified": true
+    }
+  }
+}

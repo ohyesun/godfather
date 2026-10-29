@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "offlinePythonTestsRun": 4,
+  "actualSwiftOrNetworkFrameworkExecution": false,
+  "swiftCompilerAvailable": false,
+  "xcodeSimulatorDeviceOrLiveNetworkOperation": false,
+  "originalJavaContractCompared": true,
+  "launcherAuthenticationPrintedOrStoredInReport": false,
+  "requiredNextValidation": "Run ZGNativeNetworkingTests XCTest on macOS/iOS Simulator; this Windows audit is not an iOS compilation.",
+  "sourceSHA256": {
+    "ZGByteChannel.swift": "80c9af80037005beaa56019c26c4609c5b56870d63ea063a6e6aef43d2bc48a4",
+    "ZGNativeNetworking.swift": "0062845064b4e15b5ab94d5e19c49dee3b57e6494d7b0f82b73784db168cf44d",
+    "ZGNetworkTypes.swift": "ec7be033612f0bfe2c8aa409cd731dcfdce3e1c50c5cbc9242f326380a72887f",
+    "ZGWireCodec.swift": "67e08cb75ffb6a5b296bbab1f2070e78e9abcf00170768f6e326e572094cede7"
+  }
+}

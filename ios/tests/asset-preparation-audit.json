@@ -1,0 +1,66 @@
+{
+  "source": {
+    "apkName": "apk114-direct-game-45.124.77.131-login-r119.apk",
+    "apkSHA256": "62a968e2d80bdaf95b6ddd80a038de3dd29622aa2e1f55cddde5f8e887800c44",
+    "apkBytes": 1666110840
+  },
+  "summary": {
+    "directCount": 1781,
+    "packedCount": 82344,
+    "overriddenPackedCount": 1722,
+    "visibleCount": 82403,
+    "directBytes": 1696466113,
+    "decodedPackedBytes": 2255979051,
+    "codecs": {
+      "1": 64353,
+      "0": 17991
+    }
+  },
+  "manifestBytes": 10156264,
+  "manifestSHA256": "86163a1dbdb0c78edbc826c8a769e1897d6ed78e095b41b2666b9ddea644f3e5",
+  "independentSamples": [
+    {
+      "path": "native107/301003.glb",
+      "storedBytes": 213142,
+      "decodedBytes": 635800,
+      "sha256": "bc4392020e22eff567d141c47a0c7b64c86fbfdc4bc2aab8750da545c0397819",
+      "header": "676c54460200000098b30900"
+    },
+    {
+      "path": "native107/2047.glb",
+      "storedBytes": 8324812,
+      "decodedBytes": 24449744,
+      "sha256": "0a550e80f841f4f40dc7af33349d69ea6e215acefe5559b3f58f4483e8360b1e",
+      "header": "676c544602000000d0127501"
+    },
+    {
+      "path": "vendor/build/three.module.js",
+      "storedBytes": 136590,
+      "decodedBytes": 603113,
+      "sha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a",
+      "header": "2f2a2a0a202a20406c696365"
+    },
+    {
+      "path": "native107/textures/16837487.png",
+      "storedBytes": 55073,
+      "decodedBytes": 55073,
+      "sha256": "487b223c8a81730d47d1eb72080352f92820a23b9b033b0701659c64eb16f0c9",
+      "header": "89504e470d0a1a0a0000000d"
+    }
+  ],
+  "pythonTests": "6 methods passed incl gzip/zlib/identity, direct override, pinned APK SHA, idempotence/no overwrites, traversal/symlink/bounds, truncated/trailing members",
+  "swiftCompileAndXCTest": "not run: no Swift/Apple SDK on Windows",
+  "deviceWKAcceptance": "pending Mac simulator/device: ESM fetch WebGL GLB/audio, Range HEAD cancel",
+  "overlayFilesHashVerified": [
+    "client.js",
+    "index.html",
+    "native-ios.js",
+    "ios-startup.js"
+  ],
+  "staticESModuleGraph": {
+    "entry": "actual overlay index.html",
+    "modules": 43,
+    "missing": [],
+    "limitation": "static literal imports only; actual WebKit execution remains pending"
+  }
+}

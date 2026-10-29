@@ -1,0 +1,11 @@
+{
+  "schema": "zg-micro-client/1",
+  "host": "45.124.77.131",
+  "port": 18008,
+  "token": "zgphs00",
+  "connectTimeoutMs": 6000,
+  "readTimeoutMs": 25000,
+  "maxAttempts": 3,
+  "cacheBudgetMb": 512,
+  "note": "最小包 + 按需拉取。host/port 改成实际微端服务器即可，客户端不再重编。字段与安卓 assets/micro-client.json 同名同义。"
+}

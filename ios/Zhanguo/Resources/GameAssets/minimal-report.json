@@ -1,0 +1,65 @@
+{
+  "mode": "minimal",
+  "source": "D:\\zg\\apk114-bridge\\ios\\Zhanguo\\Resources\\GameAssets",
+  "output": "D:\\zg\\apk114-bridge\\ios\\build\\minimal\\GameAssets",
+  "indexEntries": 82344,
+  "localEntries": 1887,
+  "remoteEntries": 80457,
+  "shadowedByDirect": 1722,
+  "localPakBytes": 29940179,
+  "localDecodedBytes": 36736551,
+  "remoteStoredBytes": 1583125153,
+  "localPakSha256": "6d92cadb3d24a8e3478d544768c2b8a766944d94b52188228687e650c5c462fe",
+  "indexBytes": 3381727,
+  "indexSha256": "df84daeee06652f7d2657535ad3a236da6606661ef24d7f46f022ed2507ebec2",
+  "manifestBytes": 9545020,
+  "manifestSha256": "7184076978fb0231aa1ed4ca2f06ebed47e9507a78500177849079d2c9d3243b",
+  "fullPakBytes": 1641386457,
+  "reasons": {
+    "boot-prefix": 1885,
+    "boot-file": 1,
+    "boot-catchall": 1
+  },
+  "localCodes": {
+    "0": 1869,
+    "1": 18,
+    "2": 0
+  },
+  "localBytesByPrefix": {
+    "bridge": {
+      "entries": 372,
+      "storedBytes": 12977856
+    },
+    "characters84": {
+      "entries": 8,
+      "storedBytes": 7561603
+    },
+    "companions84": {
+      "entries": 2,
+      "storedBytes": 4540220
+    },
+    "icons": {
+      "entries": 1493,
+      "storedBytes": 3514384
+    },
+    "(root)": {
+      "entries": 1,
+      "storedBytes": 559895
+    },
+    "vendor": {
+      "entries": 5,
+      "storedBytes": 500376
+    },
+    "season84": {
+      "entries": 5,
+      "storedBytes": 179874
+    },
+    "scenes": {
+      "entries": 1,
+      "storedBytes": 105971
+    }
+  },
+  "linkedFiles": 51,
+  "copiedFiles": 4,
+  "seconds": 10.4
+}

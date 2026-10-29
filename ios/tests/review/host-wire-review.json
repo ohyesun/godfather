@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "actualJSShimExecuted": true,
+  "swiftCompiled": false,
+  "actualWKWebViewOrKeychainExecuted": false,
+  "recordWireField": "body",
+  "reportWireField": "body",
+  "navigationReplacementSourceGuard": true,
+  "queuedNavigationIdentityAndBackgroundGuard": true,
+  "nativeMacTests": "ios/ZhanguoTests/Host/ZGHostContractTests.swift",
+  "remainingMacChecks": [
+    "Actual WK shim->Host->Keychain roundtrip",
+    "New nonce on location.assign/index link",
+    "Queued old navigation cannot reopen after shutdown/background",
+    "Old native callback never reaches replacement document"
+  ],
+  "sourceSHA256": {
+    "ios/Web/native-ios.js": "06c85444f363dd6e1aa7a5d2dfa514bc8197afb66d9a300430432da861bdaa88",
+    "ios/Zhanguo/Sources/Native/Bridge/ZGScriptBridge.swift": "5d09f0dae3b8eeffd4a17a07cfd51befa0b56a840a7b6623a6d1d2ccda715695",
+    "ios/Zhanguo/Sources/Native/Storage/ZGSecureStorage.swift": "4b7e566da856f2f945102f3424ea7359f92eb2144b16ea076298bb7db869851f",
+    "ios/Zhanguo/Sources/App/GameViewController.swift": "be4b5f8270cdc1f7e6aaed7a6b2cd0d3d4562513fc869d67d034169f598a5ad3"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "sourceAPK_SHA256": "62a968e2d80bdaf95b6ddd80a038de3dd29622aa2e1f55cddde5f8e887800c44",
+  "sourceClientSHA256": "de88b63c601b537ad8d737aae27b8dbd8ab4a127b8581f5ee13065d2dcfe0b87",
+  "sourceIndexSHA256": "318611f54cc04079d7173eef332f8b4abe1b4c4cfd4f6a3c2f196429e5c0be81",
+  "clientPrefixUnchanged": true,
+  "clientSuffixUnchanged": true,
+  "nativeBridgeBootstrapTokenCount": 1,
+  "overlay": "D:\\zg\\apk114-bridge\\ios\\Zhanguo\\Resources\\GameOverlay",
+  "files": {
+    "client.js": [
+      18358623,
+      "29853289ab75fc2d1abe43021365bdb62aadaf6243d82d73b75b558843d08370"
+    ],
+    "index.html": [
+      262949,
+      "3f80d1564438ec6ea81dd9363acd29607a22cca77f5c74142a3cecb9e76519d4"
+    ],
+    "native-ios.js": [
+      6515,
+      "06c85444f363dd6e1aa7a5d2dfa514bc8197afb66d9a300430432da861bdaa88"
+    ],
+    "ios-startup.js": [
+      2535,
+      "3cda29a96f98b150aedb8c5875d7b7ace8c16d2c3f453d928d956587385567a7"
+    ]
+  }
+}

@@ -1,0 +1,938 @@
+[
+  {
+    "name": "map/129.map",
+    "width": 46,
+    "height": 60,
+    "walkable": 666,
+    "cells": 2760,
+    "layer6": 2263
+  },
+  {
+    "name": "map/139.map",
+    "width": 112,
+    "height": 124,
+    "walkable": 461,
+    "cells": 13888,
+    "layer6": 13888
+  },
+  {
+    "name": "map/50jijuqing.map",
+    "width": 140,
+    "height": 172,
+    "walkable": 7134,
+    "cells": 24080,
+    "layer6": 23229
+  },
+  {
+    "name": "map/60jijuqing.map",
+    "width": 230,
+    "height": 300,
+    "walkable": 14353,
+    "cells": 69000,
+    "layer6": 58843
+  },
+  {
+    "name": "map/70jijuqing.map",
+    "width": 130,
+    "height": 160,
+    "walkable": 5549,
+    "cells": 20800,
+    "layer6": 18323
+  },
+  {
+    "name": "map/anqisheng.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 12109,
+    "cells": 52000,
+    "layer6": 40066
+  },
+  {
+    "name": "map/baimacuncunzhang.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 34443,
+    "cells": 78000,
+    "layer6": 57329
+  },
+  {
+    "name": "map/bangpaifuben.map",
+    "width": 150,
+    "height": 200,
+    "walkable": 8318,
+    "cells": 30000,
+    "layer6": 25695
+  },
+  {
+    "name": "map/bangpaizhan01.map",
+    "width": 300,
+    "height": 360,
+    "walkable": 59742,
+    "cells": 108000,
+    "layer6": 48418
+  },
+  {
+    "name": "map/bozhiyong.map",
+    "width": 300,
+    "height": 300,
+    "walkable": 32591,
+    "cells": 90000,
+    "layer6": 57911
+  },
+  {
+    "name": "map/cangbao01.map",
+    "width": 240,
+    "height": 300,
+    "walkable": 29269,
+    "cells": 72000,
+    "layer6": 61420
+  },
+  {
+    "name": "map/cangbao02.map",
+    "width": 240,
+    "height": 312,
+    "walkable": 23531,
+    "cells": 74880,
+    "layer6": 67346
+  },
+  {
+    "name": "map/cangbao03.map",
+    "width": 260,
+    "height": 340,
+    "walkable": 25935,
+    "cells": 88400,
+    "layer6": 78933
+  },
+  {
+    "name": "map/cangbaodongku1.map",
+    "width": 300,
+    "height": 320,
+    "walkable": 23411,
+    "cells": 96000,
+    "layer6": 90737
+  },
+  {
+    "name": "map/cangbaodongku2.map",
+    "width": 360,
+    "height": 400,
+    "walkable": 33574,
+    "cells": 144000,
+    "layer6": 110552
+  },
+  {
+    "name": "map/cangbaodongku3.map",
+    "width": 240,
+    "height": 380,
+    "walkable": 22238,
+    "cells": 91200,
+    "layer6": 75911
+  },
+  {
+    "name": "map/cangbaoshamo1.map",
+    "width": 260,
+    "height": 360,
+    "walkable": 34735,
+    "cells": 93600,
+    "layer6": 68526
+  },
+  {
+    "name": "map/cangbaoshamo2.map",
+    "width": 240,
+    "height": 380,
+    "walkable": 29519,
+    "cells": 91200,
+    "layer6": 79200
+  },
+  {
+    "name": "map/cangbaoshamo3.map",
+    "width": 250,
+    "height": 320,
+    "walkable": 29159,
+    "cells": 80000,
+    "layer6": 66236
+  },
+  {
+    "name": "map/chengchidaiding.map",
+    "width": 420,
+    "height": 500,
+    "walkable": 90568,
+    "cells": 210000,
+    "layer6": 200328
+  },
+  {
+    "name": "map/chezixi.map",
+    "width": 240,
+    "height": 340,
+    "walkable": 37230,
+    "cells": 81600,
+    "layer6": 44513
+  },
+  {
+    "name": "map/chushendidao1.map",
+    "width": 300,
+    "height": 300,
+    "walkable": 4610,
+    "cells": 90000,
+    "layer6": 85964
+  },
+  {
+    "name": "map/chusheng.map",
+    "width": 1460,
+    "height": 900,
+    "walkable": 62558,
+    "cells": 1314000,
+    "layer6": 1300058
+  },
+  {
+    "name": "map/chushengdian.map",
+    "width": 120,
+    "height": 160,
+    "walkable": 3263,
+    "cells": 19200,
+    "layer6": 18513
+  },
+  {
+    "name": "map/chushengdidao2.map",
+    "width": 300,
+    "height": 300,
+    "walkable": 3167,
+    "cells": 90000,
+    "layer6": 89559
+  },
+  {
+    "name": "map/chushengditu.map",
+    "width": 700,
+    "height": 600,
+    "walkable": 32725,
+    "cells": 420000,
+    "layer6": 405238
+  },
+  {
+    "name": "map/cunyukun.map",
+    "width": 240,
+    "height": 320,
+    "walkable": 28524,
+    "cells": 76800,
+    "layer6": 66908
+  },
+  {
+    "name": "map/daomuzei.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 7544,
+    "cells": 52000,
+    "layer6": 44472
+  },
+  {
+    "name": "map/dongfangxuan.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 13391,
+    "cells": 78000,
+    "layer6": 64872
+  },
+  {
+    "name": "map/dongku001.map",
+    "width": 240,
+    "height": 280,
+    "walkable": 8230,
+    "cells": 67200,
+    "layer6": 61482
+  },
+  {
+    "name": "map/dongku01ceng.map",
+    "width": 160,
+    "height": 200,
+    "walkable": 4595,
+    "cells": 32000,
+    "layer6": 30805
+  },
+  {
+    "name": "map/dongku02ceng.map",
+    "width": 156,
+    "height": 240,
+    "walkable": 4327,
+    "cells": 37440,
+    "layer6": 34618
+  },
+  {
+    "name": "map/feiwuji.map",
+    "width": 300,
+    "height": 400,
+    "walkable": 10013,
+    "cells": 120000,
+    "layer6": 110003
+  },
+  {
+    "name": "map/feiyi.map",
+    "width": 260,
+    "height": 340,
+    "walkable": 19994,
+    "cells": 88400,
+    "layer6": 80745
+  },
+  {
+    "name": "map/gongyangyu.map",
+    "width": 220,
+    "height": 280,
+    "walkable": 20278,
+    "cells": 61600,
+    "layer6": 41336
+  },
+  {
+    "name": "map/gongzian.map",
+    "width": 220,
+    "height": 260,
+    "walkable": 10714,
+    "cells": 57200,
+    "layer6": 47036
+  },
+  {
+    "name": "map/guangzhong.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 41660,
+    "cells": 78000,
+    "layer6": 41268
+  },
+  {
+    "name": "map/guduruji.map",
+    "width": 280,
+    "height": 320,
+    "walkable": 23387,
+    "cells": 89600,
+    "layer6": 67506
+  },
+  {
+    "name": "map/guidong.map",
+    "width": 800,
+    "height": 800,
+    "walkable": 94975,
+    "cells": 640000,
+    "layer6": 546134
+  },
+  {
+    "name": "map/guidong01.map",
+    "width": 300,
+    "height": 400,
+    "walkable": 14613,
+    "cells": 120000,
+    "layer6": 105423
+  },
+  {
+    "name": "map/guidong02.map",
+    "width": 340,
+    "height": 420,
+    "walkable": 16499,
+    "cells": 142800,
+    "layer6": 126330
+  },
+  {
+    "name": "map/guidong03.map",
+    "width": 360,
+    "height": 400,
+    "walkable": 28951,
+    "cells": 144000,
+    "layer6": 116067
+  },
+  {
+    "name": "map/hanguguan.map",
+    "width": 220,
+    "height": 260,
+    "walkable": 18839,
+    "cells": 57200,
+    "layer6": 57196
+  },
+  {
+    "name": "map/huanyilaozhe.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 24928,
+    "cells": 52000,
+    "layer6": 51985
+  },
+  {
+    "name": "map/jiangtanzhi.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 12488,
+    "cells": 78000,
+    "layer6": 65628
+  },
+  {
+    "name": "map/jiguanshi.map",
+    "width": 230,
+    "height": 280,
+    "walkable": 6440,
+    "cells": 64400,
+    "layer6": 64400
+  },
+  {
+    "name": "map/jiguanshizuizhongboss.map",
+    "width": 152,
+    "height": 100,
+    "walkable": 964,
+    "cells": 15200,
+    "layer6": 15168
+  },
+  {
+    "name": "map/jilugudu.map",
+    "width": 260,
+    "height": 340,
+    "walkable": 26174,
+    "cells": 88400,
+    "layer6": 71631
+  },
+  {
+    "name": "map/jiuyuan.map",
+    "width": 300,
+    "height": 520,
+    "walkable": 14117,
+    "cells": 156000,
+    "layer6": 154956
+  },
+  {
+    "name": "map/jiuyuan02.map",
+    "width": 500,
+    "height": 600,
+    "walkable": 99367,
+    "cells": 300000,
+    "layer6": 268445
+  },
+  {
+    "name": "map/kuangdong1.map",
+    "width": 500,
+    "height": 500,
+    "walkable": 86729,
+    "cells": 250000,
+    "layer6": 168099
+  },
+  {
+    "name": "map/kuangdong2.map",
+    "width": 560,
+    "height": 560,
+    "walkable": 116985,
+    "cells": 313600,
+    "layer6": 197663
+  },
+  {
+    "name": "map/kuangdong3.map",
+    "width": 560,
+    "height": 500,
+    "walkable": 74924,
+    "cells": 280000,
+    "layer6": 205313
+  },
+  {
+    "name": "map/kuanggongtongban.map",
+    "width": 260,
+    "height": 320,
+    "walkable": 19293,
+    "cells": 83200,
+    "layer6": 69671
+  },
+  {
+    "name": "map/licheng.map",
+    "width": 240,
+    "height": 300,
+    "walkable": 14066,
+    "cells": 72000,
+    "layer6": 58282
+  },
+  {
+    "name": "map/liuyan.map",
+    "width": 240,
+    "height": 300,
+    "walkable": 19154,
+    "cells": 72000,
+    "layer6": 53900
+  },
+  {
+    "name": "map/liuzhanxiong.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 7255,
+    "cells": 52000,
+    "layer6": 44898
+  },
+  {
+    "name": "map/liuzhi.map",
+    "width": 240,
+    "height": 320,
+    "walkable": 17191,
+    "cells": 76800,
+    "layer6": 74249
+  },
+  {
+    "name": "map/longxi.map",
+    "width": 500,
+    "height": 600,
+    "walkable": 108809,
+    "cells": 300000,
+    "layer6": 300000
+  },
+  {
+    "name": "map/lujunsheng.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 5030,
+    "cells": 52000,
+    "layer6": 47617
+  },
+  {
+    "name": "map/lundaoqu.map",
+    "width": 68,
+    "height": 100,
+    "walkable": 853,
+    "cells": 6800,
+    "layer6": 6796
+  },
+  {
+    "name": "map/luorixiagu.map",
+    "width": 260,
+    "height": 420,
+    "walkable": 47794,
+    "cells": 109200,
+    "layer6": 61946
+  },
+  {
+    "name": "map/luorixiagu2.map",
+    "width": 240,
+    "height": 312,
+    "walkable": 23531,
+    "cells": 74880,
+    "layer6": 67346
+  },
+  {
+    "name": "map/luoyang.map",
+    "width": 782,
+    "height": 868,
+    "walkable": 207959,
+    "cells": 678776,
+    "layer6": 586309
+  },
+  {
+    "name": "map/luoyangshanmin.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 21882,
+    "cells": 52000,
+    "layer6": 39511
+  },
+  {
+    "name": "map/mengfei.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 27155,
+    "cells": 78000,
+    "layer6": 51036
+  },
+  {
+    "name": "map/mengkuo.map",
+    "width": 260,
+    "height": 320,
+    "walkable": 21589,
+    "cells": 83200,
+    "layer6": 62769
+  },
+  {
+    "name": "map/nanjiaosanwang.map",
+    "width": 260,
+    "height": 280,
+    "walkable": 19612,
+    "cells": 72800,
+    "layer6": 70603
+  },
+  {
+    "name": "map/nanshanyiji01.map",
+    "width": 788,
+    "height": 824,
+    "walkable": 74513,
+    "cells": 649312,
+    "layer6": 614416
+  },
+  {
+    "name": "map/nanshanyiji02.map",
+    "width": 782,
+    "height": 868,
+    "walkable": 97428,
+    "cells": 678776,
+    "layer6": 615162
+  },
+  {
+    "name": "map/nanshanyiji03.map",
+    "width": 300,
+    "height": 300,
+    "walkable": 13366,
+    "cells": 90000,
+    "layer6": 86961
+  },
+  {
+    "name": "map/nanshanyiji04.map",
+    "width": 300,
+    "height": 300,
+    "walkable": 15528,
+    "cells": 90000,
+    "layer6": 85556
+  },
+  {
+    "name": "map/nanshanyiji05.map",
+    "width": 300,
+    "height": 400,
+    "walkable": 17550,
+    "cells": 120000,
+    "layer6": 102712
+  },
+  {
+    "name": "map/nanshanyiji06.map",
+    "width": 300,
+    "height": 300,
+    "walkable": 9067,
+    "cells": 90000,
+    "layer6": 89016
+  },
+  {
+    "name": "map/peihe.map",
+    "width": 260,
+    "height": 280,
+    "walkable": 11919,
+    "cells": 72800,
+    "layer6": 61079
+  },
+  {
+    "name": "map/pk00.map",
+    "width": 140,
+    "height": 172,
+    "walkable": 6581,
+    "cells": 24080,
+    "layer6": 18899
+  },
+  {
+    "name": "map/pk01.map",
+    "width": 80,
+    "height": 140,
+    "walkable": 2134,
+    "cells": 11200,
+    "layer6": 9465
+  },
+  {
+    "name": "map/pk02.map",
+    "width": 110,
+    "height": 140,
+    "walkable": 4515,
+    "cells": 15400,
+    "layer6": 11058
+  },
+  {
+    "name": "map/pk03.map",
+    "width": 140,
+    "height": 200,
+    "walkable": 8663,
+    "cells": 28000,
+    "layer6": 20968
+  },
+  {
+    "name": "map/pk04.map",
+    "width": 156,
+    "height": 192,
+    "walkable": 5075,
+    "cells": 29952,
+    "layer6": 29952
+  },
+  {
+    "name": "map/qiaozhuangdekuanggong.map",
+    "width": 280,
+    "height": 320,
+    "walkable": 30072,
+    "cells": 89600,
+    "layer6": 59685
+  },
+  {
+    "name": "map/qiecuo.map",
+    "width": 110,
+    "height": 160,
+    "walkable": 789,
+    "cells": 17600,
+    "layer6": 17600
+  },
+  {
+    "name": "map/qiguaidewaidiren.map",
+    "width": 200,
+    "height": 200,
+    "walkable": 8634,
+    "cells": 40000,
+    "layer6": 36339
+  },
+  {
+    "name": "map/qinshuang.map",
+    "width": 280,
+    "height": 320,
+    "walkable": 26380,
+    "cells": 89600,
+    "layer6": 64148
+  },
+  {
+    "name": "map/qiuboran.map",
+    "width": 260,
+    "height": 284,
+    "walkable": 13498,
+    "cells": 73840,
+    "layer6": 64540
+  },
+  {
+    "name": "map/ruan.map",
+    "width": 280,
+    "height": 320,
+    "walkable": 19944,
+    "cells": 89600,
+    "layer6": 76340
+  },
+  {
+    "name": "map/sanjiaoshaqiu.map",
+    "width": 110,
+    "height": 180,
+    "walkable": 7020,
+    "cells": 19800,
+    "layer6": 14305
+  },
+  {
+    "name": "map/sikongyi.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 12464,
+    "cells": 78000,
+    "layer6": 66040
+  },
+  {
+    "name": "map/simaxing.map",
+    "width": 220,
+    "height": 260,
+    "walkable": 11863,
+    "cells": 57200,
+    "layer6": 49088
+  },
+  {
+    "name": "map/simayan.map",
+    "width": 240,
+    "height": 340,
+    "walkable": 41672,
+    "cells": 81600,
+    "layer6": 39996
+  },
+  {
+    "name": "map/songwuji.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 17610,
+    "cells": 78000,
+    "layer6": 60775
+  },
+  {
+    "name": "map/suli.map",
+    "width": 200,
+    "height": 200,
+    "walkable": 18563,
+    "cells": 40000,
+    "layer6": 31952
+  },
+  {
+    "name": "map/taopaoditu02.map",
+    "width": 300,
+    "height": 300,
+    "walkable": 3257,
+    "cells": 90000,
+    "layer6": 89878
+  },
+  {
+    "name": "map/teammap1.map",
+    "width": 80,
+    "height": 100,
+    "walkable": 1741,
+    "cells": 8000,
+    "layer6": 7057
+  },
+  {
+    "name": "map/teammap2.map",
+    "width": 72,
+    "height": 120,
+    "walkable": 2484,
+    "cells": 8640,
+    "layer6": 8226
+  },
+  {
+    "name": "map/wangchong.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 31070,
+    "cells": 78000,
+    "layer6": 47907
+  },
+  {
+    "name": "map/wangkai.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 10693,
+    "cells": 52000,
+    "layer6": 41322
+  },
+  {
+    "name": "map/wuyichuanren.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 27407,
+    "cells": 78000,
+    "layer6": 50936
+  },
+  {
+    "name": "map/xianyangcheng.map",
+    "width": 400,
+    "height": 600,
+    "walkable": 53714,
+    "cells": 240000,
+    "layer6": 240000
+  },
+  {
+    "name": "map/xiaoshan.map",
+    "width": 360,
+    "height": 540,
+    "walkable": 40573,
+    "cells": 194400,
+    "layer6": 193760
+  },
+  {
+    "name": "map/xiyu.map",
+    "width": 250,
+    "height": 340,
+    "walkable": 35711,
+    "cells": 85000,
+    "layer6": 61602
+  },
+  {
+    "name": "map/xuedi01.map",
+    "width": 300,
+    "height": 400,
+    "walkable": 47739,
+    "cells": 120000,
+    "layer6": 74937
+  },
+  {
+    "name": "map/xuejier.map",
+    "width": 260,
+    "height": 300,
+    "walkable": 31589,
+    "cells": 78000,
+    "layer6": 46659
+  },
+  {
+    "name": "map/xueluo.map",
+    "width": 240,
+    "height": 320,
+    "walkable": 22583,
+    "cells": 76800,
+    "layer6": 54247
+  },
+  {
+    "name": "map/yindao.map",
+    "width": 60,
+    "height": 80,
+    "walkable": 1100,
+    "cells": 4800,
+    "layer6": 4765
+  },
+  {
+    "name": "map/yindao01.map",
+    "width": 48,
+    "height": 64,
+    "walkable": 759,
+    "cells": 3072,
+    "layer6": 2954
+  },
+  {
+    "name": "map/yindao02.map",
+    "width": 80,
+    "height": 64,
+    "walkable": 868,
+    "cells": 5120,
+    "layer6": 5108
+  },
+  {
+    "name": "map/yindao03.map",
+    "width": 80,
+    "height": 64,
+    "walkable": 884,
+    "cells": 5120,
+    "layer6": 5116
+  },
+  {
+    "name": "map/yinshan.map",
+    "width": 250,
+    "height": 300,
+    "walkable": 20733,
+    "cells": 75000,
+    "layer6": 70265
+  },
+  {
+    "name": "map/yudongzhongdeshidi.map",
+    "width": 280,
+    "height": 220,
+    "walkable": 10249,
+    "cells": 61600,
+    "layer6": 54531
+  },
+  {
+    "name": "map/yudongzhou.map",
+    "width": 240,
+    "height": 260,
+    "walkable": 18316,
+    "cells": 62400,
+    "layer6": 45754
+  },
+  {
+    "name": "map/yudongzhoudizi.map",
+    "width": 280,
+    "height": 300,
+    "walkable": 21479,
+    "cells": 84000,
+    "layer6": 67062
+  },
+  {
+    "name": "map/zhanchang01.map",
+    "width": 200,
+    "height": 320,
+    "walkable": 18508,
+    "cells": 64000,
+    "layer6": 58836
+  },
+  {
+    "name": "map/zhaoyi.map",
+    "width": 200,
+    "height": 260,
+    "walkable": 8810,
+    "cells": 52000,
+    "layer6": 43539
+  },
+  {
+    "name": "map/zhoulaohu.map",
+    "width": 160,
+    "height": 160,
+    "walkable": 3399,
+    "cells": 25600,
+    "layer6": 22261
+  },
+  {
+    "name": "map/zhuangheng.map",
+    "width": 200,
+    "height": 200,
+    "walkable": 15120,
+    "cells": 40000,
+    "layer6": 25080
+  },
+  {
+    "name": "map/zoushidekuanggong.map",
+    "width": 300,
+    "height": 340,
+    "walkable": 23672,
+    "cells": 102000,
+    "layer6": 78881
+  }
+]

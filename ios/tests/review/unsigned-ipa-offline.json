@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "testsRun": 11,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 1,
+  "syntheticMachOFixtures": true,
+  "appleXcodeBuildExecuted": false,
+  "realDeviceIPAProduced": false,
+  "signedOrInstalled": false,
+  "hostPlatform": "nt",
+  "windowsFixtureExecutableModeAdapter": true,
+  "realSymlinkIntegrationExecuted": false,
+  "sourceSHA256": {
+    "build_unsigned_ipa.sh": "416eeb6be2b489e7c4e2f9194f1a75afd38ed5e7296fddd01ef4a01bf126e1e4",
+    "package_unsigned_ipa.py": "ecfa23a509794a3830eb0c805ce81ecfe2e957401c05720fad325e8afc00bdc9",
+    "test_unsigned_ipa.py": "defaf98681865c7d5dce89f7e6c8abb9ac19d5b59e75b87d8ecb67138577a812",
+    "UNSIGNED_IPA.md": "81470976b02732dde81b289ccc533df48149b4002cdc5fd7e880ce15545b4954"
+  },
+  "scope": "Offline parser, dependency, ZIP metadata, no-overwrite and shell contract tests only."
+}

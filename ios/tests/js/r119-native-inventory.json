@@ -1,0 +1,161 @@
+{
+  "apk": "D:\\zg\\apk114-bridge\\local-test\\direct-acceptance-r119\\aligned-direct-login-r119.apk",
+  "entries": [
+    {
+      "entry": "assets/client.js",
+      "sha256": "de88b63c601b537ad8d737aae27b8dbd8ab4a127b8581f5ee13065d2dcfe0b87",
+      "bytes": 18357554,
+      "methods": [
+        "closeStream109",
+        "openStream109",
+        "report",
+        "request",
+        "request95",
+        "sendStream109"
+      ]
+    }
+  ],
+  "snippets": [
+    {
+      "entry": "assets/client.js",
+      "offset": 11085864,
+      "text": " Promise((resolve,reject)=>{const id=++nativeId,timer=setTimeout(()=>{native.delete(id);reject(Error('连接超时，请重试'));},7000);native.set(id,{resolve,reject,timer});window.Lab.request(id,endpoint,route,token,JSON.stringify(body));});return fetch(route,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body),signal:AbortSignal.timeout(7000)}).then(async "
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 11086281,
+      "text": " b=await r.json();if(!r.ok)throw Object.assign(Error(b.error??'请求失败'),{code:b.code});return b;});}\r\nwindow.ZgDirectGame114?.setNativeRequest((route,body)=>{if(!window.Lab?.request95)throw Error('直连登录必须在 APK 原生环境运行');return new Promise((resolve,reject)=>{const id=++nativeId;const timer=setTimeout(()=>{native.delete(id);reject(Error('直连区服请求超时'));},50000);native.set(id,{resolve,reject,timer,route,started:perfor"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 11086546,
+      "text": "nativeId;const timer=setTimeout(()=>{native.delete(id);reject(Error('直连区服请求超时'));},50000);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,'','',JSON.stringify(body));});});const crossplay95=crossplayTransport95((route,credential,account,body)=>{if(window.ZgDirectGame114?.enabled?.()&&/^\\/(?:player|mobile)\\//.test(route"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 11087193,
+      "text": "action?.type)?50000:route==='/mobile/action'&&['pc-shop-buy','item_use','potion_use','item_recast','item_bless'].includes(body?.action?.type)?18000:12000;\r\n if(window.Lab?.request95&&pcBridge114()&&route!=='/mobile/logout'){const realtime114=route==='/mobile/step';if(!realtime114&&[...native.values()].filter(p=>(p.route==='/mobile/step')===realtime114).length>=4)return Promise.reject(Object.assign(Error('本次操"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 11087483,
+      "text": "ve.values()].filter(p=>(p.route==='/mobile/step')===realtime114).length>=4)return Promise.reject(Object.assign(Error('本次操作已丢弃'),{code:'action_discarded'}));}if(window.Lab?.request95)return new Promise((resolve,reject)=>{const id=++nativeId,timer=setTimeout(()=>{if(!pcBridge114())native.delete(id);reject(Error('连接超时，请重试'));},timeout95);native.set(id,{resolve,reject,timer,route,started:performance.now()});wind"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 11087730,
+      "text": "etTimeout(()=>{if(!pcBridge114())native.delete(id);reject(Error('连接超时，请重试'));},timeout95);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,credential,account,JSON.stringify(body));});\r\n return fetch('/crossplay95'+route,{method:'POST',headers:{'Content-Type':'application/json',...(credential?{Authorization:'Bearer '+cre"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 14872548,
+      "text": "elled=true;return null;}\n      try{return await request('/systems',{kind:'welfare'});}\n      catch(failure){\n       // This exact admission error occurs before Lab.request95: nothing\n       // was sent. Only a read may briefly wait for a native slot; uncertain\n       // transport failures and all claim actions must never be replayed.\n       if(failure?.message!=='本次操作已丢弃')throw failure;\n       if(!vi"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 17335198,
+      "text": "=false,streamOpenedAt109=0,streamLast109=0,streamSent109=0,streamRetry109=0;\r\nconst streamPending110=new Set();\r\nfunction stopStream109(){streamGeneration110++;window.Lab?.closeStream109?.();streamReady109=false;streamOpening109=false;streamPending110.clear();}\r\nwindow.nativeStream109=(generation,message)=>{\r\n if(generation!==streamGeneration110||phase!=='game')return;\r\n if(message.ready){streamReady109=true;stre"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 17336532,
+      "text": "rkMs);}catch(e){stopStream109();world=null;streamRetry109=performance.now()+2000;error(e);}\r\n};\r\nfunction streamInput109(){if(pcBridge114())return false;\r\n if(!window.Lab?.openStream109||!$('shared95')?.checked||$('endpoint').value.startsWith('zg+tls://')||performance.now()<streamRetry109)return false;\r\n const now=performance.now();if(streamReady109&&now-streamLast109>5000||streamOpening109&&now-streamOpenedAt10"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 17336938,
+      "text": "penedAt109>6000){stopStream109();streamRetry109=now+5000;return false;}\r\n if(!streamReady109){if(!streamOpening109){streamOpening109=true;streamOpenedAt109=now;window.Lab.openStream109(++streamGeneration110,$('endpoint').value.replace(/\\/$/,''),token,$('user').value.trim());}return true;}\r\n view.input109(dir);bridgeMotionAim114?.update?.();const urgent113=!busy&&queue.some(a=>['dodge','jump'].includes(a.kind));"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 17337720,
+      "text": "uiMs??0,clientRttMs:report.latency109?.networkMs??0},since,dir:{...dir},heldSkill:busy?0:heldSkill107,aim:heldSkill107?aimHeld110():groundAim107,actions};\r\n if(window.Lab.sendStream109(JSON.stringify(input))){streamSent109=now;streamPending110.add(input.seq);queue.splice(0,actions.length);}else{stopStream109();streamRetry109=now+5000;}\r\n return true;\r\n}\r\nasync function poll(){if(phase!=='game'||document.hidden)"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 17341899,
+      "text": "error(e);}finally{refreshPending=false;if(refreshAgain110&&phase==='game'&&expected===epoch)refreshState();}},500);\r\n}\r\n\r\nsetInterval(poll,80);setInterval(()=>{window.Lab?.report(JSON.stringify(report));},2000);$('endpoint').value=window.Lab?'http://127.0.0.1:27150':location.origin;\r\n\r\nlet auctionTab='all',auctionSearch='',auctionCategory='all',auctionSort='time-desc';\r\nasync function auctionUI(body){\r\n c"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 17347249,
+      "text": "me} ×${m.count}`).join('、'),button('合成1个',()=>mutate({type:'stone-compose',recipe:r.id,count:1}))));}\r\n\r\nasync function directLauncherRequest114(body={}){\n if(!window.Lab?.request95)throw Error('直连区服列表必须在 APK 原生环境读取');\n return new Promise((resolve,reject)=>{\n  const id=++nativeId,timer=setTimeout(()=>{native.delete(id);reject(Error('区服列表读取超时'));},12000);\n  native.set(id,{resolve,reject,timer,route:'/direct/z"
+    },
+    {
+      "entry": "assets/client.js",
+      "offset": 17347537,
+      "text": "etTimeout(()=>{native.delete(id);reject(Error('区服列表读取超时'));},12000);\n  native.set(id,{resolve,reject,timer,route:'/direct/zones',started:performance.now()});\n  window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),'/direct/zones','','',JSON.stringify(body));\n });\n}\nfunction parseLauncherZones114(text){\n const zones=[],seen=new Set();let server=false;\n for(const raw of String(text??'').split(/\\r?\\n/)"
+    }
+  ],
+  "clientSnippets": {
+    "nativeReply": [
+      "s');\n    }\n    const result = new Uint8Array(value.length / 2);\n    for (let i = 0; i < result.length; i++)\n        result[i] = parseInt(value.slice(i * 2, i * 2 + 2), 16);\n    return result;\n}\nfunction resultBody(result) {\n    // The APK's existing nativeReply callback unwraps the transport envelope\n    // before resolving its Promise, while standalone tests often pass the\n    // envelope through unchanged. Accept both shapes.\n    let body = result?.body === undefined ? result : result.body;\n    if (typeof body === 'string') {\n        try {\n            body = JSON.parse(body);\n        }\n        catch { /* keep the structured error below */ }\n    }\n    if (!body || typeof body !== 'object' || Array.isArray(body))\n        throw new Error('direct gateway response is invalid');\n    return body;\n}\n/** A direct 6020 Connection backed by the APK's raw-socket bridge. */\nclass DirectJsonConnection extends Connection_1.Connection {\n    request;\n    pollMs;\n    onPacket;\n    decoder = new DirectJsonCodec_1",
+      "'');\r\nlet epoch=0;let token='',state=null,world=null,phase='login',seq=0,since=0,pending=null,polling=false,busy=false,queue=[],selected=0,menu='',dir={x:0,z:0},toastTimer,toastLastText='',toastLastAt=0;\r\nconst native=new Map();let nativeId=0;window.nativeReply=(id,r)=>{if(Number.isFinite(r.wireBytes)){report.transport107??={responses:0,compressed:0,wireBytes:0,plainBytes:0};const t=report.transport107;t.responses++;t.compressed+=r.encoding==='gzip'?1:0;t.wireBytes+=r.wireBytes;t.plainBytes+=r.decodedBytes??0;}const p=native.get(id);if(!p)return;native.delete(id);clearTimeout(p.timer);try{if(p.route==='/mobile/step')report.latency109={networkMs:r.networkMs109,queueMs:r.queueMs109,deliveryMs:Math.max(0,performance.now()-p.started-(r.networkMs109??0)-(r.queueMs109??0))};const b=JSON.parse(r.body);r.status===200?p.resolve(b):p.reject(Object.assign(new Error(b.error??'连接失败'),{code:b.code}));}catch(e){p.reject(e);}};\r\nfunction previewRequest94(route,body={}){const endpoint=$('endpoint').value.replace("
+    ],
+    "setNativeRequest": [
+      "ry)throw new Error('direct module missing: '+name);\n factory(module,module.exports,local);return module.exports;}\nconst __zgEntry=__zgLoad('DirectAppSession.js');\nlet __zgNative=null,__zgSession=null;\nglobalThis.ZgDirectGame114={\n enabled:()=>true,\n setNativeRequest:fn=>{__zgNative=fn;},\n request:async(route,body)=>{if(!__zgNative)throw new Error('APK 直连桥尚未初始化');\n  if(!__zgSession)__zgSession=new __zgEntry.DirectAppSession(__zgNative);\n  return __zgSession.requestRoute(route,body||{});},\n reset:()=>{__zgSession=null;}\n};\n})();\n\nglobalThis.bridgeDirectShop114=true;\nimport {pcQualityColor111} from './quality111.js';\r\nimport {bindAim111,installWorldControls111,companionPanel111} from './controls111.js';\r\nimport {autoTarget110,installControls110,potionPanel110,setText110} from './controls110.js';\r\nimport {nativeSkillsPanel110,innerPanel110,pcSkillsPanel114} from './panels110.js';\r\nimport {mergeFrame109} from './frame109.js';\nimport {navigation109} from './navigation109.js';\nimport * as THREE from 'three';",
+      "ication/json',Authorization:'Bearer '+token},body:JSON.stringify(body),signal:AbortSignal.timeout(7000)}).then(async r=>{const b=await r.json();if(!r.ok)throw Object.assign(Error(b.error??'请求失败'),{code:b.code});return b;});}\r\nwindow.ZgDirectGame114?.setNativeRequest((route,body)=>{if(!window.Lab?.request95)throw Error('直连登录必须在 APK 原生环境运行');return new Promise((resolve,reject)=>{const id=++nativeId;const timer=setTimeout(()=>{native.delete(id);reject(Error('直连区服请求超时'));},50000);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,'','',JSON.stringify(body));});});const crossplay95=crossplayTransport95((route,credential,account,body)=>{if(window.ZgDirectGame114?.enabled?.()&&/^\\/(?:player|mobile)\\//.test(route))return window.ZgDirectGame114.request(route,body);const timeout95=route==='/mobile/logout'?18000:route==='/player/login'||route==='/mobile/open'||route==='/player/register'||route==='/mobile/action'&&['select','cr"
+    ],
+    "openStream109": [
+      "plainBytes+=message.plainBytes109??0;\r\n try{acceptWorld109(message.frame,networkMs);}catch(e){stopStream109();world=null;streamRetry109=performance.now()+2000;error(e);}\r\n};\r\nfunction streamInput109(){if(pcBridge114())return false;\r\n if(!window.Lab?.openStream109||!$('shared95')?.checked||$('endpoint').value.startsWith('zg+tls://')||performance.now()<streamRetry109)return false;\r\n const now=performance.now();if(streamReady109&&now-streamLast109>5000||streamOpening109&&now-streamOpenedAt109>6000){stopStream109();streamRetry109=now+5000;return false;}\r\n if(!streamReady109){if(!streamOpening109){streamOpening109=true;streamOpenedAt109=now;window.Lab.openStream109(++streamGeneration110,$('endpoint').value.replace(/\\/$/,''),token,$('user').value.trim());}return true;}\r\n view.input109(dir);bridgeMotionAim114?.update?.();const urgent113=!busy&&queue.some(a=>['dodge','jump'].includes(a.kind));if(!urgent113&&now-streamSent109<65||streamPending110.size>=(urgent113?17:16))return true;\r\n const actions=busy?[]:",
+      ".now();if(streamReady109&&now-streamLast109>5000||streamOpening109&&now-streamOpenedAt109>6000){stopStream109();streamRetry109=now+5000;return false;}\r\n if(!streamReady109){if(!streamOpening109){streamOpening109=true;streamOpenedAt109=now;window.Lab.openStream109(++streamGeneration110,$('endpoint').value.replace(/\\/$/,''),token,$('user').value.trim());}return true;}\r\n view.input109(dir);bridgeMotionAim114?.update?.();const urgent113=!busy&&queue.some(a=>['dodge','jump'].includes(a.kind));if(!urgent113&&now-streamSent109<65||streamPending110.size>=(urgent113?17:16))return true;\r\n const actions=busy?[]:queue.slice(0,4),input={seq:++seq,protocol109:true,protocol110:true,characterUid:state.character.id,sentAt109:now,motion112:{epoch:view.predict109.epoch112},diagnostics114:{clientDeliveryMs:report.latency109?.deliveryMs??0,clientUiMs:report.latency109?.uiMs??0,clientRttMs:report.latency109?.networkMs??0},since,dir:{...dir},heldSkill:busy?0:heldSkill107,aim:heldSkill107?aimHeld110():groundAim107,actions"
+    ],
+    "sendStream109": [
+      "lientDeliveryMs:report.latency109?.deliveryMs??0,clientUiMs:report.latency109?.uiMs??0,clientRttMs:report.latency109?.networkMs??0},since,dir:{...dir},heldSkill:busy?0:heldSkill107,aim:heldSkill107?aimHeld110():groundAim107,actions};\r\n if(window.Lab.sendStream109(JSON.stringify(input))){streamSent109=now;streamPending110.add(input.seq);queue.splice(0,actions.length);}else{stopStream109();streamRetry109=now+5000;}\r\n return true;\r\n}\r\nasync function poll(){if(phase!=='game'||document.hidden)return;if(pcBridge114()&&typeof bridgeQuestTravelInput114==='function')bridgeQuestTravelInput114(dir);if(streamInput109())return;if(pcBridge114()?bridgePollTask114?.generation===epoch:polling||busy)return;polling=true;const pollTask114={generation:epoch};if(pcBridge114())bridgePollTask114=pollTask114;const generation=epoch,start=performance.now();view.input109(dir);bridgeMotionAim114?.update?.();pending??={seq:++seq,protocol109:true,protocol110:true,...(pcBridge114()?{characterUid:state.character.id,inputGeneration"
+    ],
+    "closeStream109": [
+      "start)};}\r\nlet streamGeneration110=0;let streamReady109=false,streamOpening109=false,streamOpenedAt109=0,streamLast109=0,streamSent109=0,streamRetry109=0;\r\nconst streamPending110=new Set();\r\nfunction stopStream109(){streamGeneration110++;window.Lab?.closeStream109?.();streamReady109=false;streamOpening109=false;streamPending110.clear();}\r\nwindow.nativeStream109=(generation,message)=>{\r\n if(generation!==streamGeneration110||phase!=='game')return;\r\n if(message.ready){streamReady109=true;streamOpening109=false;streamLast109=performance.now();streamPending110.clear();pending=null;queueMicrotask(poll);return;}\r\n if(message.closed||message.error){stopStream109();streamRetry109=performance.now()+5000;report.stream109='reconnecting';return;}\r\n if(!message.frame)return;for(const id of streamPending110)if(id<=message.frame.ack)streamPending110.delete(id);streamLast109=performance.now();const networkMs=Math.max(0,streamLast109-message.echo109);\r\n report.latency109={networkMs,serverMs:message.processMs109,queue"
+    ],
+    "request95": [
+      "y:JSON.stringify(body),signal:AbortSignal.timeout(7000)}).then(async r=>{const b=await r.json();if(!r.ok)throw Object.assign(Error(b.error??'请求失败'),{code:b.code});return b;});}\r\nwindow.ZgDirectGame114?.setNativeRequest((route,body)=>{if(!window.Lab?.request95)throw Error('直连登录必须在 APK 原生环境运行');return new Promise((resolve,reject)=>{const id=++nativeId;const timer=setTimeout(()=>{native.delete(id);reject(Error('直连区服请求超时'));},50000);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,'','',JSON.stringify(body));});});const crossplay95=crossplayTransport95((route,credential,account,body)=>{if(window.ZgDirectGame114?.enabled?.()&&/^\\/(?:player|mobile)\\//.test(route))return window.ZgDirectGame114.request(route,body);const timeout95=route==='/mobile/logout'?18000:route==='/player/login'||route==='/mobile/open'||route==='/player/register'||route==='/mobile/action'&&['select','create'].includes(body?.action?.type)?50000",
+      "w Error('直连登录必须在 APK 原生环境运行');return new Promise((resolve,reject)=>{const id=++nativeId;const timer=setTimeout(()=>{native.delete(id);reject(Error('直连区服请求超时'));},50000);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,'','',JSON.stringify(body));});});const crossplay95=crossplayTransport95((route,credential,account,body)=>{if(window.ZgDirectGame114?.enabled?.()&&/^\\/(?:player|mobile)\\//.test(route))return window.ZgDirectGame114.request(route,body);const timeout95=route==='/mobile/logout'?18000:route==='/player/login'||route==='/mobile/open'||route==='/player/register'||route==='/mobile/action'&&['select','create'].includes(body?.action?.type)?50000:route==='/mobile/action'&&['pc-shop-buy','item_use','potion_use','item_recast','item_bless'].includes(body?.action?.type)?18000:12000;\r\n if(window.Lab?.request95&&pcBridge114()&&route!=='/mobile/logout'){const realtime114=route==='/mobile/step';if(!realtime114&&[",
+      "layer/register'||route==='/mobile/action'&&['select','create'].includes(body?.action?.type)?50000:route==='/mobile/action'&&['pc-shop-buy','item_use','potion_use','item_recast','item_bless'].includes(body?.action?.type)?18000:12000;\r\n if(window.Lab?.request95&&pcBridge114()&&route!=='/mobile/logout'){const realtime114=route==='/mobile/step';if(!realtime114&&[...native.values()].filter(p=>(p.route==='/mobile/step')===realtime114).length>=4)return Promise.reject(Object.assign(Error('本次操作已丢弃'),{code:'action_discarded'}));}if(window.Lab?.request95)return new Promise((resolve,reject)=>{const id=++nativeId,timer=setTimeout(()=>{if(!pcBridge114())native.delete(id);reject(Error('连接超时，请重试'));},timeout95);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,credential,account,JSON.stringify(body));});\r\n return fetch('/crossplay95'+route,{method:'POST',headers:{'Content-Type':'application/json',...(credential?{Authorizati",
+      "le/logout'){const realtime114=route==='/mobile/step';if(!realtime114&&[...native.values()].filter(p=>(p.route==='/mobile/step')===realtime114).length>=4)return Promise.reject(Object.assign(Error('本次操作已丢弃'),{code:'action_discarded'}));}if(window.Lab?.request95)return new Promise((resolve,reject)=>{const id=++nativeId,timer=setTimeout(()=>{if(!pcBridge114())native.delete(id);reject(Error('连接超时，请重试'));},timeout95);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,credential,account,JSON.stringify(body));});\r\n return fetch('/crossplay95'+route,{method:'POST',headers:{'Content-Type':'application/json',...(credential?{Authorization:'Bearer '+credential}:{}),'X-ZG-Account':account},body:JSON.stringify(body),signal:AbortSignal.timeout(timeout95)}).then(async r=>{const b=await r.json();if(!r.ok)throw Object.assign(Error(b.error??'连接失败'),{code:b.code});return b;});\r\n});\r\nfunction request(route,body={}){if(!bridgeLogou",
+      "ab?.request95)return new Promise((resolve,reject)=>{const id=++nativeId,timer=setTimeout(()=>{if(!pcBridge114())native.delete(id);reject(Error('连接超时，请重试'));},timeout95);native.set(id,{resolve,reject,timer,route,started:performance.now()});window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),route,credential,account,JSON.stringify(body));});\r\n return fetch('/crossplay95'+route,{method:'POST',headers:{'Content-Type':'application/json',...(credential?{Authorization:'Bearer '+credential}:{}),'X-ZG-Account':account},body:JSON.stringify(body),signal:AbortSignal.timeout(timeout95)}).then(async r=>{const b=await r.json();if(!r.ok)throw Object.assign(Error(b.error??'连接失败'),{code:b.code});return b;});\r\n});\r\nfunction request(route,body={}){if(!bridgeLogoutAllowsRequest114(route))return Promise.reject(Error(bridgeLogoutMessage114()));return $('shared95')?.checked?crossplay95(route,body):previewRequest94(route,body);}\r\nfunction toast(text){const toastValue=String(text??'');const toastNow=Date.now()",
+      "='welfare'&&bridgeWelfareView114?.current();\n      if(attempt&&!visible()){record.cancelled=true;return null;}\n      try{return await request('/systems',{kind:'welfare'});}\n      catch(failure){\n       // This exact admission error occurs before Lab.request95: nothing\n       // was sent. Only a read may briefly wait for a native slot; uncertain\n       // transport failures and all claim actions must never be replayed.\n       if(failure?.message!=='本次操作已丢弃')throw failure;\n       if(!visible()){record.cancelled=true;return null;}\n       if(attempt>=9)throw failure;\n       await new Promise(resolve=>setTimeout(resolve,200));\n      }\n     }\n    };\n    // Bound admission wait plus the read; never replay a transmitted request.\n    const result=await Promise.race([query(),new Promise((_,reject)=>{\n     deadline=setTimeout(()=>reject(Error('福利读取超时，请点击刷新福利重试。')),13000);\n    })]);if(!sameOwner()||result===null)return;\n    const incoming=result?.state?.welfare??result?.welfare;\n    if(!incoming||!Array.is",
+      "));filterRows(body,state.stoneRecipes,r=>row(r.name,r.materials.map(m=>`${m.name} ×${m.count}`).join('、'),button('合成1个',()=>mutate({type:'stone-compose',recipe:r.id,count:1}))));}\r\n\r\nasync function directLauncherRequest114(body={}){\n if(!window.Lab?.request95)throw Error('直连区服列表必须在 APK 原生环境读取');\n return new Promise((resolve,reject)=>{\n  const id=++nativeId,timer=setTimeout(()=>{native.delete(id);reject(Error('区服列表读取超时'));},12000);\n  native.set(id,{resolve,reject,timer,route:'/direct/zones',started:performance.now()});\n  window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),'/direct/zones','','',JSON.stringify(body));\n });\n}\nfunction parseLauncherZones114(text){\n const zones=[],seen=new Set();let server=false;\n for(const raw of String(text??'').split(/\\r?\\n/)){\n  const line=raw.trim();if(!line||line.startsWith(';'))continue;\n  if(line.startsWith('[')&&line.endsWith(']')){server=line.slice(1,-1).trim().toLowerCase()==='server';continue;}\n  if(!server||!line.includes('='))continue;\n  const",
+      "原生环境读取');\n return new Promise((resolve,reject)=>{\n  const id=++nativeId,timer=setTimeout(()=>{native.delete(id);reject(Error('区服列表读取超时'));},12000);\n  native.set(id,{resolve,reject,timer,route:'/direct/zones',started:performance.now()});\n  window.Lab.request95(id,$('endpoint').value.replace(/\\/$/,''),'/direct/zones','','',JSON.stringify(body));\n });\n}\nfunction parseLauncherZones114(text){\n const zones=[],seen=new Set();let server=false;\n for(const raw of String(text??'').split(/\\r?\\n/)){\n  const line=raw.trim();if(!line||line.startsWith(';'))continue;\n  if(line.startsWith('[')&&line.endsWith(']')){server=line.slice(1,-1).trim().toLowerCase()==='server';continue;}\n  if(!server||!line.includes('='))continue;\n  const value=line.slice(line.indexOf('=')+1).trim().replace(/^['\\\"`]|['\\\"`]$/g,'');\n  const fields=value.split('|').map(v=>v.trim());if(fields.length<7)continue;\n  const category=fields[0],name=fields[1],serverName=fields[2],host=fields[3];\n  const port=Number(fields[4]),zoneId=Number(fields["
+    ],
+    "offlineDevice49": [
+      "evice capability and lease\n// metadata. The ordinary game bearer and password remain transient.\nlet bridgeOffline49={owner:null,registered:false,task:null,options:null,key:null};\nfunction bridgeOfflineNative49(){const a=window.Lab;return a&&typeof a.offlineDevice49==='function'&&typeof a.offlineRecord49==='function'?a:null;}\nfunction bridgeOfflineDevice49(){try{const d=JSON.parse(bridgeOfflineNative49()?.offlineDevice49()||'null');\n return /^[a-f0-9]{64}$/.test(d?.deviceId||'')&&/^[a-f0-9]{64}$/.test(d?.deviceSecret||'')?d:null;}catch{return null;}}\nfunction bridgeOfflineRead49(){try{const r=JSON.parse(bridgeOfflineNative49()?.offlineRead49()||'null');\n return r&&typeof r.account==='string'&&typeof r.startKey==='string'?r:null;}catch{return null;}}\nfunction bridgeOfflineSave49(r){if(bridgeOfflineNative49()?.offlineRecord49(JSON.stringify(r))!==true)throw Error('本机接回凭证未能保存，请保持在线后重试。');return r;}\nfunction bridgeOfflineKey49(){const d=bridgeOfflineDevice49();if(!d)throw Error('此安装版本尚未准备好本机接回凭证。');\n cons",
+      "ions:null,key:null};\nfunction bridgeOfflineNative49(){const a=window.Lab;return a&&typeof a.offlineDevice49==='function'&&typeof a.offlineRecord49==='function'?a:null;}\nfunction bridgeOfflineDevice49(){try{const d=JSON.parse(bridgeOfflineNative49()?.offlineDevice49()||'null');\n return /^[a-f0-9]{64}$/.test(d?.deviceId||'')&&/^[a-f0-9]{64}$/.test(d?.deviceSecret||'')?d:null;}catch{return null;}}\nfunction bridgeOfflineRead49(){try{const r=JSON.parse(bridgeOfflineNative49()?.offlineRead49()||'null');\n return r&&typeof r.account==='string'&&typeof r.startKey==='string'?r:null;}catch{return null;}}\nfunction bridgeOfflineSave49(r){if(bridgeOfflineNative49()?.offlineRecord49(JSON.stringify(r))!==true)throw Error('本机接回凭证未能保存，请保持在线后重试。');return r;}\nfunction bridgeOfflineKey49(){const d=bridgeOfflineDevice49();if(!d)throw Error('此安装版本尚未准备好本机接回凭证。');\n const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return 'offline49:'+Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');}\nfunction bridgeOff"
+    ],
+    "report(": [
+      "owGains94(state,r.state);apply(r.state);}else refreshAgain110=true;}}catch(e){error(e);}finally{refreshPending=false;if(refreshAgain110&&phase==='game'&&expected===epoch)refreshState();}},500);\r\n}\r\n\r\nsetInterval(poll,80);setInterval(()=>{window.Lab?.report(JSON.stringify(report));},2000);$('endpoint').value=window.Lab?'http://127.0.0.1:27150':location.origin;\r\n\r\nlet auctionTab='all',auctionSearch='',auctionCategory='all',auctionSort='time-desc';\r\nasync function auctionUI(body){\r\n const tabs=el('div',undefined,'toolbar');for(const [key,title]of [['all','浏览拍卖'],['mine','我的上架'],['bag','背包上架']])tabs.append(button(title,()=>{auctionTab=key;render('auction');}));body.append(tabs);\r\n if(auctionTab==='bag'){const grid=el('div',undefined,'grid');for(const item of state.inventory.filter(i=>i.container===1))grid.append(itemButton(item,()=>auctionListForm(item)));body.append(grid);return;}\r\n const tools=el('div',undefined,'toolbar'),search=el('input'),category=el('select'),sort=el('select');search.placeh"
+    ]
+  },
+  "directNativeMarkerCounts": {
+    "readPacked107": 0,
+    "offlineDevice49": 2,
+    "offlineRead49": 1,
+    "offlineRecord49": 2,
+    "offlineForget49": 2
+  },
+  "packedOnlyJavaScriptOrHTML": [
+    {
+      "name": "vendor/build/three.core.js",
+      "bytes": 1403455,
+      "sha256": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20",
+      "nativeMarkers": []
+    },
+    {
+      "name": "vendor/build/three.module.js",
+      "bytes": 603113,
+      "sha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a",
+      "nativeMarkers": []
+    },
+    {
+      "name": "vendor/examples/jsm/loaders/GLTFLoader.js",
+      "bytes": 114739,
+      "sha256": "67ac5551fdafa6e349bd80c8f8e5e39c136d6b2fb1ad647db9abb21dc86f9e4a",
+      "nativeMarkers": []
+    },
+    {
+      "name": "vendor/examples/jsm/utils/BufferGeometryUtils.js",
+      "bytes": 35539,
+      "sha256": "fda7e946b8e0b5ab39b779206589e7a1079a22eb24efb89d7223e03fdfb1f751",
+      "nativeMarkers": []
+    }
+  ],
+  "packedSourceAPK_SHA256": "62a968e2d80bdaf95b6ddd80a038de3dd29622aa2e1f55cddde5f8e887800c44"
+}

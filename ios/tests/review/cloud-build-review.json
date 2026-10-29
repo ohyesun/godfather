@@ -1,0 +1,47 @@
+{
+  "review": "independent-read-only-cloud-template",
+  "date": "2026-10-16",
+  "blockingFindings": [],
+  "sourceSHA256": {
+    "codemagic.yaml": "6fb02df35decb41f1b7c33ff404c13da33eceb2ddf393b297dc9d742a32c1116",
+    "scripts/fetch_source.py": "9d7b262d45433cc3667ef0124f9cd051ae9cf2d53b3ca4ecbdd3729ea4ad4679",
+    "scripts/test_fetch_source.py": "dfa4bc3df1e4e742a0295bcb0a49b785f02f358773eabb2830462f855e66e479",
+    "README.md": "24b397af8aab6c0e24bdbf0dfe99afb0498d39b36abb0a00c1882a9effecdb21"
+  },
+  "offlineFixtures": {
+    "command": "python ios/CloudBuild/scripts/test_fetch_source.py",
+    "testsRun": 9,
+    "failures": 0,
+    "errors": 0,
+    "passed": true,
+    "syntheticZIPs": true
+  },
+  "yaml": {
+    "structureReviewed": true,
+    "parserExecuted": false,
+    "schemaExecuted": false,
+    "reason": "No local PyYAML or Node yaml package; manual comparison to official Codemagic configuration docs only."
+  },
+  "checks": {
+    "destinationAndBuildPathsMatch": true,
+    "artifactPathsMatch": true,
+    "outerSHA256BeforeExtraction": true,
+    "exactManifestAndPerFileHash": true,
+    "canonicalZIPPathsAndLimits": true,
+    "HTTPSRedirectValidation": true,
+    "URLAndConfigNotPrinted": true,
+    "noAutomaticTriggerSigningPublishing": true
+  },
+  "notExecuted": [
+    "real source download",
+    "cloud account/network build",
+    "Xcode/Swift compile",
+    "native XCTest",
+    "real device IPA production",
+    "Apple signing/install",
+    "live game/account test"
+  ],
+  "officialDocumentation": [
+    "https://docs.codemagic.io/yaml-basic-configuration/yaml-getting-started/"
+  ]
+}

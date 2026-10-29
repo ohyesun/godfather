@@ -1,0 +1,31 @@
+# Copy the CONTENTS of CloudBuild into a small private repository's root.
+# Keep the complete 1.68 GB source ZIP outside Git. See README.md.
+workflows:
+  zhanguo-ios-unsigned:
+    name: Zhanguo r119 - unsigned device IPA
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      xcode: "16.4"
+      groups:
+        - ios_unsigned_source
+    scripts:
+      - name: Fetch and verify complete private source bundle
+        script: |
+          set -euo pipefail
+          python3 scripts/fetch_source.py --destination .work/source
+      - name: Compile and run native Simulator tests
+        script: |
+          set -euo pipefail
+          mkdir -p logs
+          bash .work/source/ios/tools/check_on_mac.sh 2>&1 | tee logs/native-tests.log
+      - name: Compile iPhoneOS Release and package unsigned IPA
+        script: |
+          set -euo pipefail
+          bash .work/source/ios/tools/build_unsigned_ipa.sh 2>&1 | tee logs/unsigned-device-build.log
+    artifacts:
+      - .work/source/ios/build/**/*.ipa
+      - .work/source/ios/build/**/*unsigned*.json
+      - .work/source/ios/build/**/*.sha256
+      - logs/*.log
+# No automatic triggers, signing integration, store publishing, or notifications.

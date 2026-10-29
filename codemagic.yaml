@@ -1,0 +1,96 @@
+# Zhanguo iOS minimal client (ZGMU/1) - cloud build for a Windows-only workstation.
+# No signing, no Apple account, no automatic trigger, no store publishing.
+# The game assets live in this repository under ios/, so no transfer step is needed.
+workflows:
+  swift-compile:
+    name: Zhanguo iOS minimal - Swift compile only (fast loop)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      xcode: "16.4"
+    scripts:
+      - name: Toolchain report
+        script: |
+          set -euo pipefail
+          xcodebuild -version
+          xcrun --sdk iphonesimulator --show-sdk-version
+          xcrun simctl list runtimes | head -20
+          python3 --version
+          sw_vers
+          df -h /
+      - name: Regenerate project, verify source, compile app and tests
+        script: |
+          set -euo pipefail
+          cd ios
+          bash tools/cloud_step.sh generate python3 tools/generate_project.py
+          bash tools/cloud_step.sh verify python3 tools/verify_project.py
+          bash tools/cloud_step.sh compile xcodebuild \
+            -project Zhanguo.xcodeproj -scheme Zhanguo \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            build-for-testing
+    artifacts:
+      - ios/build/logs/*.log
+      - ios/build/logs/*.errors.txt
+      - ios/tests/project-verification.json
+
+  zhanguo-ios-minimal:
+    name: Zhanguo iOS minimal - Simulator tests + unsigned IPA
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      xcode: "16.4"
+    scripts:
+      - name: Toolchain report
+        script: |
+          set -euo pipefail
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          xcrun simctl list runtimes | head -20
+          python3 --version
+          df -h /
+      - name: Simulator native tests
+        script: |
+          set -euo pipefail
+          cd ios
+          bash tools/cloud_step.sh native-tests bash tools/check_on_mac.sh
+      - name: Summarise native test results
+        script: |
+          set -euo pipefail
+          cd ios
+          python3 - <<'PY'
+          import glob, json, os
+          found = sorted(glob.glob('build/NativeTests-*.xcresult'))
+          print('xcresult bundles:', [os.path.basename(p) for p in found] or 'none')
+          for path in glob.glob('build/**/native-test-session*.json', recursive=True):
+              print(path)
+              print(json.dumps(json.load(open(path, encoding='utf-8')), ensure_ascii=False, indent=2)[:4000])
+          PY
+      - name: Unsigned device IPA
+        script: |
+          set -euo pipefail
+          cd ios
+          bash tools/cloud_step.sh unsigned-ipa bash tools/build_unsigned_ipa.sh
+      - name: Report IPA identity
+        script: |
+          set -euo pipefail
+          cd ios
+          set +e
+          ipa="$(ls -1 build/*/*.ipa 2>/dev/null | head -1)"
+          set -e
+          if [ -z "$ipa" ]; then echo "no IPA produced" >&2; exit 2; fi
+          ls -l "$ipa"
+          shasum -a 256 "$ipa"
+          report="$(ls -1 build/*/unsigned-ipa-audit.json 2>/dev/null | head -1)"
+          if [ -n "$report" ]; then
+            echo "audit: $report"
+            python3 -c "import json,sys;print(json.dumps(json.load(open(sys.argv[1],encoding='utf-8')),ensure_ascii=False,indent=2))" "$report" | head -80
+          fi
+    artifacts:
+      - ios/build/**/*.ipa
+      - ios/build/**/unsigned-ipa-audit.json
+      - ios/build/logs/*.log
+      - ios/build/logs/*.errors.txt
+      - ios/tests/project-verification.json

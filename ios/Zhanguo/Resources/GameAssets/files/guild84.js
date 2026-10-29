@@ -1,0 +1,10 @@
+export async function guildPanel84(body,{el,button,row,request,mutate,render}){
+ const data=await request('/guild');if(document.querySelector('#panelTitle')?.textContent!=='帮派')return;
+ const act=(operation,fields={})=>mutate({type:'guild',operation,guildRevision:data.revision,guild:data.mine?.id,...fields});body.replaceChildren();body.append(button('刷新帮派',()=>render('guild')));
+ if(!data.mine){const name=el('input');name.placeholder='帮派名称';name.maxLength=15;body.append(name,button('创建帮派',()=>act('create',{name:name.value,description:''})));for(const g of data.guilds)body.append(row(g.name,`${g.count}人 · ${g.description}`,button(g.applied?'已申请':'申请加入',()=>act('apply',{guild:g.id}),g.applied)));return;}
+ const g=data.mine;body.append(el('h2',g.name),el('p',g.description||'暂无帮派公告'),el('p',`帮派资金 ${g.fund}金币`));const donation=el('input');donation.type='number';donation.value='10000';donation.min=10000;body.append(donation,button('捐献金币',()=>act('donate',{amount:Number(donation.value)})));
+ if(g.leader===data.me){const description=el('textarea');description.value=g.description;body.append(description,button('保存公告',()=>act('description',{description:description.value})));}
+ for(const applicant of g.applicants)body.append(row(applicant.name,'申请加入',button('批准',()=>act('admit',{target:applicant.id})),button('拒绝',()=>act('reject',{target:applicant.id}))));
+ body.append(el('h3','帮派成员'));for(const m of g.members){const tools=[];if(m.id!==data.me){tools.push(button('移出帮派',()=>act('kick',{target:m.id})));if(g.leader===data.me)tools.push(button('移交帮主',()=>act('transfer',{target:m.id})));const rank=el('select');for(const [value,label]of [[3,'副帮主'],[4,'长老'],[5,'精英'],[6,'成员']]){const option=el('option',label);option.value=value;rank.append(option);}rank.value=m.rank;tools.push(rank,button('任免',()=>act('appoint',{target:m.id,rank:Number(rank.value)})));}body.append(row(m.name,`${m.id===g.leader?'帮主 · ':''}${m.level}级 · 捐献 ${m.donated}金币 · ${m.online?'在线':'离线'}`,...tools));}
+ body.append(button('退出帮派',()=>act('leave'),g.leader===data.me));
+}

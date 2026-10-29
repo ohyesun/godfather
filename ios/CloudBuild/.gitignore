@@ -1,0 +1,6 @@
+.work/
+logs/
+*.zip
+*.ipa
+.env
+__pycache__/

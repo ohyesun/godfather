@@ -1,0 +1,41 @@
+{
+  "stage": "iOS source-and-resources implementation prepared on Windows",
+  "androidBaseRevision": "r119",
+  "androidAPKUnmodified": true,
+  "preparedXcodeProject": true,
+  "nativeSourceAreas": [
+    "WKWebView host and document bridge",
+    "NWConnection TCP/launcher transport",
+    "local packed resource scheme handler",
+    "Keychain async storage"
+  ],
+  "javascriptAdapter": {
+    "connectionIdPerInstance": true,
+    "ownerAndGenerationIsolation": true,
+    "serialAsyncFrameDecode": true,
+    "originalGameProtocolReused": true
+  },
+  "executedChecks": {
+    "assetPreparation": "tests/asset-preparation-audit.json",
+    "javascriptContract": "tests/js/contract-report.json",
+    "actualBrowserColdStart": "tests/js/cold-start-report.json",
+    "hostIndependentReview": "tests/review/host-bridge-review.md",
+    "projectAndFullResources": "tests/project-verification.json",
+    "unsignedIPAFixtures": "tests/review/unsigned-ipa-offline.json",
+    "unsignedIndependentReview": "tests/review/unsigned-integration-review.md"
+  },
+  "notExecuted": [
+    "Xcode/Swift compilation",
+    "iOS Simulator XCTest",
+    "real WKWebView custom scheme acceptance",
+    "real iPhone login and scene/combat/movie/performance",
+    "Apple signing and IPA export"
+  ],
+  "installableIPAProduced": false,
+  "gameAccountOrLiveServerTested": false,
+  "reason": "Windows has no Apple SDK/Xcode and no connected Mac build worker; unsigned device IPA build scripts and a private cloud Mac workflow are prepared, but require an actual Mac execution.",
+  "unsignedDeviceIPABuildPathPrepared": true,
+  "cloudMacBuildTemplatePrepared": true,
+  "unsignedIPAProduced": false,
+  "cloudBuildExecuted": false
+}
