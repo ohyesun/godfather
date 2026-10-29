@@ -44,7 +44,6 @@ final class Game6020Monitor {
         }
         encrypted.write(bytes, 0, bytes.length);
         byte[] data = encrypted.toByteArray();
-        scanMetadata(data);
         int consumed = 0;
         int offset = 0;
         while (offset + 4 <= data.length) {
@@ -70,23 +69,51 @@ final class Game6020Monitor {
                 offset += 8;
                 continue;
             }
-            int frameSize = ((4 + length + 7) / 8) * 8;
+            int frameSize = 4 + length;
             if (offset + frameSize > data.length) {
                 break;
             }
             int command = ((plain[4] & 0xff) << 8) | (plain[5] & 0xff);
+            int bodyStart = 4;
+            int bodyLength = length;
+            if (bodyLength < 2 || bodyStart + bodyLength > plain.length) {
+                offset += 8;
+                continue;
+            }
+            if (command == 0x050c && bodyLength >= 55) {
+                int mapId = getU16(plain, bodyStart + 12);
+                String mapName = decodeGbk(plain, bodyStart + 22, 33);
+                if (mapId > 0) {
+                    pendingMapId = mapId;
+                    pendingMapName = mapName;
+                    if (!sceneMapLogged) {
+                        sceneMapLogged = true;
+                        Log.i(TAG, "SCENE-MAP map=" + mapId
+                            + " filename=" + mapName);
+                    }
+                }
+            } else if (command == 0x0501 && bodyLength >= 405) {
+                String name = name(plain, bodyStart + 38);
+                if (name.isEmpty()) name = name(plain, bodyStart + 37);
+                if (!name.isEmpty()) selfName = name;
+            } else if (command == 0x0507 && bodyLength >= 177) {
+                npcIds.add(getU32(plain, bodyStart + 6));
+            }
             if (!logged) {
                 logged = true;
                 Log.i(TAG, "GAME-OK 6020 cmd=" + String.format("%04x", command)
                     + " len=" + length + " encrypted=des");
             }
-            if (command == 0x050c) {
-                ++sceneLines;
-                sceneOk = true;
-                Log.i(TAG, "05/0c lines=" + sceneLines + " len=" + length);
-            }
-            consumed = offset + frameSize;
-            offset += frameSize;
+            consumed = offset + 4 + length;
+            offset += 4 + length;
+        }
+        if (sceneMapLogged && !sceneLogged && validName(selfName)
+            && !npcIds.isEmpty()) {
+            sceneLogged = true;
+            sceneOk = true;
+            ++sceneLines;
+            Log.i(TAG, "SCENE-OK map=" + pendingMapId + " self=" + selfName
+                + " npc=" + npcIds.size());
         }
         if (consumed > 0) {
             encrypted.reset();
