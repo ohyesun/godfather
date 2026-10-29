@@ -74,6 +74,35 @@ The negative offset path is therefore reaching 18008 and caching actual
 `scenes/xianyangcheng/*` resources. One `MICRO-FAIL code=io` occurred among
 otherwise successful loads; it is logged and does not crash the handler.
 
+## UI rerun: new-four zone
+
+Device: MuMu `emulator-5554`; old APK `com.zhanguo.chaptertwo` force-stopped.
+Selected **新开四区** (45.124.78.8:7000), logged in, selected 烈火教父, clicked
+“进入游戏”.
+
+Result: **entered the actual game scene** (咸阳城, character 烈火教父 26级,
+NPCs/minimap visible). This is not just a startup resource probe.
+
+Resource layer:
+
+```text
+MICRO-OK count = 800
+MICRO-OK total bytes = 22,530,003
+MICRO-FAIL = 0
+```
+
+The loaded set includes `scenes/xianyangcheng/map.json` and multiple
+`scenes/xianyangcheng/*.bin` files.
+
+6020 layer progressed through the select/tail/heartbeat sequence (logs show
+`GAME-TAIL order=0452,0452,0a03,0452` and continued `0452/0a03`). The 6020
+observer still only logs the first frame as `GAME-OK 0a01`; it does not emit
+a separate `SCENE-OK` line. Therefore “UI entered game” is proven visually,
+while `05/0c` / `SCENE-OK` is **not separately instrumented in this run**; the
+two layers are not conflated.
+
+`MICRO-FAIL` now includes the failing `path=` for future diagnosis.
+
 ## Not yet connected
 
 UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
@@ -83,8 +112,8 @@ UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
-| `app-debug.apk` | 55,839,701 | `506c0b1385e032693a80d3397106a9396a7f34c0f50821ac9dd3bb1d05d5cb51` |
-| `app-release-unsigned.apk` | 54,786,786 | `af838294ee119e8cbf48ced68c145352a442a3d3dc4e6260c00ceea5f3609a68` |
+| `app-debug.apk` | 55,839,725 | `cb6609845b6f55958fdecabae460438f2465c5ffe3cca35ddce503b63066376f` |
+| `app-release-unsigned.apk` | 54,786,786 | `e5cfef6b63831e2a53364b935a1e9a83baeb9a5ad8912cc2b511b47ec2132af6` |
 
 Release keystore scan: 0 hits for `keystore|zg_test|.p12|.jks`; release remains
 unsigned.
@@ -95,7 +124,7 @@ unsigned.
 |---|---:|---|
 | `Zgmu.java` | 8395 | `39d15fd642a21102e421dd897af511b17768a6bdff7edf74f5a989b352f70882` |
 | `MicroProbe.java` | 4204 | `d4b2755dd6c7a0427f8a5f17149641ddc1dacb9439a6267e09a8b476ceedce31` |
-| `PakRemote.java` | 6982 | `11f631aa886532f79bb819278b3b45e23150fb609acf596f63734c240e2796ba` |
+| `PakRemote.java` | 7013 | `52a8d77bb27851a0986836aec86484e4424e2dcc18956659f36d82e5c81858e3` |
 | `PackedAssetsPathHandler.java` | 9315 | `3334340dad142242cdb2d9d741053f6454558cb31d7739d8a31f9252aa29e3a1` |
 | `MainActivity.java` | 15027 | `483093d502479fd76f824d41efcf8591c0bc3a7d566a45478a7d4b85ce7fbd1c` |
 

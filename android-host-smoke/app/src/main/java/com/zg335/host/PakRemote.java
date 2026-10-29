@@ -86,10 +86,10 @@ final class PakRemote {
             Log.i(TAG, "MICRO-OK path=" + name + " bytes=" + cache.length());
             return wrap(cache, flag);
         } catch (Zgmu.ProtoError error) {
-            Log.e(TAG, "MICRO-FAIL code=" + error.code);
+            Log.e(TAG, "MICRO-FAIL code=" + error.code + " path=" + name);
             throw error;
         } catch (Throwable error) {
-            Log.e(TAG, "MICRO-FAIL code=io");
+            Log.e(TAG, "MICRO-FAIL code=io path=" + name);
             throw new IOException("micro fetch failed", error);
         } finally {
             if (client != null) {
