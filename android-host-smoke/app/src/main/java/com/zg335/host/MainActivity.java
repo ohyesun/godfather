@@ -2,6 +2,7 @@ package com.zg335.host;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -61,7 +62,22 @@ public final class MainActivity extends Activity {
 
         probe();
         runBridgeByteBuffer();
+        runDebugTlsLoopback();
         web.loadUrl("file:///android_asset/index.html");
+    }
+
+    private void runDebugTlsLoopback() {
+        boolean debuggable = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        if (!debuggable || bridge == null) {
+            return;
+        }
+        try {
+            Class.forName("com.zg335.host.TlsLoopbackTest")
+                .getMethod("run", Activity.class, ZgBridge.class)
+                .invoke(null, this, bridge);
+        } catch (Throwable error) {
+            Log.e("ZG335BRIDGE", "debug TLS hook unavailable", error);
+        }
     }
 
     private void runBridgeByteBuffer() {
