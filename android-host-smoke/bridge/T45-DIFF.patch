@@ -1,13 +1,13 @@
 diff --git a/android-host-smoke/bridge/src/zg_bridge.c b/android-host-smoke/bridge/src/zg_bridge.c
-index 306c248..24620c3 100644
+index 306c248..12357d9 100644
 --- a/android-host-smoke/bridge/src/zg_bridge.c
 +++ b/android-host-smoke/bridge/src/zg_bridge.c
 @@ -9,6 +9,8 @@
  #define ZG_FRAME_ABS_MAX_BYTES (UINT32_C(2) * UINT32_C(1024) * UINT32_C(1024))
  #define ZG_CONTROL_BYTES UINT32_C(24)
  #define ZG_JSON_MAX_DEPTH 64U
-+#define ZG_JSON_MAX_TOKENS UINT32_C(65536)
-+#define ZG_JSON_MAX_KEYS UINT32_C(16384)
++#define ZG_JSON_MAX_TOKENS UINT32_C(262144)
++#define ZG_JSON_MAX_KEYS UINT32_C(65536)
  
  struct zg_bridge {
      zg_bridge_config config;
@@ -270,10 +270,10 @@ index 306c248..24620c3 100644
      if (length != 0) {
          ring_append(bridge->rx, bridge->rx_capacity, &bridge->rx_head,
 diff --git a/android-host-smoke/bridge/tests/test_frame.c b/android-host-smoke/bridge/tests/test_frame.c
-index 0a37eeb..ca1867c 100644
+index 0a37eeb..301d681 100644
 --- a/android-host-smoke/bridge/tests/test_frame.c
 +++ b/android-host-smoke/bridge/tests/test_frame.c
-@@ -3,45 +3,64 @@
+@@ -3,45 +3,109 @@
  
  #include <stdint.h>
  #include <stdio.h>
@@ -347,10 +347,55 @@ index 0a37eeb..ca1867c 100644
 +    config.max_packet_bytes = max_packet;
 +    config.max_tx_bytes = 64;
 +    return zg_bridge_create(&config);
++}
++
++static size_t make_array_json(size_t count, uint8_t **out)
++{
++    size_t length = 2 + count * 2 + 1;
++    uint8_t *json = (uint8_t *)malloc(length);
++    size_t position = 0;
++    size_t i;
++
++    if (json == NULL) {
++        return 0;
++    }
++    json[position++] = '[';
++    for (i = 0; i < count; ++i) {
++        json[position++] = '0';
++        if (i + 1 < count) {
++            json[position++] = ',';
++        }
++    }
++    json[position++] = ']';
++    *out = json;
++    return position;
++}
++
++static size_t make_object_json(size_t count, uint8_t **out)
++{
++    size_t length = 2 + count * 6 + 1;
++    uint8_t *json = (uint8_t *)malloc(length);
++    size_t position = 0;
++    size_t i;
++
++    if (json == NULL) {
++        return 0;
++    }
++    json[position++] = '{';
++    for (i = 0; i < count; ++i) {
++        memcpy(json + position, "\"a\":0", 5);
++        position += 5;
++        if (i + 1 < count) {
++            json[position++] = ',';
++        }
++    }
++    json[position++] = '}';
++    *out = json;
++    return position;
  }
  
  static void write_control(uint8_t *out)
-@@ -56,39 +75,38 @@ static void write_control(uint8_t *out)
+@@ -56,39 +120,38 @@ static void write_control(uint8_t *out)
  
  int main(void)
  {
@@ -405,7 +450,7 @@ index 0a37eeb..ca1867c 100644
      zg_bridge_get_stats(bridge, &stats);
      CHECK(stats.frames == 1);
      CHECK(stats.rx_bytes == frame_length);
-@@ -98,60 +116,221 @@ int main(void)
+@@ -98,60 +161,277 @@ int main(void)
      CHECK(json.keys == 2);
      zg_bridge_destroy(bridge);
  
@@ -465,10 +510,7 @@ index 0a37eeb..ca1867c 100644
 -    bridge = zg_bridge_create(&config);
 +    /* BACKPRESSURE preserves the accepted partial frame and can recover. */
 +    bridge = make_bridge((uint32_t)frame_length, 2U * 1024U * 1024U);
-     CHECK(bridge != NULL);
--    frame[0] = 0;
--    frame[1] = 0;
--    frame[2] = 0;
++    CHECK(bridge != NULL);
 +    CHECK(zg_bridge_feed(bridge, frame, frame_length - 1, 0) ==
 +        ZG_BRIDGE_OK);
 +    CHECK(zg_bridge_feed(bridge, frame + frame_length - 1, 6, 0) ==
@@ -538,34 +580,50 @@ index 0a37eeb..ca1867c 100644
 +        }
 +    }
 +
-+    /* Token cap: a large number array must be rejected, not counted forever. */
++    /* Exact token/key caps: 262144/262145 tokens and 65536/65537 keys. */
 +    {
-+        const size_t count = 300000;
-+        size_t length = 2 + (count * 2);
-+        size_t position = 0;
++        const size_t token_ok = 262143;   /* array token + values = 262144 */
++        const size_t token_bad = 262144;  /* array token + values = 262145 */
++        const size_t key_ok = 65536;
++        const size_t key_bad = 65537;
++        size_t payload_length;
 +        size_t big_gzip_length;
 +        size_t big_frame_length;
++        zg_bridge_internal_json_stats big_stats;
 +
-+        big_json = (uint8_t *)malloc(length + 1);
-+        big_gzip = (uint8_t *)malloc(1024 * 1024);
-+        big_frame = (uint8_t *)malloc(1024 * 1024);
-+        CHECK(big_json != NULL && big_gzip != NULL && big_frame != NULL);
-+        big_json[position++] = '[';
-+        for (i = 0; i < count; ++i) {
-+            big_json[position++] = '0';
-+            if (i + 1 < count) {
-+                big_json[position++] = ',';
-+            }
-+        }
-+        big_json[position++] = ']';
-+        big_json[position] = 0;
-+        big_gzip_length = gzip_bytes(big_json, position, big_gzip,
-+            1024 * 1024);
++        big_gzip = (uint8_t *)malloc(64 * 1024);
++        big_frame = (uint8_t *)malloc(64 * 1024);
++        CHECK(big_gzip != NULL && big_frame != NULL);
++
++        payload_length = make_array_json(token_ok, &big_json);
++        CHECK(payload_length > 0);
++        big_gzip_length = gzip_bytes(big_json, payload_length, big_gzip,
++            64 * 1024);
 +        CHECK(big_gzip_length > 0);
 +        big_frame_length = build_frame(big_gzip, big_gzip_length, big_frame,
-+            1024 * 1024);
++            64 * 1024);
 +        CHECK(big_frame_length > 0);
-+        bridge = make_bridge(4096, 2U * 1024U * 1024U);
++        bridge = make_bridge(65536, 2U * 1024U * 1024U);
++        CHECK(bridge != NULL);
++        CHECK(zg_bridge_feed(bridge, big_frame, big_frame_length, 0) ==
++            ZG_BRIDGE_OK);
++        zg_bridge_get_stats(bridge, &stats);
++        CHECK(stats.frames == 1);
++        zg_bridge_internal_get_json_stats(bridge, &big_stats);
++        CHECK(big_stats.tokens == 262144);
++        zg_bridge_destroy(bridge);
++        free(big_json);
++        big_json = NULL;
++
++        payload_length = make_array_json(token_bad, &big_json);
++        CHECK(payload_length > 0);
++        big_gzip_length = gzip_bytes(big_json, payload_length, big_gzip,
++            64 * 1024);
++        CHECK(big_gzip_length > 0);
++        big_frame_length = build_frame(big_gzip, big_gzip_length, big_frame,
++            64 * 1024);
++        CHECK(big_frame_length > 0);
++        bridge = make_bridge(65536, 2U * 1024U * 1024U);
 +        CHECK(bridge != NULL);
 +        CHECK(zg_bridge_feed(bridge, big_frame, big_frame_length, 0) ==
 +            ZG_BRIDGE_PROTOCOL_ERROR);
@@ -575,11 +633,51 @@ index 0a37eeb..ca1867c 100644
 +        zg_bridge_destroy(bridge);
 +
 +        /* The same large plaintext exceeds a small output cap. */
-+        bridge = make_bridge(4096, 64);
++        bridge = make_bridge(65536, 64);
 +        CHECK(bridge != NULL);
 +        CHECK(zg_bridge_feed(bridge, big_frame, big_frame_length, 0) ==
 +            ZG_BRIDGE_OVERSIZE);
 +        zg_bridge_destroy(bridge);
++        free(big_json);
++        big_json = NULL;
++
++        payload_length = make_object_json(key_ok, &big_json);
++        CHECK(payload_length > 0);
++        big_gzip_length = gzip_bytes(big_json, payload_length, big_gzip,
++            64 * 1024);
++        CHECK(big_gzip_length > 0);
++        big_frame_length = build_frame(big_gzip, big_gzip_length, big_frame,
++            64 * 1024);
++        CHECK(big_frame_length > 0);
++        bridge = make_bridge(65536, 2U * 1024U * 1024U);
++        CHECK(bridge != NULL);
++        CHECK(zg_bridge_feed(bridge, big_frame, big_frame_length, 0) ==
++            ZG_BRIDGE_OK);
++        zg_bridge_get_stats(bridge, &stats);
++        CHECK(stats.frames == 1);
++        zg_bridge_internal_get_json_stats(bridge, &big_stats);
++        CHECK(big_stats.keys == 65536);
++        zg_bridge_destroy(bridge);
++        free(big_json);
++        big_json = NULL;
++
++        payload_length = make_object_json(key_bad, &big_json);
++        CHECK(payload_length > 0);
++        big_gzip_length = gzip_bytes(big_json, payload_length, big_gzip,
++            64 * 1024);
++        CHECK(big_gzip_length > 0);
++        big_frame_length = build_frame(big_gzip, big_gzip_length, big_frame,
++            64 * 1024);
++        CHECK(big_frame_length > 0);
++        bridge = make_bridge(65536, 2U * 1024U * 1024U);
++        CHECK(bridge != NULL);
++        CHECK(zg_bridge_feed(bridge, big_frame, big_frame_length, 0) ==
++            ZG_BRIDGE_PROTOCOL_ERROR);
++        zg_bridge_get_stats(bridge, &stats);
++        CHECK(stats.frames == 0);
++        CHECK(stats.last_error == ZG_BRIDGE_PROTOCOL_ERROR);
++        zg_bridge_destroy(bridge);
++
 +        free(big_json);
 +        free(big_gzip);
 +        free(big_frame);
@@ -595,7 +693,10 @@ index 0a37eeb..ca1867c 100644
 +        sizeof frame);
 +    CHECK(frame_length > 0);
 +    bridge = make_bridge(64, 2U * 1024U * 1024U);
-+    CHECK(bridge != NULL);
+     CHECK(bridge != NULL);
+-    frame[0] = 0;
+-    frame[1] = 0;
+-    frame[2] = 0;
 +    memset(multi, 0, sizeof multi);
 +    CHECK(zg_bridge_feed(bridge, multi, 69, 0) == ZG_BRIDGE_OVERSIZE);
 +    CHECK(zg_bridge_feed(bridge, frame, frame_length, 0) == ZG_BRIDGE_OK);
