@@ -483,3 +483,10 @@ candidate decoded `self` as invalid bytes and `npc=0`, so it is not accepted:
 the monitor now requires a valid GBK Han name and nonempty unique `05/07`
 npcIDs before emitting `SCENE-OK`. No `SCENE-OK` is fabricated. Raw:
 `PHASE6-COLD-RUN-T91.log`.
+
+## T91 frame-boundary attempt (BLOCKED)
+
+Removed raw scan and used logical `4+len` frame dispatch. Latest cold only
+emitted `GAME-OK 6020 cmd=0a01 len=18`; no `SCENE-MAP` or `SCENE-OK` in this
+run. Therefore no map/self/npc is claimed for T91. Raw:
+`PHASE6-COLD-RUN-T91.log`.

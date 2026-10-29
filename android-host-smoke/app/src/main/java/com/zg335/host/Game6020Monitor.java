@@ -93,7 +93,7 @@ final class Game6020Monitor {
                     }
                 }
             } else if (command == 0x0501 && bodyLength >= 405) {
-                String name = name(plain, bodyStart + 38);
+                String name = name(plain, bodyStart + 37);
                 if (name.isEmpty()) name = name(plain, bodyStart + 37);
                 if (!name.isEmpty()) selfName = name;
             } else if (command == 0x0507 && bodyLength >= 177) {
@@ -123,84 +123,6 @@ final class Game6020Monitor {
         }
     }
 
-    private void scanMetadata(byte[] data) {
-        int usable = data.length & ~7;
-        if (usable < 8) {
-            return;
-        }
-        byte[] plain = decrypt(Arrays.copyOf(data, usable));
-        if (plain == null) {
-            return;
-        }
-        boolean pendingScene = false;
-        int sceneOffset = -1;
-        for (int i = 0; i + 1 < plain.length; ++i) {
-            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x0c) {
-                if (sceneOffset < 0) {
-                    sceneOffset = i;
-                    Log.i(TAG, "SCENE-FRAME offset=" + i + " hex="
-                        + hex(plain, i, Math.min(55, plain.length - i)));
-                }
-                if (i + 55 <= plain.length) {
-                    int mapId = getU16(plain, i + 12);
-                    String mapName = decodeGbk(plain, i + 22, 33);
-                    if (mapId > 0) {
-                        pendingScene = true;
-                        pendingMapId = mapId;
-                        pendingMapName = mapName;
-                        if (!sceneMapLogged) {
-                            sceneMapLogged = true;
-                            Log.i(TAG, "SCENE-MAP map=" + mapId
-                                + " filename=" + mapName);
-                        }
-                    }
-                }
-            }
-            if ((plain[i] & 0xff) == 0x0a && (plain[i + 1] & 0xff) == 0x01
-                && i + 42 <= plain.length) {
-                String name = name(plain, i + 10);
-                if (name.isEmpty()) name = name(plain, i + 6);
-                if (!name.isEmpty()) selfName = name;
-            }
-            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x01
-                && i + 405 <= plain.length) {
-                String name = name(plain, i + 38);
-                if (name.isEmpty()) name = name(plain, i + 34);
-                if (!name.isEmpty()) selfName = name;
-            }
-            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x07
-                && i + 177 <= plain.length) {
-                npcIds.add(getU32(plain, i + 6));
-            }
-        }
-        if (sceneMapLogged && !sceneLogged && validName(selfName)
-            && !npcIds.isEmpty()) {
-            sceneLogged = true;
-            sceneOk = true;
-            ++sceneLines;
-            Log.i(TAG, "SCENE-OK map=" + pendingMapId + " self=" + selfName
-                + " npc=" + npcIds.size());
-        } else if (pendingScene && !sceneLogged) {
-            Log.i(TAG, "SCENE-PENDING map=" + pendingMapId
-                + " filename=" + pendingMapName + " self="
-                + (validName(selfName) ? selfName : "unknown") + " npc="
-                + npcIds.size());
-        } else if (!pendingScene && sceneOffset < 0) {
-            Log.i(TAG, "SCENE-NO 05c plain=" + plain.length);
-        }
-    }
-
-    private static boolean validName(String value) {
-        int han = 0;
-        for (int i = 0; i < value.length(); ++i) {
-            if (Character.UnicodeScript.of(value.charAt(i))
-                == Character.UnicodeScript.HAN) {
-                ++han;
-            }
-        }
-        return han >= 2;
-    }
-
     private static int getU16(byte[] bytes, int offset) {
         return (bytes[offset] & 0xff) | ((bytes[offset + 1] & 0xff) << 8);
     }
@@ -214,17 +136,7 @@ final class Game6020Monitor {
 
     private static String name(byte[] bytes, int offset) {
         if (offset < 0 || offset + 32 > bytes.length) return "";
-        String value = decodeGbk(bytes, offset, 32);
-        return value.isEmpty() ? "" : value;
-    }
-
-    private static String hex(byte[] bytes, int offset, int length) {
-        StringBuilder out = new StringBuilder(length * 2);
-        for (int i = 0; i < length; ++i) {
-            out.append(Character.forDigit((bytes[offset + i] >> 4) & 0xf, 16));
-            out.append(Character.forDigit(bytes[offset + i] & 0xf, 16));
-        }
-        return out.toString();
+        return decodeGbk(bytes, offset, 32);
     }
 
     private static String decodeGbk(byte[] bytes, int offset, int length) {
@@ -235,6 +147,17 @@ final class Game6020Monitor {
         } catch (Exception ignored) {
             return "";
         }
+    }
+
+    private static boolean validName(String value) {
+        int han = 0;
+        for (int i = 0; i < value.length(); ++i) {
+            if (Character.UnicodeScript.of(value.charAt(i))
+                == Character.UnicodeScript.HAN) {
+                ++han;
+            }
+        }
+        return han >= 2;
     }
 
     private byte[] decrypt(byte[] blocks) {
