@@ -183,6 +183,30 @@ public final class MainActivity extends Activity {
         runBridgeByteBuffer();
         runDebugFrameFeed();
         web.loadUrl(ASSET_ORIGIN + ASSET_INDEX + "?sceneQA=1");
+        installSceneReadyProbe(web);
+    }
+
+    private void installSceneReadyProbe(final WebView web) {
+        final Runnable[] probe = new Runnable[1];
+        probe[0] = () -> {
+            if (webView != web) {
+                return;
+            }
+            web.evaluateJavascript(
+                "(function(){var h=document.getElementById('hud');"
+                    + "var l=document.querySelector('.bridgeLoading114');"
+                    + "return !!(h&&!h.classList.contains('hidden')&&!l);})()",
+                value -> {
+                    if ("true".equals(value)) {
+                        web.evaluateJavascript(
+                            "window.Lab&&window.Lab.sceneReady&&window.Lab.sceneReady()",
+                            null);
+                    } else {
+                        web.postDelayed(probe[0], 1000L);
+                    }
+                });
+        };
+        web.postDelayed(probe[0], 1000L);
     }
 
     private void logWebViewVersion() {

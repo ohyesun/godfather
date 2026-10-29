@@ -24,6 +24,10 @@ final class MicroStats {
     private MicroStats() {
     }
 
+    static synchronized void finalizeRun() {
+        summary();
+    }
+
     static synchronized void recordOk(String path, long size) {
         if (finalized) return;
         ++ok;
@@ -55,9 +59,6 @@ final class MicroStats {
     private static synchronized void summary() {
         if (finalized) return;
         finalized = true;
-        Log.i(TAG, "MICRO-RUN-FINAL ok=" + ok + " bytes=" + bytes
-            + " uniquePaths=" + UNIQUE.size() + " fail=" + fail
-            + " start=" + START + " end=" + System.currentTimeMillis());
         Log.i(TAG, "MICRO-FAIL events=" + fail + " uniquePaths="
             + FAIL_PATHS.size());
         List<String> required = new ArrayList<>();
@@ -65,6 +66,11 @@ final class MicroStats {
         for (String path : FAIL_PATHS) {
             (PakRemote.isRequired(path) ? required : optional).add(path);
         }
+        Log.i(TAG, "MICRO-RUN-FINAL ok=" + ok + " bytes=" + bytes
+            + " uniquePaths=" + UNIQUE.size() + " fail=" + fail
+            + " requiredFail=" + required.size()
+            + " optionalFail=" + optional.size()
+            + " start=" + START + " end=" + System.currentTimeMillis());
         if (!required.isEmpty()) {
             Log.i(TAG, "MICRO-FAIL-REQUIRED " + String.join(",", required));
         }

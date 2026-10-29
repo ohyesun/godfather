@@ -84,6 +84,11 @@ public final class DirectTcpBridge {
         /* flow diagnostics are not part of the direct login bridge */
     }
 
+    @JavascriptInterface
+    public void sceneReady() {
+        MicroStats.finalizeRun();
+    }
+
     private JSONObject dispatch(String route, JSONObject body) throws Exception {
         if ("/direct/zones".equals(route)) {
             JSONObject result = new JSONObject();

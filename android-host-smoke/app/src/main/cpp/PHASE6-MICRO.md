@@ -253,6 +253,34 @@ Statistics window: this FINAL is one process/one run. T79's 33 events/31 paths
 was the earlier cold-cache run; T78 QA's `MICRO-FAIL=0` was another window.
 No `MICRO-FAIL=0` is reused as a cross-window conclusion.
 
+## T82 cold raw run
+
+Clean cold run (force-stop, `pm clear com.zg335.host`, `logcat -c`, one
+新开四区 login/select/enter). The sanitized raw log is committed at
+`app/src/main/cpp/PHASE6-COLD-RUN.log` (MICRO/GAME/LOGIN lines; GAME-RAW and
+GAME-PLAIN removed; no token/password/content).
+
+```text
+MICRO-RUN-FINAL ok=1054 bytes=43539864 uniquePaths=1044 fail=37 requiredFail=0 optionalFail=36
+MICRO-FAIL events=37 uniquePaths=36
+MICRO-FAIL-REQUIRED: <empty>
+MICRO-FAIL-OPTIONAL: 36 scenes/sprites/*.webp paths (full list in PHASE6-COLD-RUN.log)
+SCENE-OK=0 05/0c lines=0
+GAME-OK 6020 cmd=0a01 len=18 encrypted=des
+```
+
+- `native107/textures/16786117.png` was checked directly: index `[-1,60548,0]`,
+  18008 `OK 60548/60548`; it is required and not in the optional list. It was
+  not the failing path in this run.
+- Required failures: **0**.
+- UI screenshot `PHASE6-UI-COLD-FINAL.png`: actual game scene entered
+  (咸阳/听泉寨, 烈火教父 26级).
+- `SCENE-OK=0` is the observer's missing 05/0c instrumentation; the screenshot
+  is the scene evidence, not a fabricated SCENE-OK.
+
+`MICRO-FAIL=0` from T78 QA and T79's 33/31 are different windows; this cold
+FINAL has 37 events/36 paths and must not be collapsed into either.
+
 ## Not yet connected
 
 UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
@@ -262,8 +290,8 @@ UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
-| `app-debug.apk` | 55,843,203 | `71543351e91233adf2c4da8c7140589f09bba6541c67e6e40751eb3996403c69` |
-| `app-release-unsigned.apk` | 54,786,786 | `fd1010c92cd253ffaf65a307508b2cc0995941c1c48898183e4f1a15b00f2c8f` |
+| `app-debug.apk` | 55,843,965 | `0b2a0e38f6bae7f6ed2f7edf9a073861e79c92852fbc6f3b17dffa73291c492b` |
+| `app-release-unsigned.apk` | 54,790,882 | `16a88f63afd1dc170ab5f65260b8b287571ecd055bfe9d9958481e1cd1dc96bf` |
 
 Release keystore scan: 0 hits for `keystore|zg_test|.p12|.jks`; release remains
 unsigned.
@@ -276,7 +304,7 @@ unsigned.
 | `MicroProbe.java` | 4204 | `d4b2755dd6c7a0427f8a5f17149641ddc1dacb9439a6267e09a8b476ceedce31` |
 | `PakRemote.java` | 10302 | `ad648167eeb2dc935c6b4d9547c51cb896e19135f96eb2d61e8d96cffb64b932` |
 | `PackedAssetsPathHandler.java` | 9315 | `3334340dad142242cdb2d9d741053f6454558cb31d7739d8a31f9252aa29e3a1` |
-| `MicroStats.java` | 2424 | `677c7a06d9461220ddb7d626c6c3cfdabbcb403a935ae780505603d86a076ffa` |
+| `MicroStats.java` | 2593 | `d6dd76e5d250d2fe1c6ce5bae406396ce7b7439eb94571458392503864f04e70` |
 | `Game6020Monitor.java` | 3260 | `3d61df803ef4a7b690014d967b9ba5d7f44109f1c31ec683a2a9e708fbb03bdb` |
 | `MainActivity.java` | 15027 | `483093d502479fd76f824d41efcf8591c0bc3a7d566a45478a7d4b85ce7fbd1c` |
 
