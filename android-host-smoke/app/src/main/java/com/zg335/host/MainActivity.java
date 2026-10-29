@@ -97,6 +97,7 @@ public final class MainActivity extends Activity {
     private WebView webView;
     private ZgBridge bridge;
     private WebViewAssetLoader assetLoader;
+    private DirectTcpBridge directTcp;
 
     private String probe() {
         String value = runProbe();
@@ -171,6 +172,8 @@ public final class MainActivity extends Activity {
             }
         });
         web.addJavascriptInterface(new Bridge(), "ZG335Host");
+        directTcp = new DirectTcpBridge(web);
+        web.addJavascriptInterface(directTcp, "Lab");
 
         setContentView(web, new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -287,6 +290,10 @@ public final class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (directTcp != null) {
+            directTcp.close();
+            directTcp = null;
+        }
         if (bridge != null) {
             bridge.close();
             bridge = null;
