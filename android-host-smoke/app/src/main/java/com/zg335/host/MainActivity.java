@@ -182,9 +182,6 @@ public final class MainActivity extends Activity {
         probe();
         runBridgeByteBuffer();
         runDebugFrameFeed();
-        if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-            new Thread(() -> MicroProbe.probe(this), "micro-probe").start();
-        }
         web.loadUrl(ASSET_ORIGIN + ASSET_INDEX + "?sceneQA=1");
     }
 

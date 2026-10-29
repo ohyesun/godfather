@@ -103,6 +103,74 @@ two layers are not conflated.
 
 `MICRO-FAIL` now includes the failing `path=` for future diagnosis.
 
+## T78 single-run reconciliation
+
+Added process-level `MICRO-RUN` counters; automatic startup `MicroProbe` was
+removed so the UI run is not polluted by a separate probe. Before the run:
+force-stop both APKs, `pm clear com.zg335.host`, `logcat -c`. Then one
+新开四区 login/select/enter run.
+
+Counter line:
+
+```text
+MICRO-RUN ok=797 bytes=24795764 uniquePaths=779 fail=33 start=1793287221571 end=1793287397380
+```
+
+Comparison:
+
+```text
+author:  ok=800  bytes=22530003  (no unique counter)
+QA:      ok=812  bytes=30752347  uniquePaths=793
+T78 run: ok=797  bytes=24795764  uniquePaths=779 fail=33
+```
+
+The QA 812/30.7 MB includes multiple process starts / earlier probe and is not
+one run. The single run is 797, not 800; QA CONCERN therefore remains open.
+33 failures cover 31 unique failing paths (below), so 779 unique successes +
+31 unique failures = 810 potential unique paths; retries/failure paths explain
+the unique gap rather than a single-run 800.
+
+31 unique failing paths:
+
+```text
+native107/textures/16777577.png
+native107/textures/16786122.png
+scenes/sprites/12374.webp
+scenes/sprites/12427.webp
+scenes/sprites/13326.webp
+scenes/sprites/13738.webp
+scenes/sprites/14185.webp
+scenes/sprites/14209.webp
+scenes/sprites/14222.webp
+scenes/sprites/14411.webp
+scenes/sprites/14452.webp
+scenes/sprites/14485.webp
+scenes/sprites/14505.webp
+scenes/sprites/14672.webp
+scenes/sprites/4569.webp
+scenes/sprites/7432.webp
+scenes/sprites/7457.webp
+scenes/sprites/7491.webp
+scenes/sprites/7497.webp
+scenes/sprites/8034.webp
+scenes/sprites/8249.webp
+scenes/sprites/8252.webp
+scenes/sprites/8346.webp
+scenes/sprites/8461.webp
+scenes/sprites/8872.webp
+scenes/sprites/9075.webp
+scenes/sprites/9720.webp
+scenes/sprites/9721.webp
+scenes/sprites/9885.webp
+scenes/xianyangcheng/12_14.bin
+scenes/xianyangcheng/13_13.bin
+```
+
+Despite those failures, the UI entered the actual game scene (咸阳/听泉寨,
+烈火教父 26级); screenshot `PHASE6-UI-T78.png`. The 6020 observer still only
+prints the first `0a01`; no separate `05/0c`/`SCENE-OK` log was produced, so
+the scene claim is from the UI screenshot, not a fabricated log.
+
 ## Not yet connected
 
 UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
@@ -112,8 +180,8 @@ UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
-| `app-debug.apk` | 55,839,725 | `cb6609845b6f55958fdecabae460438f2465c5ffe3cca35ddce503b63066376f` |
-| `app-release-unsigned.apk` | 54,786,786 | `e5cfef6b63831e2a53364b935a1e9a83baeb9a5ad8912cc2b511b47ec2132af6` |
+| `app-debug.apk` | 55,840,495 | `11cea06fe6f6c35449f03f2d99771fb087e87603904acc676e0255863d0ea0e1` |
+| `app-release-unsigned.apk` | 54,786,786 | `699150e4f9796acc8f733a0c26951e97445ad0ee67d72ab74836c319930d55fe` |
 
 Release keystore scan: 0 hits for `keystore|zg_test|.p12|.jks`; release remains
 unsigned.
@@ -124,8 +192,9 @@ unsigned.
 |---|---:|---|
 | `Zgmu.java` | 8395 | `39d15fd642a21102e421dd897af511b17768a6bdff7edf74f5a989b352f70882` |
 | `MicroProbe.java` | 4204 | `d4b2755dd6c7a0427f8a5f17149641ddc1dacb9439a6267e09a8b476ceedce31` |
-| `PakRemote.java` | 7013 | `52a8d77bb27851a0986836aec86484e4424e2dcc18956659f36d82e5c81858e3` |
+| `PakRemote.java` | 7223 | `aa55eb914d507807e2904ea7f9cff9d4dba1d4bc455d48bbf09e2288d128e5b2` |
 | `PackedAssetsPathHandler.java` | 9315 | `3334340dad142242cdb2d9d741053f6454558cb31d7739d8a31f9252aa29e3a1` |
+| `MicroStats.java` | 1410 | `acb7c629e71869d786fc44edce922a7d5e758be09b4d14137eb6e5133bb99e03` |
 | `MainActivity.java` | 15027 | `483093d502479fd76f824d41efcf8591c0bc3a7d566a45478a7d4b85ce7fbd1c` |
 
 No token/password content printed; no view51/client.js/protocol changes.
