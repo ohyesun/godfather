@@ -62,6 +62,26 @@ EXIT=0
 
 `state=1` is `BAD_INTERFACE` for a zeroed configuration, as expected.
 
+### Android host APK smoke
+
+`android-host-smoke/` is an installable APK, not a CLI consumer:
+
+- Java `MainActivity` loads `libzg335host.so` and calls the JNI bridge
+- `jni_bridge.c` calls `zg335116_run` with zeroed configuration
+- `prebuilt/` carries x86_64 and arm64-v8a static libraries
+- Gradle 8.6 + AGP 8.1.2, compileSdk 34, minSdk 24
+
+Verified on MuMu:
+
+```text
+adb install -r app-debug.apk            -> Success
+topResumedActivity=com.zg335.host/.MainActivity
+I ZG335HOST: state=1 normal=0 overflow=0
+```
+
+APK: `abeea134853088491a0db15fcf50c69f2dcfb34366b6426dbe1e4b8cb6c6d6c6c`
+(59,077 B). The button and `onCreate` both produce the same line.
+
 ## iOS
 
 Add `ios-device-arm64/lib/libzg335_portable.a` to the Xcode target and add  
