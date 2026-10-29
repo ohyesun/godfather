@@ -46,10 +46,12 @@ public final class MainActivity extends Activity {
         + "}).then(function(buffer){"
         + "if(!buffer)return;"
         + "var view=new Uint8Array(buffer);"
-        + "if(view.length!==24)return;"
+        + "if(view.length!==40)return;"
         + "var magic=(view[0]|(view[1]<<8)).toString(16).toUpperCase();"
-        + "var kind=view[3];"
-        + "console.log('ZG335JS render len='+view.length+' kind='+kind+' magic='+magic);"
+        + "var recordCount=view[20]|(view[21]<<8);"
+        + "var type=(view[24]|(view[25]<<8)).toString(16).toUpperCase();"
+        + "var seq=view[36]|(view[37]<<8)|(view[38]<<16)|(view[39]<<24);"
+        + "console.log('ZG335JS records='+recordCount+' type='+type+' seq='+seq+' magic='+magic);"
         + "}).catch(function(error){console.log('ZG335JS fetch-error '+error);})"
         + ".then(function(){busy=false;});"
         + "}"
@@ -196,10 +198,10 @@ public final class MainActivity extends Activity {
         if (bridge == null || bridge.requestFull() != 0) {
             return null;
         }
-        ByteBuffer packet = ByteBuffer.allocateDirect(24)
+        ByteBuffer packet = ByteBuffer.allocateDirect(64)
             .order(ByteOrder.LITTLE_ENDIAN);
         int length = bridge.pollRender(packet);
-        if (length != 24) {
+        if (length != 40) {
             return null;
         }
         byte[] bytes = new byte[length];

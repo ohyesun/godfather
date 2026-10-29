@@ -11,6 +11,9 @@
 #define ZG_JSON_MAX_DEPTH 64U
 #define ZG_JSON_MAX_TOKENS UINT32_C(262144)
 #define ZG_JSON_MAX_KEYS UINT32_C(65536)
+#define ZG_RENDER_PACKET_BYTES UINT32_C(40)
+#define ZG_TEST_RECORD_TYPE UINT16_C(0x7f01)
+#define ZG_TEST_RECORD_PAYLOAD_BYTES UINT32_C(4)
 
 struct zg_bridge {
     zg_bridge_config config;
@@ -23,6 +26,7 @@ struct zg_bridge {
     size_t tx_count;
     uint32_t request_full_pending;
     uint32_t render_frame_id;
+    uint32_t render_seq;
     uint64_t json_tokens;
     uint64_t json_keys;
     zg_bridge_stats stats;
@@ -735,26 +739,41 @@ zg_bridge_status zg_bridge_poll_render(
     if (bridge->request_full_pending == 0) {
         return ZG_BRIDGE_AGAIN;
     }
-    if (capacity < ZG_BRIDGE_ENVELOPE_SIZE) {
+    if (capacity < ZG_RENDER_PACKET_BYTES) {
         set_error(bridge, ZG_BRIDGE_OVERSIZE);
         return ZG_BRIDGE_OVERSIZE;
     }
 
     write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_MAGIC, ZG_BRIDGE_MAGIC);
     dst[ZG_BRIDGE_ENVELOPE_OFFSET_VERSION] = ZG_BRIDGE_ENVELOPE_VERSION;
-    dst[ZG_BRIDGE_ENVELOPE_OFFSET_KIND] = ZG_BRIDGE_KIND_CONTROL;
-    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_FLAGS, 0);
+    dst[ZG_BRIDGE_ENVELOPE_OFFSET_KIND] = ZG_BRIDGE_KIND_FULL;
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_FLAGS,
+        ZG_BRIDGE_FLAG_KEYFRAME);
     write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_HEADER_BYTES,
         ZG_BRIDGE_ENVELOPE_HEADER_BYTES);
     write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_FRAME_ID,
         ++bridge->render_frame_id);
     write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_BASE_FRAME_ID, 0);
-    write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_PAYLOAD_BYTES, 0);
-    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RECORD_COUNT, 0);
+    write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_PAYLOAD_BYTES,
+        ZG_BRIDGE_RECORD_HEADER_BYTES + ZG_TEST_RECORD_PAYLOAD_BYTES);
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RECORD_COUNT, 1);
     write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RESERVED, 0);
+
+    /* Test-only record; replace with the PC contract record later. */
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_SIZE +
+        ZG_BRIDGE_RECORD_OFFSET_TYPE, ZG_TEST_RECORD_TYPE);
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_SIZE +
+        ZG_BRIDGE_RECORD_OFFSET_SCHEMA, 0);
+    write_le32(dst + ZG_BRIDGE_ENVELOPE_SIZE +
+        ZG_BRIDGE_RECORD_OFFSET_ENTITY_ID, 0);
+    write_le32(dst + ZG_BRIDGE_ENVELOPE_SIZE +
+        ZG_BRIDGE_RECORD_OFFSET_PAYLOAD_BYTES,
+        ZG_TEST_RECORD_PAYLOAD_BYTES);
+    write_le32(dst + ZG_BRIDGE_ENVELOPE_SIZE +
+        ZG_BRIDGE_RECORD_HEADER_BYTES, ++bridge->render_seq);
     bridge->request_full_pending = 0;
     ++bridge->stats.render_packets;
-    *out_length = ZG_BRIDGE_ENVELOPE_SIZE;
+    *out_length = ZG_RENDER_PACKET_BYTES;
     return ZG_BRIDGE_OK;
 }
 
