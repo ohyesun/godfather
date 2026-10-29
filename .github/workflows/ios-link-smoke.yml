@@ -48,7 +48,7 @@ jobs:
 
       - name: Record library identity
         run: |
-          sha256sum out/ios-device-arm64/lib/libzg335_portable.a
+          shasum -a 256 out/ios-device-arm64/lib/libzg335_portable.a
           find out/ios-device-arm64 -type f | sort
 
       - name: Link consumer
