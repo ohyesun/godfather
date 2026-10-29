@@ -7,3 +7,4 @@ _stage/
 *.o
 zg335_probe
 consumer-build-*/
+!android-host-smoke/prebuilt/**/lib/*.a
