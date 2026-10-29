@@ -16,6 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
 /** Minimal window.Lab request95 bridge for direct raw TCP. */
 public final class DirectTcpBridge {
     private static final String TAG = "ZG335DIRECT";
@@ -36,6 +39,7 @@ public final class DirectTcpBridge {
     private OutputStream output;
     private Login7000Monitor loginMonitor;
     private Game6020Monitor gameMonitor;
+    private Game6020ClientMonitor gameClientMonitor;
     private byte[] desKey;
     private volatile boolean closed = true;
 
@@ -98,12 +102,20 @@ public final class DirectTcpBridge {
         }
         if ("/direct/send".equals(route)) {
             byte[] bytes = decodeHex(body.optString("packetHex", ""));
+            Game6020ClientMonitor client = gameClientMonitor;
+            if (client != null) {
+                client.push(bytes);
+            }
             synchronized (writeLock) {
                 if (socket == null || output == null) {
                     throw new IllegalStateException("直连连接未打开");
                 }
                 output.write(bytes);
                 output.flush();
+            }
+            long tailTs = client == null ? 0 : client.takeTailTimestamp();
+            if (tailTs != 0) {
+                sendPost6c0eTail(tailTs);
             }
             JSONObject result = new JSONObject();
             result.put("dataHex", "");
@@ -139,6 +151,7 @@ public final class DirectTcpBridge {
             closed = false;
             loginMonitor = port == 7000 ? new Login7000Monitor() : null;
             gameMonitor = port == 6020 ? new Game6020Monitor(desKey) : null;
+            gameClientMonitor = port == 6020 ? new Game6020ClientMonitor(desKey) : null;
             if (port == 6020 && desKey == null) {
                 Log.e("ZG335GAME", "GAME-FAIL 6020 reason=des-key-missing");
             }
@@ -146,8 +159,60 @@ public final class DirectTcpBridge {
         Log.i(TAG, "open " + host + ":" + port);
     }
 
-    private Socket connect(String host, int port) throws Exception {
-        try {
+    private void sendPost6c0eTail(long timestamp) throws Exception {
+        byte[] key = desKey;
+        if (key == null || key.length != 8) {
+            return;
+        }
+        synchronized (writeLock) {
+            if (socket == null || output == null) {
+                return;
+            }
+            output.write(encryptFrame(heartbeatBody(timestamp, 0), key));
+            output.write(encryptFrame(heartbeatBody(timestamp, 1), key));
+            output.write(encryptFrame(timeSyncBody(timestamp), key));
+            output.write(encryptFrame(heartbeatBody(timestamp, 2), key));
+            output.flush();
+        }
+        Log.i("ZG335GAME", "GAME-TAIL 6020 order=0452,0452,0a03,0452");
+    }
+
+    private static byte[] heartbeatBody(long timestamp, int sequence) {
+        byte[] body = new byte[28];
+        body[0] = 0x04;
+        body[1] = 0x52;
+        put32(body, 2, (int)timestamp);
+        put32(body, 6, sequence);
+        return body;
+    }
+
+    private static byte[] timeSyncBody(long timestamp) {
+        byte[] body = new byte[20];
+        body[0] = 0x0a;
+        body[1] = 0x03;
+        put32(body, 2, (int)timestamp);
+        put32(body, 6, (int)timestamp);
+        return body;
+    }
+
+    private static byte[] encryptFrame(byte[] body, byte[] key) throws Exception {
+        int frameSize = ((4 + body.length + 7) / 8) * 8;
+        byte[] frame = new byte[frameSize];
+        put32(frame, 0, (frameSize - 4) | 0x80000000);
+        System.arraycopy(body, 0, frame, 4, body.length);
+        Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, "DES"));
+        return cipher.doFinal(frame);
+    }
+
+    private static void put32(byte[] bytes, int offset, int value) {
+        bytes[offset] = (byte)value;
+        bytes[offset + 1] = (byte)(value >>> 8);
+        bytes[offset + 2] = (byte)(value >>> 16);
+        bytes[offset + 3] = (byte)(value >>> 24);
+    }
+
+    private Socket connect(String host, int port) throws Exception {        try {
             return connectOnce(host, port);
         } catch (SocketTimeoutException first) {
             if (port != 6020) {
@@ -233,6 +298,7 @@ public final class DirectTcpBridge {
             output = null;
             loginMonitor = null;
             gameMonitor = null;
+            gameClientMonitor = null;
         }
     }
 
