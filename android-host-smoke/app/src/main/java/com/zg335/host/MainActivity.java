@@ -72,6 +72,15 @@ public final class MainActivity extends Activity {
         + ".forEach(function(path){fetch('/assets/'+path,{cache:'no-store'})"
         + ".then(function(r){console.log('ZG335JS asset '+path+'='+r.status);})"
         + ".catch(function(e){console.log('ZG335JS asset-error '+path+' '+e);});});"
+        + "window.addEventListener('error',function(e){console.log('ZG335JS page-error '+((e&&e.message)||e));});"
+        + "var sceneTries=0;"
+        + "function waitScene(){var q=window.sceneQA;if(!q){if(++sceneTries>80){console.log('ZG335JS sceneQA=missing');return;}setTimeout(waitScene,100);return;}"
+        + "var s={generation:1,map:{id:1},time:performance.now(),rtt109:0,"
+        + "player:{uid:1,name:'T',x:1,y:0,z:2,profession:1,sex:2,level:1,dead:false,alive:true,hp:1,maxHp:1,actionsBlocked:false},"
+        + "players:[],mobs:[],npcs:[],drops:[],events:[],pet:null,mount:null,meta:{}};"
+        + "try{q.update(s);}catch(e){console.log('ZG335JS sceneQA-error '+((e&&e.message)||e));return;}"
+        + "setTimeout(function(){var r=window.renderReport109||{};console.log('ZG335JS sceneQA=1 player=T objects='+q.objects.size+' calls='+(r.drawCalls==null?-1:r.drawCalls)+' fps='+(r.fps==null?-1:r.fps));},1000);}"
+        + "setTimeout(waitScene,0);"
         + "})();</script>";
 
     static {
@@ -164,7 +173,7 @@ public final class MainActivity extends Activity {
         probe();
         runBridgeByteBuffer();
         runDebugFrameFeed();
-        web.loadUrl(ASSET_ORIGIN + ASSET_INDEX);
+        web.loadUrl(ASSET_ORIGIN + ASSET_INDEX + "?sceneQA=1");
     }
 
     private void logWebViewVersion() {
