@@ -77,9 +77,9 @@ public final class MainActivity extends Activity {
         + "function waitScene(){var q=window.sceneQA;if(!q){if(++sceneTries>80){console.log('ZG335JS sceneQA=missing');return;}setTimeout(waitScene,100);return;}"
         + "var s={generation:1,map:{id:1},time:performance.now(),rtt109:0,"
         + "player:{uid:1,name:'T',x:1,y:0,z:2,profession:1,sex:2,level:1,dead:false,alive:true,hp:1,maxHp:1,actionsBlocked:false},"
-        + "players:[],mobs:[],npcs:[],drops:[],events:[],pet:null,mount:null,meta:{}};"
+        + "players:[],mobs:[{id:1001,name:'A',x:3,z:4,y:0,hp:10,maxHp:10,hpKnown:true,dead:false,alive:true,kind:2}],npcs:[],drops:[],events:[],pet:null,mount:null,meta:{}};"
         + "try{q.update(s);}catch(e){console.log('ZG335JS sceneQA-error '+((e&&e.message)||e));return;}"
-        + "setTimeout(function(){var r=window.renderReport109||{};console.log('ZG335JS sceneQA=1 player=T objects='+q.objects.size+' calls='+(r.drawCalls==null?-1:r.drawCalls)+' fps='+(r.fps==null?-1:r.fps));},1000);}"
+        + "setTimeout(function(){var r=window.renderReport109||{};var mob=q.objects.get('mob1001');var inScene=!!(mob&&mob.mesh&&q.scene.children.indexOf(mob.mesh)>=0);console.log('ZG335JS sceneQA=1 player=T objects='+q.objects.size+' mob1001='+inScene+' calls='+(r.drawCalls==null?-1:r.drawCalls)+' fps='+(r.fps==null?-1:r.fps));},1000);}"
         + "setTimeout(waitScene,0);"
         + "})();</script>";
 
