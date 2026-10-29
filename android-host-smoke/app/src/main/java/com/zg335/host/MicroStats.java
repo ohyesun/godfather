@@ -2,7 +2,9 @@ package com.zg335.host;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,11 +19,13 @@ final class MicroStats {
     private static long bytes;
     private static int fail;
     private static Timer timer;
+    private static boolean finalized;
 
     private MicroStats() {
     }
 
     static synchronized void recordOk(String path, long size) {
+        if (finalized) return;
         ++ok;
         bytes += Math.max(0, size);
         UNIQUE.add(path);
@@ -29,6 +33,7 @@ final class MicroStats {
     }
 
     static synchronized void recordFail(String path, int code) {
+        if (finalized) return;
         ++fail;
         FAIL_PATHS.add(path);
         schedule();
@@ -44,17 +49,27 @@ final class MicroStats {
             public void run() {
                 summary();
             }
-        }, 5000L);
+        }, 20000L);
     }
 
     private static synchronized void summary() {
-        Log.i(TAG, "MICRO-RUN ok=" + ok + " bytes=" + bytes
+        if (finalized) return;
+        finalized = true;
+        Log.i(TAG, "MICRO-RUN-FINAL ok=" + ok + " bytes=" + bytes
             + " uniquePaths=" + UNIQUE.size() + " fail=" + fail
             + " start=" + START + " end=" + System.currentTimeMillis());
         Log.i(TAG, "MICRO-FAIL events=" + fail + " uniquePaths="
             + FAIL_PATHS.size());
-        if (!FAIL_PATHS.isEmpty()) {
-            Log.i(TAG, "MICRO-FAIL-PATHS " + String.join(",", FAIL_PATHS));
+        List<String> required = new ArrayList<>();
+        List<String> optional = new ArrayList<>();
+        for (String path : FAIL_PATHS) {
+            (PakRemote.isRequired(path) ? required : optional).add(path);
+        }
+        if (!required.isEmpty()) {
+            Log.i(TAG, "MICRO-FAIL-REQUIRED " + String.join(",", required));
+        }
+        if (!optional.isEmpty()) {
+            Log.i(TAG, "MICRO-FAIL-OPTIONAL " + String.join(",", optional));
         }
         Log.i(TAG, "SCENE-OK=" + (Game6020Monitor.sceneOk() ? 1 : 0)
             + " 05/0c lines=" + Game6020Monitor.sceneLines());

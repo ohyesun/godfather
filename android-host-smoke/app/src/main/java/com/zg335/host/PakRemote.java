@@ -158,9 +158,12 @@ final class PakRemote {
         throw new IOException("micro fetch failed");
     }
 
-    private static boolean isRequired(String name) {
-        if ("native107/textures/16777577.png".equals(name)
-            || "native107/textures/16786122.png".equals(name)) {
+    static boolean isRequired(String name) {
+        if (name.startsWith("native107/textures/")
+            && name.endsWith(".png")) {
+            return true;
+        }
+        if (name.startsWith("native107/") && name.endsWith(".glb")) {
             return true;
         }
         return name.startsWith("scenes/")
