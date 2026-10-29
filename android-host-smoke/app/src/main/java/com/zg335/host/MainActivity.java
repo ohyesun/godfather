@@ -54,17 +54,18 @@ public final class MainActivity extends Activity {
         + "function applyShadow(){if(!window.sceneQA||!shadow||sceneApplied)return;"
         + "var q=window.sceneQA;sceneApplied=true;"
         + "var self=shadow.self,p={uid:shadow.selfEntity,name:self[0x0002],x:self[0x0010],y:self[0x0011]==null?0:self[0x0011],z:self[0x0012],level:self[0x0007],dead:!!self[0x0022],alive:!self[0x0022],hpKnown:false};"
+        + "if(self[0x0020]!=null&&self[0x0021]!=null){p.hp=self[0x0020];p.maxHp=self[0x0021];p.hpKnown=true;}"
         + "if(self[0x0005]!=null)p.profession=self[0x0005];if(self[0x0006]!=null)p.sex=self[0x0006];if(self[0x0013]!=null)p.dir=self[0x0013];if(self[0x0014]!=null)p.moveSpeed=self[0x0014];"
         + "var mobs=[],players=[],npcs=[],drops=[];shadow.actors.forEach(function(a){if(a.kind===2)mobs.push(a);else if(a.kind===1)players.push(a);else if(a.kind===3)npcs.push(a);else if(a.kind===4)drops.push(a);});"
         + "var s={generation:1,map:{id:shadow.map},time:performance.now(),rtt109:0,player:p,players:players,mobs:mobs,npcs:npcs,drops:drops,events:shadow.events,pet:null,mount:null,meta:{},hud:shadow.hud};"
         + "try{q.update(s);}catch(e){console.log('ZG335JS sceneQA-error '+((e&&e.message)||e));return;}"
         + "var firstMob=mobs.length?mobs[0].id:-1;"
-        + "setTimeout(function(){console.log('ZG335JS sceneQA-binary map='+shadow.map+' self='+p.name+' actors='+shadow.actors.size+' mob='+firstMob+' objects='+q.objects.size);},1000);}"
+        + "setTimeout(function(){console.log('ZG335JS real map='+shadow.map+' self='+p.name+' actors='+shadow.actors.size+' objects='+q.objects.size);var keys=Array.from(q.objects.keys());console.log('ZG335JS real-keys='+keys.length+' no-extra='+(keys.length===shadow.actors.size));},1000);}"
         + "function poll(){if(busy)return;busy=true;"
         + "fetch('/zg/render',{cache:'no-store'}).then(function(response){"
         + "if(response.status!==200)return null;return response.arrayBuffer();"
         + "}).then(function(buffer){if(!buffer)return;var v=new Uint8Array(buffer);"
-        + "if(v.length!==288)return;var count=u16(v,20),off=24,map=0,self={},selfEntity=0;"
+        + "if(v.length!==829)return;var count=u16(v,20),off=24,map=0,self={},selfEntity=0;"
         + "var actors=new Map(),events=[],hud=null;"
         + "for(var i=0;i<count;i++){var type=u16(v,off),entity=u32(v,off+4),payload=u32(v,off+8),end=off+12+payload;"
         + "if(type===0x0101){var m=fields(v,off+12,end);map=m[0x0100];}"
@@ -228,10 +229,10 @@ public final class MainActivity extends Activity {
         if (bridge == null || bridge.requestFull() != 0) {
             return null;
         }
-        ByteBuffer packet = ByteBuffer.allocateDirect(512)
+        ByteBuffer packet = ByteBuffer.allocateDirect(1024)
             .order(ByteOrder.LITTLE_ENDIAN);
         int length = bridge.pollRender(packet);
-        if (length != 288) {
+        if (length != 829) {
             return null;
         }
         byte[] bytes = new byte[length];
