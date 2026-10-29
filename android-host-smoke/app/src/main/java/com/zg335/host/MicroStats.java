@@ -20,8 +20,28 @@ final class MicroStats {
     private static int fail;
     private static Timer timer;
     private static boolean finalized;
+    private static boolean scenePending;
+    private static final String SCOPE =
+        "MICRO-SCOPE map=xianyangcheng spawn=138,184 duration=30s "
+            + "paths=87 sha256=4a3a5015";
 
     private MicroStats() {
+    }
+
+    static synchronized void sceneReady() {
+        if (finalized || scenePending) return;
+        scenePending = true;
+        if (timer != null) {
+            timer.cancel();
+        }
+        Log.i(TAG, SCOPE);
+        timer = new Timer("micro-final", true);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                summary();
+            }
+        }, 30000L);
     }
 
     static synchronized void finalizeRun() {
@@ -44,6 +64,7 @@ final class MicroStats {
     }
 
     private static void schedule() {
+        if (scenePending) return;
         if (timer != null) {
             timer.cancel();
         }

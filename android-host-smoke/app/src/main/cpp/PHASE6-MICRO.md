@@ -340,3 +340,24 @@ unsigned.
 | `MainActivity.java` | 15027 | `483093d502479fd76f824d41efcf8591c0bc3a7d566a45478a7d4b85ce7fbd1c` |
 
 No token/password content printed; no view51/client.js/protocol changes.
+
+## T85 30s cold attempt (BLOCKED)
+
+Frozen scope: `MICRO-SCOPE map=xianyangcheng spawn=138,184 duration=30s paths=87 sha256=4a3a5015`.
+
+The cold run (`pm clear`, force-stop, `logcat -c`) did **not reach HUD/scene
+ready within 180s**; screenshot shows “正在载入首屏资源… / 重试载入”. Therefore
+no `MICRO-SCOPE` or `MICRO-RUN-FINAL` was emitted; no FINAL numbers are claimed.
+Raw evidence is `PHASE6-COLD-RUN-T85-30S.log`; screenshot
+`PHASE6-UI-COLD-T85-30S.png`.
+
+Observed before failure timeout:
+
+- `16786117.png`: `MICRO-OK 60548B` (required preflight)
+- `11199.webp`: `MICRO-OK 21106B`
+- provisional `MICRO-OK=983`, `MICRO-FAIL=4` (all optional sprites), `MICRO-RETRY=41`
+- these are **not FINAL** and cannot be used as requiredFail evidence
+
+Blocking issue: cold first-screen load does not reliably reach the HUD; the
+30s window cannot start. Next action is to diagnose the cold loading overlay /
+required path that prevents scene readiness, not to freeze early.

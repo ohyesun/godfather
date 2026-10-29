@@ -86,7 +86,7 @@ public final class DirectTcpBridge {
 
     @JavascriptInterface
     public void sceneReady() {
-        MicroStats.finalizeRun();
+        MicroStats.sceneReady();
     }
 
     private JSONObject dispatch(String route, JSONObject body) throws Exception {
