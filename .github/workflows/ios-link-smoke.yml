@@ -48,12 +48,16 @@ jobs:
 
       - name: Record library identity
         run: |
-          LIB_SHA="$(shasum -a 256 out/ios-device-arm64/lib/libzg335_portable.a | awk '{print $1}')"
-          echo "::notice title=ios_lib_sha256::$LIB_SHA"
-          test "$LIB_SHA" = "d839e3bddb3d50dfab7519c99938fa5efbd9966808e7352b3839d5047b0930ce" || {
-            echo "::error title=ios_lib_sha256_mismatch::$LIB_SHA"
+          LIB="out/ios-device-arm64/lib/libzg335_portable.a"
+          echo "::notice title=ios_lib_sha256::$(shasum -a 256 "$LIB" | awk '{print $1}')"
+          TMP="$(mktemp -d)"
+          (cd "$TMP" && ar x "$GITHUB_WORKSPACE/$LIB")
+          (cd "$TMP" && shasum -a 256 *.o | sort -k2) > "$TMP/current.sha256"
+          if ! diff -u ios-object-manifest.sha256 "$TMP/current.sha256"; then
+            echo "::error title=ios_object_mismatch::object bytes differ from pinned manifest"
             exit 1
-          }
+          fi
+          echo "::notice title=ios_objects::13 objects match pinned manifest"
           find out/ios-device-arm64 -type f | sort
 
       - name: Link consumer
