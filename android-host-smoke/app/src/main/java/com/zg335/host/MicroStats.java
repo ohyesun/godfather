@@ -12,6 +12,7 @@ final class MicroStats {
     private static final String TAG = "ZG335MICRO";
     private static final long START = System.currentTimeMillis();
     private static final Set<String> UNIQUE = new HashSet<>();
+    private static final Set<String> FAIL_PATHS = new HashSet<>();
     private static int ok;
     private static long bytes;
     private static int fail;
@@ -29,6 +30,7 @@ final class MicroStats {
 
     static synchronized void recordFail(String path, int code) {
         ++fail;
+        FAIL_PATHS.add(path);
         schedule();
     }
 
@@ -49,5 +51,12 @@ final class MicroStats {
         Log.i(TAG, "MICRO-RUN ok=" + ok + " bytes=" + bytes
             + " uniquePaths=" + UNIQUE.size() + " fail=" + fail
             + " start=" + START + " end=" + System.currentTimeMillis());
+        Log.i(TAG, "MICRO-FAIL events=" + fail + " uniquePaths="
+            + FAIL_PATHS.size());
+        if (!FAIL_PATHS.isEmpty()) {
+            Log.i(TAG, "MICRO-FAIL-PATHS " + String.join(",", FAIL_PATHS));
+        }
+        Log.i(TAG, "SCENE-OK=" + (Game6020Monitor.sceneOk() ? 1 : 0)
+            + " 05/0c lines=" + Game6020Monitor.sceneLines());
     }
 }

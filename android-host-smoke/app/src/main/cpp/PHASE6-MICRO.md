@@ -197,6 +197,29 @@ entered the real scene; screenshot `PHASE6-UI-T80.png`.
 This is not a claim that the total is 800: the single-run total is 796/24.8 MB,
 with required resources complete. The optional-sprite failures remain.
 
+## T80 same-run three-group record
+
+One warm-cache run after force-stop + `logcat -c` (same process, no separate
+probe), 新开四区 → 烈火教父 → enter:
+
+```text
+MICRO-RUN ok=797 bytes=24802468 uniquePaths=780 fail=0
+MICRO-FAIL events=0 uniquePaths=0
+SCENE-OK=0 05/0c lines=0
+GAME-OK 6020 cmd=0a01 len=18 encrypted=des
+```
+
+The UI screenshot `PHASE6-UI-T80-RUN.png` shows the actual game scene
+(咸阳/听泉寨, 烈火教父 26级). The same run's required-resource failure list is
+empty. `SCENE-OK` is 0 because the passive 6020 observer did not parse a
+`05/0c` frame in this build; the scene is proven by the UI screenshot, not by
+that counter.
+
+**Statistics-window clarification:** T79's `33 events / 31 paths` came from
+the cold-cache single run; T78 QA's `MICRO-FAIL=0` and this T80 warm run's
+`events=0` are different statistics windows (cold vs warm cache). They are not
+the same run and must not be compared as one `MICRO-FAIL=0` conclusion.
+
 ## Not yet connected
 
 UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
@@ -206,8 +229,8 @@ UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
-| `app-debug.apk` | 55,842,319 | `425c90edde6b85fcac7c5f8a178edc9976f31afe3484e6ca50c94269899737c2` |
-| `app-release-unsigned.apk` | 54,786,786 | `504cbd3c2ce589f4546b4eb6d5c1746d51c8776d208657cfaa23dbfd1da64833` |
+| `app-debug.apk` | 55,843,014 | `9223cf74feaa98b6b5b09b93dd708cbd18366bd5a20879a57c7c6ceae6ed2409` |
+| `app-release-unsigned.apk` | 54,786,786 | `e803abbd63c33ecdd36e8adeaee4db585bcd34115d680bda049c2f05221a0917` |
 
 Release keystore scan: 0 hits for `keystore|zg_test|.p12|.jks`; release remains
 unsigned.
@@ -220,7 +243,8 @@ unsigned.
 | `MicroProbe.java` | 4204 | `d4b2755dd6c7a0427f8a5f17149641ddc1dacb9439a6267e09a8b476ceedce31` |
 | `PakRemote.java` | 10238 | `2a41c9ee640a3b68e62d6c93ab32ea4dcd03adcb935b24e3f60c535530b3ec9d` |
 | `PackedAssetsPathHandler.java` | 9315 | `3334340dad142242cdb2d9d741053f6454558cb31d7739d8a31f9252aa29e3a1` |
-| `MicroStats.java` | 1410 | `acb7c629e71869d786fc44edce922a7d5e758be09b4d14137eb6e5133bb99e03` |
+| `MicroStats.java` | 1861 | `a7ec26b051ab9bc7ffacb12cf45924327cedd4e3c932bd4ec3e5e028c9cb42fe` |
+| `Game6020Monitor.java` | 3260 | `3d61df803ef4a7b690014d967b9ba5d7f44109f1c31ec683a2a9e708fbb03bdb` |
 | `MainActivity.java` | 15027 | `483093d502479fd76f824d41efcf8591c0bc3a7d566a45478a7d4b85ce7fbd1c` |
 
 No token/password content printed; no view51/client.js/protocol changes.

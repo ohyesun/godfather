@@ -14,19 +14,31 @@ final class Game6020Monitor {
     private final byte[] key;
     private final ByteArrayOutputStream encrypted = new ByteArrayOutputStream();
     private boolean logged;
+    private static volatile int sceneLines;
+    private static volatile boolean sceneOk;
+
+    static int sceneLines() {
+        return sceneLines;
+    }
+
+    static boolean sceneOk() {
+        return sceneOk;
+    }
 
     Game6020Monitor(byte[] key) {
         this.key = key == null ? null : Arrays.copyOf(key, key.length);
     }
 
     synchronized void push(byte[] bytes) {
-        if (logged || key == null || key.length != 8 || bytes == null
+        if (key == null || key.length != 8 || bytes == null
             || bytes.length == 0) {
             return;
         }
         encrypted.write(bytes, 0, bytes.length);
         byte[] data = encrypted.toByteArray();
-        for (int offset = 0; offset + 4 <= data.length; offset += 8) {
+        int consumed = 0;
+        int offset = 0;
+        while (offset + 4 <= data.length) {
             int available = data.length - offset;
             if (available < 8) {
                 break;
@@ -35,6 +47,7 @@ final class Game6020Monitor {
             byte[] block = Arrays.copyOfRange(data, offset, offset + blocks * 8);
             byte[] plain = decrypt(block);
             if (plain == null || plain.length < 6) {
+                offset += 8;
                 continue;
             }
             int lengthAndFlags = (plain[0] & 0xff)
@@ -45,13 +58,32 @@ final class Game6020Monitor {
             int flags = (lengthAndFlags >>> 24) & 0xff;
             if (length <= 0 || length > 1024 * 1024
                 || plain.length < 4 + length) {
+                offset += 8;
                 continue;
             }
+            int frameSize = ((4 + length + 7) / 8) * 8;
+            if (offset + frameSize > data.length) {
+                break;
+            }
             int command = ((plain[4] & 0xff) << 8) | (plain[5] & 0xff);
-            logged = true;
-            Log.i(TAG, "GAME-OK 6020 cmd=" + String.format("%04x", command)
-                + " len=" + length + " encrypted=des");
-            return;
+            if (!logged) {
+                logged = true;
+                Log.i(TAG, "GAME-OK 6020 cmd=" + String.format("%04x", command)
+                    + " len=" + length + " encrypted=des");
+            }
+            if (command == 0x050c) {
+                ++sceneLines;
+                sceneOk = true;
+                Log.i(TAG, "05/0c lines=" + sceneLines + " len=" + length);
+            }
+            consumed = offset + frameSize;
+            offset += frameSize;
+        }
+        if (consumed > 0) {
+            encrypted.reset();
+            if (consumed < data.length) {
+                encrypted.write(data, consumed, data.length - consumed);
+            }
         }
     }
 
