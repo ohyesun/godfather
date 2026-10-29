@@ -72,7 +72,13 @@ final class ZGAssetSchemeHandler: NSObject, WKURLSchemeHandler {
                 guard let response = HTTPURLResponse(url: plan.url, statusCode: plan.status,
                     httpVersion: "HTTP/1.1", headerFields: plan.headers) else { throw ZGAssetError.invalidPath }
                 guard deliver(.response(response)) else { return }
-                if !plan.head {
+                if plan.head {
+                    // WebKit 的自定义 scheme 不实现 HEAD 语义：只要响应声明了
+                    // Content-Length 却一个字节都没 didReceive 就 didFinish，
+                    // 这个请求会一直挂着，连带该页面的 JS 定时器也跑不动。
+                    // 补一次空数据把 body 流显式结束掉。
+                    if !deliver(.data(Data())) { return }
+                } else {
                     if let bytes = plan.smallBody, !deliver(.data(bytes)) { return }
                     if let source = plan.source {
                         try ZGAssetReader.stream(source, range: plan.range,
