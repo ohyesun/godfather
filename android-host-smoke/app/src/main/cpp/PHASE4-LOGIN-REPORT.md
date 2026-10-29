@@ -61,6 +61,12 @@ connect with `SocketTimeoutException`; switching to 新开四区 succeeded. This
 was a zone-selection issue, not a crypto/68/10/68/04 failure. No fake key or
 account fallback was used.
 
+A separate observation: while the old APK `com.zhanguo.chaptertwo` still held
+the account/session, the host's first `45.124.78.8:6020` open timed out at
+6000ms. After force-stopping the old APK, the retry reached the role list.
+This is session/port contention, not RC5 or 68/04 failure; QA records it as a
+CONCERN, not a PASS condition.
+
 ## APK / release
 
 | Artifact | Bytes | SHA-256 |
@@ -82,4 +88,5 @@ Keystore scan:
 | `app/src/main/java/com/zg335/host/Login7000Monitor.java` | 6312 | `4a510dddc01e9426555bcd561ea286cd091eb2d05d7f26db68d7a27f31102c0f` |
 | `app/src/main/java/com/zg335/host/MainActivity.java` | 14857 | `bf57e5c3a4c926ec1ce3c3d513a07148d7ef155c1306259b8331d7edc7359211` |
 
-No view51/client.js/protocol/record-layer/old Java/assets changes; no push.
+No view51/client.js/protocol/record-layer/old Java/assets changes. This commit
+was pushed as `ef7500a`; the earlier "no push" line was a stale template line.
