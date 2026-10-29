@@ -1,0 +1,67 @@
+name: ios-link-smoke
+
+on:
+  push:
+    branches: [zg335-portable]
+    paths:
+      - "design/**"
+      - "consumer-smoke/**"
+      - "vendor/**"
+      - "codemagic.yaml"
+      - ".github/workflows/ios-link-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  link:
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-path
+          cmake --version || true
+
+      - name: Install CMake if missing
+        run: |
+          if ! command -v cmake >/dev/null 2>&1; then
+            brew install cmake
+          fi
+
+      - name: Build iOS library
+        run: |
+          cmake -S design -B build-ios \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/out/ios-device-arm64" \
+            -DZG_LEGACY_ROOT="$GITHUB_WORKSPACE/vendor/legacy" \
+            -DZG_ADAPTER_ROOT="$GITHUB_WORKSPACE/vendor/adapter"
+          cmake --build build-ios --target install
+
+      - name: Link consumer
+        run: |
+          SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos clang -arch arm64 -isysroot "$SDK" -mios-version-min=13.0 \
+            -Iout/ios-device-arm64/include/zg335 \
+            consumer-smoke/main.c \
+            out/ios-device-arm64/lib/libzg335_portable.a \
+            -o build-ios/zg335_consumer_ios
+          file build-ios/zg335_consumer_ios
+          lipo -info build-ios/zg335_consumer_ios
+          otool -L build-ios/zg335_consumer_ios
+
+      - name: Upload link-smoke artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-link-smoke
+          path: |
+            build-ios/zg335_consumer_ios
+            out/ios-device-arm64/**
