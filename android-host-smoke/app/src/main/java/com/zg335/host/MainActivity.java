@@ -3,21 +3,59 @@ package com.zg335.host;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewCompat;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Locale;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 public final class MainActivity extends Activity {
+    private static final String TAG_BRIDGE = "ZG335BRIDGE";
+    private static final String TAG_JS = "ZG335JS";
+    private static final String ASSET_ORIGIN = "https://appassets.androidplatform.net";
+    private static final String ASSET_INDEX = "/assets/index.html";
+    private static final String BRIDGE_ADAPTER =
+        "<script>(function(){"
+        + "var busy=false;"
+        + "function poll(){"
+        + "if(busy)return;busy=true;"
+        + "fetch('/zg/render',{cache:'no-store'}).then(function(response){"
+        + "if(response.status!==200)return null;"
+        + "return response.arrayBuffer();"
+        + "}).then(function(buffer){"
+        + "if(!buffer)return;"
+        + "var view=new Uint8Array(buffer);"
+        + "if(view.length!==24)return;"
+        + "var magic=(view[0]|(view[1]<<8)).toString(16).toUpperCase();"
+        + "var kind=view[3];"
+        + "console.log('ZG335JS render len='+view.length+' kind='+kind+' magic='+magic);"
+        + "}).catch(function(error){console.log('ZG335JS fetch-error '+error);})"
+        + ".then(function(){busy=false;});"
+        + "}"
+        + "poll();setInterval(poll,100);"
+        + "})();</script>";
+
     static {
         System.loadLibrary("zg335host");
     }
@@ -25,6 +63,7 @@ public final class MainActivity extends Activity {
     private native String runProbe();
     private WebView webView;
     private ZgBridge bridge;
+    private WebViewAssetLoader assetLoader;
 
     private String probe() {
         String value = runProbe();
@@ -38,6 +77,26 @@ public final class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         WebView.setWebContentsDebuggingEnabled(true);
+        logWebViewVersion();
+
+        assetLoader = new WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+            .addPathHandler("/zg/", new WebViewAssetLoader.PathHandler() {
+                @Override
+                public WebResourceResponse handle(String path) {
+                    if (!"render".equals(path) && !"/render".equals(path)
+                        && !"/zg/render".equals(path)) {
+                        return noContent();
+                    }
+                    byte[] packet = pollRenderPacket();
+                    if (packet == null) {
+                        return noContent();
+                    }
+                    return new WebResourceResponse("application/octet-stream",
+                        "UTF-8", new ByteArrayInputStream(packet));
+                }
+            })
+            .build();
 
         webView = new WebView(this);
         WebView web = webView;
@@ -45,16 +104,39 @@ public final class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setAllowFileAccess(true);
-        settings.setAllowContentAccess(true);
-        settings.setAllowFileAccessFromFileURLs(true);
-        settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setAllowFileAccess(false);
+        settings.setAllowContentAccess(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-        web.setWebViewClient(new WebViewClient());
-        web.setWebChromeClient(new WebChromeClient());
+        web.setWebViewClient(new WebViewClient() {
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view,
+                WebResourceRequest request) {
+                Uri uri = request.getUrl();
+                if (ASSET_ORIGIN.equals(uri.getScheme() + "://" + uri.getAuthority())
+                    && ASSET_INDEX.equals(uri.getPath())) {
+                    return assetWithBridgeAdapter(uri);
+                }
+                return assetLoader.shouldInterceptRequest(uri);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Log.i(TAG_BRIDGE, "ui loaded " + url);
+            }
+        });
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage message) {
+                String text = message == null ? null : message.message();
+                if (text != null && text.startsWith(TAG_JS)) {
+                    Log.i(TAG_JS, text);
+                }
+                return true;
+            }
+        });
         web.addJavascriptInterface(new Bridge(), "ZG335Host");
 
         setContentView(web, new ViewGroup.LayoutParams(
@@ -64,36 +146,66 @@ public final class MainActivity extends Activity {
         probe();
         runBridgeByteBuffer();
         runDebugFrameFeed();
-        web.postDelayed(this::runDebugRender, 400);
-        web.loadUrl("file:///android_asset/index.html");
+        web.loadUrl(ASSET_ORIGIN + ASSET_INDEX);
     }
 
-    private void runDebugRender() {
-        if (bridge == null) {
-            return;
+    private void logWebViewVersion() {
+        try {
+            PackageInfo info = WebViewCompat.getCurrentWebViewPackage(this);
+            String version = info == null ? "unknown"
+                : (info.versionName == null ? "unknown" : info.versionName);
+            Log.i(TAG_BRIDGE, "webview=" + version);
+        } catch (Throwable error) {
+            Log.e(TAG_BRIDGE, "webview version unavailable", error);
         }
-        int request = bridge.requestFull();
-        if (request != 0) {
-            Log.e("ZG335BRIDGE", "render request=" + request);
-            return;
+    }
+
+    private WebResourceResponse assetWithBridgeAdapter(Uri uri) {
+        try (InputStream input = getAssets().open("index.html")) {
+            byte[] original = readAll(input);
+            String html = new String(original, StandardCharsets.UTF_8);
+            int body = html.lastIndexOf("</body>");
+            String injected = body >= 0
+                ? html.substring(0, body) + BRIDGE_ADAPTER + html.substring(body)
+                : html + BRIDGE_ADAPTER;
+            return new WebResourceResponse("text/html", "UTF-8",
+                new ByteArrayInputStream(injected.getBytes(StandardCharsets.UTF_8)));
+        } catch (IOException error) {
+            Log.e(TAG_BRIDGE, "asset index adapter injection failed", error);
+            return assetLoader.shouldInterceptRequest(uri);
+        }
+    }
+
+    private static byte[] readAll(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8192];
+        int count;
+        while ((count = input.read(buffer)) >= 0) {
+            output.write(buffer, 0, count);
+        }
+        return output.toByteArray();
+    }
+
+    private static WebResourceResponse noContent() {
+        return new WebResourceResponse("application/octet-stream", "UTF-8",
+            204, "No Content", Collections.emptyMap(),
+            new ByteArrayInputStream(new byte[0]));
+    }
+
+    private synchronized byte[] pollRenderPacket() {
+        if (bridge == null || bridge.requestFull() != 0) {
+            return null;
         }
         ByteBuffer packet = ByteBuffer.allocateDirect(24)
             .order(ByteOrder.LITTLE_ENDIAN);
         int length = bridge.pollRender(packet);
-        if (length == 24) {
-            int magic = packet.getShort(0) & 0xffff;
-            int kind = packet.get(3) & 0xff;
-            int frame = packet.getInt(8);
-            Log.i("ZG335BRIDGE", String.format(Locale.US,
-                "render len=%d kind=%d frame=%d magic=%04X",
-                length, kind, frame, magic));
-        } else {
-            Log.i("ZG335BRIDGE", "render len=" + length);
+        if (length != 24) {
+            return null;
         }
-        ByteBuffer againPacket = ByteBuffer.allocateDirect(24)
-            .order(ByteOrder.LITTLE_ENDIAN);
-        int again = bridge.pollRender(againPacket);
-        Log.i("ZG335BRIDGE", "render again=" + again);
+        byte[] bytes = new byte[length];
+        packet.position(0);
+        packet.get(bytes);
+        return bytes;
     }
 
     private void runDebugFrameFeed() {
@@ -106,14 +218,14 @@ public final class MainActivity extends Activity {
                 .getMethod("run", ZgBridge.class)
                 .invoke(null, bridge);
         } catch (Throwable error) {
-            Log.e("ZG335BRIDGE", "debug frame hook unavailable", error);
+            Log.e(TAG_BRIDGE, "debug frame hook unavailable", error);
         }
     }
 
     private void runBridgeByteBuffer() {
         bridge = new ZgBridge();
         if (!bridge.create(4096, 65536, 4096, 0)) {
-            Log.e("ZG335BRIDGE", "create failed");
+            Log.e(TAG_BRIDGE, "create failed");
             bridge = null;
             return;
         }
@@ -133,9 +245,9 @@ public final class MainActivity extends Activity {
         int status = bridge.feed(frame, 24, SystemClock.elapsedRealtime());
         int[] stats = bridge.stats();
         if (stats == null) {
-            Log.i("ZG335BRIDGE", "status=" + status + " rx=? frames=? error=?");
+            Log.i(TAG_BRIDGE, "status=" + status + " rx=? frames=? error=?");
         } else {
-            Log.i("ZG335BRIDGE", "status=" + status + " rx=" + (stats[0] & 0xffffffffL)
+            Log.i(TAG_BRIDGE, "status=" + status + " rx=" + (stats[0] & 0xffffffffL)
                 + " frames=" + (stats[1] & 0xffffffffL) + " error=" + stats[2]);
         }
     }
