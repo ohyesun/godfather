@@ -88,3 +88,48 @@ workflows:
       - ios/build/logs/*.log
       - ios/build/logs/*.errors.txt
       - ios/tests/project-verification.json
+
+  # Build-only path. Produces the unsigned device IPA and nothing else.
+  # It deliberately does NOT run the XCTest suite, so it is not an acceptance
+  # gate: `zhanguo-ios-minimal` stays the gate and remains red until the native
+  # tests pass. Use this only when a device-installable artefact is needed
+  # before the test debt is cleared.
+  ios-ipa-only:
+    name: Zhanguo iOS minimal - Unsigned IPA only (no tests)
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      xcode: "16.4"
+    scripts:
+      - name: Toolchain report
+        script: |
+          set -euo pipefail
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          python3 --version
+          df -h /
+      - name: Unsigned device IPA
+        script: |
+          set -euo pipefail
+          cd ios
+          bash tools/cloud_step.sh unsigned-ipa bash tools/build_unsigned_ipa.sh
+      - name: Report IPA identity
+        script: |
+          set -euo pipefail
+          cd ios
+          set +e
+          ipa="$(ls -1 build/*/*.ipa 2>/dev/null | head -1)"
+          set -e
+          if [ -z "$ipa" ]; then echo "no IPA produced" >&2; exit 2; fi
+          ls -l "$ipa"
+          shasum -a 256 "$ipa"
+          report="$(ls -1 build/*/unsigned-ipa-audit.json 2>/dev/null | head -1)"
+          if [ -n "$report" ]; then
+            echo "audit: $report"
+            python3 -c "import json,sys;print(json.dumps(json.load(open(sys.argv[1],encoding='utf-8')),ensure_ascii=False,indent=2))" "$report" | head -80
+          fi
+    artifacts:
+      - ios/build/**/*.ipa
+      - ios/build/**/unsigned-ipa-audit.json
+      - ios/build/logs/*.log
+      - ios/build/logs/*.errors.txt
