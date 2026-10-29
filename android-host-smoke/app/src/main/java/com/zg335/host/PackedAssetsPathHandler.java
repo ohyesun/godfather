@@ -37,10 +37,13 @@ final class PackedAssetsPathHandler implements WebViewAssetLoader.PathHandler {
     private static final String PAK = "resources107.pak";
 
     private final AssetManager assets;
+    private final Context context;
     private Map<String, Entry> index;
 
     PackedAssetsPathHandler(Context context) {
+        this.context = context;
         assets = context.getAssets();
+        PakRemote.attach(context);
     }
 
     @Override
@@ -72,6 +75,15 @@ final class PackedAssetsPathHandler implements WebViewAssetLoader.PathHandler {
         }
         if (entry.offset < 0 || entry.length < 0) {
             Log.i(TAG, "pak miss negative " + key + " offset=" + entry.offset);
+            try {
+                InputStream remote = PakRemote.openRemote(assets, key,
+                    entry.length, entry.gzip);
+                if (remote != null) {
+                    return response(mime(key), remote);
+                }
+            } catch (IOException error) {
+                Log.e(TAG, "micro fallback failed " + key, error);
+            }
             return null;
         }
         try {

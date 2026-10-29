@@ -65,6 +65,7 @@ final class MicroProbe {
                 }
             }
             Log.i(TAG, "MICRO-OK path=" + PATH + " bytes=" + raw.length);
+            probeHandler(context);
         } catch (Zgmu.ProtoError error) {
             Log.e(TAG, "MICRO-FAIL code=" + error.code);
         } catch (Throwable error) {
@@ -73,6 +74,33 @@ final class MicroProbe {
             if (client != null) {
                 client.close();
             }
+        }
+    }
+
+    private static void probeHandler(Context context) {
+        try {
+            android.webkit.WebResourceResponse response =
+                new PackedAssetsPathHandler(context).handle(PATH);
+            if (response == null || response.getData() == null) {
+                throw new IOException("handler returned no response");
+            }
+            java.io.InputStream input = response.getData();
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buffer = new byte[256];
+                int count;
+                while ((count = input.read(buffer)) >= 0) {
+                    out.write(buffer, 0, count);
+                }
+                if (out.size() != 40) {
+                    throw new IOException("handler length mismatch");
+                }
+            } finally {
+                input.close();
+            }
+            Log.i(TAG, "MICRO-OK path=" + PATH + " bytes=40 source=pak-remote");
+        } catch (Throwable error) {
+            Log.e(TAG, "MICRO-FAIL code=handler");
         }
     }
 
