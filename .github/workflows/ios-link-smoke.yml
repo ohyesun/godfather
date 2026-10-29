@@ -46,6 +46,11 @@ jobs:
             -DZG_ADAPTER_ROOT="$GITHUB_WORKSPACE/vendor/adapter"
           cmake --build build-ios --target install
 
+      - name: Record library identity
+        run: |
+          sha256sum out/ios-device-arm64/lib/libzg335_portable.a
+          find out/ios-device-arm64 -type f | sort
+
       - name: Link consumer
         run: |
           SDK="$(xcrun --sdk iphoneos --show-sdk-path)"

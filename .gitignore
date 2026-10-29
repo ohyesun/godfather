@@ -6,3 +6,4 @@ _stage/
 *.a
 *.o
 zg335_probe
+consumer-build-*/
