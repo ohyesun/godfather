@@ -35,6 +35,8 @@ public final class DirectTcpBridge {
     private InputStream input;
     private OutputStream output;
     private Login7000Monitor loginMonitor;
+    private Game6020Monitor gameMonitor;
+    private byte[] desKey;
     private volatile boolean closed = true;
 
     public DirectTcpBridge(WebView webView) {
@@ -128,9 +130,7 @@ public final class DirectTcpBridge {
             throw new IllegalArgumentException("直连区服地址无效");
         }
         close();
-        Socket next = new Socket();
-        next.setTcpNoDelay(true);
-        next.connect(new InetSocketAddress(host, port), 6000);
+        Socket next = connect(host, port);
         next.setSoTimeout(25);
         synchronized (socketLock) {
             socket = next;
@@ -138,8 +138,52 @@ public final class DirectTcpBridge {
             output = next.getOutputStream();
             closed = false;
             loginMonitor = port == 7000 ? new Login7000Monitor() : null;
+            gameMonitor = port == 6020 ? new Game6020Monitor(desKey) : null;
+            if (port == 6020 && desKey == null) {
+                Log.e("ZG335GAME", "GAME-FAIL 6020 reason=des-key-missing");
+            }
         }
         Log.i(TAG, "open " + host + ":" + port);
+    }
+
+    private Socket connect(String host, int port) throws Exception {
+        try {
+            return connectOnce(host, port);
+        } catch (SocketTimeoutException first) {
+            if (port != 6020) {
+                throw first;
+            }
+            Log.i("ZG335GAME", "GAME-RETRY 6020 attempt=2 reason=timeout");
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw first;
+            }
+            try {
+                return connectOnce(host, port);
+            } catch (SocketTimeoutException second) {
+                Log.e("ZG335GAME",
+                    "GAME-FAIL 6020 attempt=2 reason=timeout possible-old-client-session");
+                throw second;
+            }
+        }
+    }
+
+    private Socket connectOnce(String host, int port) throws Exception {
+        Socket socket = new Socket();
+        try {
+            socket.setTcpNoDelay(true);
+            socket.connect(new InetSocketAddress(host, port), 6000);
+            return socket;
+        } catch (Exception error) {
+            try {
+                socket.close();
+            } catch (Exception ignored) {
+                /* connection never opened */
+            }
+            throw error;
+        }
     }
 
     private byte[] receive() throws Exception {
@@ -159,6 +203,13 @@ public final class DirectTcpBridge {
                 Login7000Monitor monitor = loginMonitor;
                 if (monitor != null) {
                     monitor.push(bytes);
+                    if (monitor.hasDesKey()) {
+                        desKey = monitor.desKey();
+                    }
+                }
+                Game6020Monitor game = gameMonitor;
+                if (game != null) {
+                    game.push(bytes);
                 }
                 return bytes;
             } catch (SocketTimeoutException timeout) {
@@ -181,6 +232,7 @@ public final class DirectTcpBridge {
             input = null;
             output = null;
             loginMonitor = null;
+            gameMonitor = null;
         }
     }
 

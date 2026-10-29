@@ -20,6 +20,15 @@ final class Login7000Monitor {
     private final ByteArrayOutputStream encrypted = new ByteArrayOutputStream();
     private final ByteArrayOutputStream plain = new ByteArrayOutputStream();
     private boolean logged;
+    private byte[] desKey;
+
+    synchronized byte[] desKey() {
+        return desKey == null ? null : desKey.clone();
+    }
+
+    synchronized boolean hasDesKey() {
+        return desKey != null;
+    }
 
     Login7000Monitor() {
         subkeys = new int[2 * (ROUNDS + 1)];
@@ -112,6 +121,11 @@ final class Login7000Monitor {
         String host = new String(body, 14, end - 14, StandardCharsets.US_ASCII);
         int port = get16(body, 0x1e);
         int ticketLength = body.length - 0x20;
+        int keyOffset = 0x20 + (body[0x5a] & 0xff);
+        if (keyOffset + 8 <= body.length) {
+            desKey = new byte[8];
+            System.arraycopy(body, keyOffset, desKey, 0, 8);
+        }
         logged = true;
         Log.i(TAG, "LOGIN-OK accid=" + accid + " game=" + host + ":"
             + port + " ticket=" + ticketLength + "B");
