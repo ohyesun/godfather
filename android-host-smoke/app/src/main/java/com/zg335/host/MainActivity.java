@@ -68,6 +68,10 @@ public final class MainActivity extends Activity {
         + "}).catch(function(error){console.log('ZG335JS fetch-error '+error);})"
         + ".then(function(){busy=false;});}"
         + "poll();setInterval(poll,100);"
+        + "['vendor/build/three.module.js','vendor/examples/jsm/loaders/GLTFLoader.js']"
+        + ".forEach(function(path){fetch('/assets/'+path,{cache:'no-store'})"
+        + ".then(function(r){console.log('ZG335JS asset '+path+'='+r.status);})"
+        + ".catch(function(e){console.log('ZG335JS asset-error '+path+' '+e);});});"
         + "})();</script>";
 
     static {
@@ -94,7 +98,7 @@ public final class MainActivity extends Activity {
         logWebViewVersion();
 
         assetLoader = new WebViewAssetLoader.Builder()
-            .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+            .addPathHandler("/assets/", new PackedAssetsPathHandler(this))
             .addPathHandler("/zg/", new WebViewAssetLoader.PathHandler() {
                 @Override
                 public WebResourceResponse handle(String path) {
