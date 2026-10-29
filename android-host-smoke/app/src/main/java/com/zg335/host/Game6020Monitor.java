@@ -15,6 +15,9 @@ final class Game6020Monitor {
     private final ByteArrayOutputStream encrypted = new ByteArrayOutputStream();
     private boolean logged;
     private boolean sceneLogged;
+    private boolean sceneMapLogged;
+    private int pendingMapId;
+    private String pendingMapName = "";
     private String selfName = "";
     private int npcCount;
     private static volatile int sceneLines;
@@ -101,50 +104,65 @@ final class Game6020Monitor {
             return;
         }
         boolean pendingScene = false;
-        int pendingMapId = 0;
-        String pendingMapName = "";
         int sceneOffset = -1;
         for (int i = 0; i + 1 < plain.length; ++i) {
-            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x0c
-                && sceneOffset < 0) {
-                sceneOffset = i;
-                Log.i(TAG, "SCENE-FRAME offset=" + i + " hex="
-                    + hex(plain, i, Math.min(16, plain.length - i)));
+            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x0c) {
+                if (sceneOffset < 0) {
+                    sceneOffset = i;
+                    Log.i(TAG, "SCENE-FRAME offset=" + i + " hex="
+                        + hex(plain, i, Math.min(55, plain.length - i)));
+                }
+                if (i + 55 <= plain.length) {
+                    int mapId = getU16(plain, i + 12);
+                    String mapName = decodeGbk(plain, i + 22, 33);
+                    if (mapId > 0) {
+                        pendingScene = true;
+                        pendingMapId = mapId;
+                        pendingMapName = mapName;
+                        if (!sceneMapLogged) {
+                            sceneMapLogged = true;
+                            Log.i(TAG, "SCENE-MAP map=" + mapId
+                                + " filename=" + mapName);
+                        }
+                    }
+                }
             }
             if ((plain[i] & 0xff) == 0x0a && (plain[i + 1] & 0xff) == 0x01
-                && i + 38 <= plain.length) {
-                String name = decodeGbk(plain, i + 6, 32);
-                if (!name.isEmpty()) {
+                && i + 42 <= plain.length) {
+                String name = decodeGbk(plain, i + 10, 32);
+                if (!name.isEmpty() && selfName.isEmpty()) {
                     selfName = name;
                 }
             }
-            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x0c
-                && i + 51 <= plain.length) {
-                int mapId = (plain[i + 8] & 0xff)
-                    | ((plain[i + 9] & 0xff) << 8);
-                String mapName = decodeGbk(plain, i + 18, 33);
-                if (!pendingScene && !sceneLogged && mapId > 0) {
-                    pendingScene = true;
-                    pendingMapId = mapId;
-                    pendingMapName = mapName;
+            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x01
+                && i + 405 <= plain.length) {
+                String name = decodeGbk(plain, i + 38, 32);
+                if (!name.isEmpty() && selfName.isEmpty()) {
+                    selfName = name;
                 }
             }
             if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x07) {
                 ++npcCount;
             }
         }
-        if (pendingScene) {
+        if ((pendingScene || sceneMapLogged) && !sceneLogged
+            && !selfName.isEmpty()) {
             sceneLogged = true;
             sceneOk = true;
             ++sceneLines;
-            Log.i(TAG, "SCENE-OK map="
-                + (pendingMapName.isEmpty() ? String.valueOf(pendingMapId)
-                    : pendingMapName)
-                + " self=" + (selfName.isEmpty() ? "unknown" : selfName)
+            Log.i(TAG, "SCENE-OK map=" + pendingMapId + " self=" + selfName
                 + " npc=" + npcCount);
-        } else if (sceneOffset < 0) {
+        } else if (pendingScene && !sceneLogged) {
+            Log.i(TAG, "SCENE-PENDING map=" + pendingMapId
+                + " filename=" + pendingMapName + " self=unknown npc="
+                + npcCount);
+        } else if (!pendingScene && sceneOffset < 0) {
             Log.i(TAG, "SCENE-NO 05c plain=" + plain.length);
         }
+    }
+
+    private static int getU16(byte[] bytes, int offset) {
+        return (bytes[offset] & 0xff) | ((bytes[offset + 1] & 0xff) << 8);
     }
 
     private static String hex(byte[] bytes, int offset, int length) {

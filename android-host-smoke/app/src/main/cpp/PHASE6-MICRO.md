@@ -463,3 +463,15 @@ No `SCENE-OK map=<id> self=<name> npc=<n>` was emitted; the candidate does not
 match the expected parseSceneInfo layout (mapId at expected offset is 0), so
 map/self/npc are not fabricated. Log: `PHASE6-COLD-RUN-T91.log`.
 This is a 6020 metadata-parser blocker, not a resource/HUD failure.
+
+## T91 corrected 05/0c parse
+
+Using real layout: `05/0c` body length>=55, mapId u16@12, filename 22:55.
+
+```text
+SCENE-FRAME offset=5434 hex=050ced6e4c7f000000000000020000000a43000038437869616e79616e676368656e670000...
+SCENE-MAP map=2 filename=xianyangcheng
+SCENE-PENDING map=2 filename=xianyangcheng self=unknown npc=0
+```
+
+`SCENE-MAP` is correct. `SCENE-OK` is not emitted because self (`0a/01` or `05/01`) has not yet yielded a name; map/self/npc are not fabricated. Log `PHASE6-COLD-RUN-T91.log`.
