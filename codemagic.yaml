@@ -24,13 +24,7 @@ workflows:
           cd ios
           bash tools/cloud_step.sh generate python3 tools/generate_project.py
           bash tools/cloud_step.sh verify python3 tools/verify_project.py
-          bash tools/cloud_step.sh compile xcodebuild \
-            -project Zhanguo.xcodeproj -scheme Zhanguo \
-            -configuration Debug \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build/DerivedData \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
-            build-for-testing
+          bash tools/cloud_compile_probe.sh
     artifacts:
       - ios/build/logs/*.log
       - ios/build/logs/*.errors.txt

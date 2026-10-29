@@ -101,8 +101,11 @@ def check_yaml(problems):
         if needle in raw:
             problems.append('yaml must stay unsigned; found ' + needle)
     compile_flow = flows.get('swift-compile', {})
-    if 'build-for-testing' not in json.dumps(compile_flow.get('scripts')):
-        problems.append('swift-compile: expected build-for-testing')
+    if 'tools/cloud_compile_probe.sh' not in json.dumps(compile_flow.get('scripts')):
+        problems.append('swift-compile: expected tools/cloud_compile_probe.sh')
+    probe = IOS / 'tools/cloud_compile_probe.sh'
+    if not probe.is_file() or 'build-for-testing' not in probe.read_text('utf-8'):
+        problems.append('cloud_compile_probe.sh missing or not build-for-testing')
     return {'workflows': sorted(flows)}
 
 

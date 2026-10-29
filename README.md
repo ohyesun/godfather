@@ -18,6 +18,7 @@ ios/                    # 完整可构建的 iOS 源树（112 MB 工作区，含
   Zhanguo/Resources/GameAssets/                        # 最小资产：pak 29,940,179 B
   ZhanguoTests/Micro/ZGMicroClientTests.swift          # 9 个用例，内存假服务端
   tools/cloud_step.sh                                  # 步骤日志 + 编译错误摘要
+  tools/cloud_compile_probe.sh                         # 只编译不跑（泛型模拟器失败则自动换真实机型）
   tools/check_on_mac.sh                                # 模拟器原生测试（原样）
   tools/build_unsigned_ipa.sh                          # 未签名 IPA（原样）
 verify_cloud_repo.py                                   # 推送前的本地自检
