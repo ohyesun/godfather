@@ -475,3 +475,11 @@ SCENE-PENDING map=2 filename=xianyangcheng self=unknown npc=0
 ```
 
 `SCENE-MAP` is correct. `SCENE-OK` is not emitted because self (`0a/01` or `05/01`) has not yet yielded a name; map/self/npc are not fabricated. Log `PHASE6-COLD-RUN-T91.log`.
+
+## T91 SCENE-MAP correct; SCENE-OK still blocked
+
+`SCENE-MAP map=2 filename=xianyangcheng` is correct. Current `SCENE-OK`
+candidate decoded `self` as invalid bytes and `npc=0`, so it is not accepted:
+the monitor now requires a valid GBK Han name and nonempty unique `05/07`
+npcIDs before emitting `SCENE-OK`. No `SCENE-OK` is fabricated. Raw:
+`PHASE6-COLD-RUN-T91.log`.

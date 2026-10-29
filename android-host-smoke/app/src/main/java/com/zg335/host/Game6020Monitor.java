@@ -4,6 +4,8 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -19,7 +21,7 @@ final class Game6020Monitor {
     private int pendingMapId;
     private String pendingMapName = "";
     private String selfName = "";
-    private int npcCount;
+    private final Set<Integer> npcIds = new HashSet<>();
     private static volatile int sceneLines;
     private static volatile boolean sceneOk;
 
@@ -129,40 +131,64 @@ final class Game6020Monitor {
             }
             if ((plain[i] & 0xff) == 0x0a && (plain[i + 1] & 0xff) == 0x01
                 && i + 42 <= plain.length) {
-                String name = decodeGbk(plain, i + 10, 32);
-                if (!name.isEmpty() && selfName.isEmpty()) {
-                    selfName = name;
-                }
+                String name = name(plain, i + 10);
+                if (name.isEmpty()) name = name(plain, i + 6);
+                if (!name.isEmpty()) selfName = name;
             }
             if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x01
                 && i + 405 <= plain.length) {
-                String name = decodeGbk(plain, i + 38, 32);
-                if (!name.isEmpty() && selfName.isEmpty()) {
-                    selfName = name;
-                }
+                String name = name(plain, i + 38);
+                if (name.isEmpty()) name = name(plain, i + 34);
+                if (!name.isEmpty()) selfName = name;
             }
-            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x07) {
-                ++npcCount;
+            if ((plain[i] & 0xff) == 0x05 && (plain[i + 1] & 0xff) == 0x07
+                && i + 177 <= plain.length) {
+                npcIds.add(getU32(plain, i + 6));
             }
         }
-        if ((pendingScene || sceneMapLogged) && !sceneLogged
-            && !selfName.isEmpty()) {
+        if (sceneMapLogged && !sceneLogged && validName(selfName)
+            && !npcIds.isEmpty()) {
             sceneLogged = true;
             sceneOk = true;
             ++sceneLines;
             Log.i(TAG, "SCENE-OK map=" + pendingMapId + " self=" + selfName
-                + " npc=" + npcCount);
+                + " npc=" + npcIds.size());
         } else if (pendingScene && !sceneLogged) {
             Log.i(TAG, "SCENE-PENDING map=" + pendingMapId
-                + " filename=" + pendingMapName + " self=unknown npc="
-                + npcCount);
+                + " filename=" + pendingMapName + " self="
+                + (validName(selfName) ? selfName : "unknown") + " npc="
+                + npcIds.size());
         } else if (!pendingScene && sceneOffset < 0) {
             Log.i(TAG, "SCENE-NO 05c plain=" + plain.length);
         }
     }
 
+    private static boolean validName(String value) {
+        int han = 0;
+        for (int i = 0; i < value.length(); ++i) {
+            if (Character.UnicodeScript.of(value.charAt(i))
+                == Character.UnicodeScript.HAN) {
+                ++han;
+            }
+        }
+        return han >= 2;
+    }
+
     private static int getU16(byte[] bytes, int offset) {
         return (bytes[offset] & 0xff) | ((bytes[offset + 1] & 0xff) << 8);
+    }
+
+    private static int getU32(byte[] bytes, int offset) {
+        return (bytes[offset] & 0xff)
+            | ((bytes[offset + 1] & 0xff) << 8)
+            | ((bytes[offset + 2] & 0xff) << 16)
+            | ((bytes[offset + 3] & 0xff) << 24);
+    }
+
+    private static String name(byte[] bytes, int offset) {
+        if (offset < 0 || offset + 32 > bytes.length) return "";
+        String value = decodeGbk(bytes, offset, 32);
+        return value.isEmpty() ? "" : value;
     }
 
     private static String hex(byte[] bytes, int offset, int length) {
