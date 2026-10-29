@@ -22,6 +22,7 @@ final class Game6020Monitor {
     private String pendingMapName = "";
     private String selfName = "";
     private final Set<Integer> npcIds = new HashSet<>();
+    private boolean selfProbeLogged;
     private static volatile int sceneLines;
     private static volatile boolean sceneOk;
 
@@ -37,6 +38,8 @@ final class Game6020Monitor {
         this.key = key == null ? null : Arrays.copyOf(key, key.length);
     }
 
+    private int plainConsumed;
+
     synchronized void push(byte[] bytes) {
         if (key == null || key.length != 8 || bytes == null
             || bytes.length == 0) {
@@ -44,45 +47,44 @@ final class Game6020Monitor {
         }
         encrypted.write(bytes, 0, bytes.length);
         byte[] data = encrypted.toByteArray();
-        int consumed = 0;
-        int offset = 0;
-        while (offset + 4 <= data.length) {
-            int available = data.length - offset;
-            if (available < 8) {
+        int usable = data.length & ~7;
+        if (usable < 8 || usable <= plainConsumed) {
+            return;
+        }
+        byte[] plain = decrypt(Arrays.copyOf(data, usable));
+        if (plain == null) {
+            return;
+        }
+        int off = plainConsumed;
+        while (off + 4 <= plain.length) {
+            int flags = plain[off + 3] & 0xff;
+            int length = (plain[off] & 0xff)
+                | ((plain[off + 1] & 0xff) << 8)
+                | ((plain[off + 2] & 0xff) << 16);
+            if (length == 0 || length > 0xfffffb) {
                 break;
             }
-            int blocks = available / 8;
-            byte[] block = Arrays.copyOfRange(data, offset, offset + blocks * 8);
-            byte[] plain = decrypt(block);
-            if (plain == null || plain.length < 6) {
-                offset += 8;
-                continue;
-            }
-            int lengthAndFlags = (plain[0] & 0xff)
-                | ((plain[1] & 0xff) << 8)
-                | ((plain[2] & 0xff) << 16)
-                | ((plain[3] & 0xff) << 24);
-            int length = lengthAndFlags & 0xffffff;
-            int flags = (lengthAndFlags >>> 24) & 0xff;
-            if (length <= 0 || length > 1024 * 1024
-                || plain.length < 4 + length) {
-                offset += 8;
-                continue;
-            }
-            int frameSize = 4 + length;
-            if (offset + frameSize > data.length) {
+            int total = 4 + length;
+            if (off + total > plain.length) {
                 break;
             }
-            int command = ((plain[4] & 0xff) << 8) | (plain[5] & 0xff);
-            int bodyStart = 4;
-            int bodyLength = length;
-            if (bodyLength < 2 || bodyStart + bodyLength > plain.length) {
-                offset += 8;
+            byte[] payload = Arrays.copyOfRange(plain, off + 4, off + 4 + length);
+            if ((flags & 0x40) != 0) {
+                byte[] inflated = inflate(payload);
+                if (inflated == null) {
+                    off += total;
+                    continue;
+                }
+                payload = inflated;
+            }
+            if (payload.length < 2) {
+                off += total;
                 continue;
             }
-            if (command == 0x050c && bodyLength >= 55) {
-                int mapId = getU16(plain, bodyStart + 12);
-                String mapName = decodeGbk(plain, bodyStart + 22, 33);
+            int command = ((payload[0] & 0xff) << 8) | (payload[1] & 0xff);
+            if (command == 0x050c && payload.length >= 55) {
+                int mapId = getU16(payload, 12);
+                String mapName = decodeGbk(payload, 22, 33);
                 if (mapId > 0) {
                     pendingMapId = mapId;
                     pendingMapName = mapName;
@@ -92,21 +94,27 @@ final class Game6020Monitor {
                             + " filename=" + mapName);
                     }
                 }
-            } else if (command == 0x0501 && bodyLength >= 405) {
-                String name = name(plain, bodyStart + 37);
-                if (name.isEmpty()) name = name(plain, bodyStart + 37);
+            } else if (command == 0x0501 && payload.length >= 405) {
+                if (!selfProbeLogged) {
+                    selfProbeLogged = true;
+                    Log.i(TAG, "SELF-FRAME len=" + payload.length
+                        + " offset=0 hex=" + hex(payload, 0, Math.min(80, payload.length)));
+                }
+                String name = name(payload, 38);
                 if (!name.isEmpty()) selfName = name;
-            } else if (command == 0x0507 && bodyLength >= 177) {
-                npcIds.add(getU32(plain, bodyStart + 6));
+            } else if (command == 0x0507 && payload.length >= 177) {
+                npcIds.add(getU32(payload, 6));
             }
             if (!logged) {
                 logged = true;
                 Log.i(TAG, "GAME-OK 6020 cmd=" + String.format("%04x", command)
                     + " len=" + length + " encrypted=des");
             }
-            consumed = offset + 4 + length;
-            offset += 4 + length;
+            Log.i(TAG, "GAME-CMD 6020 cmd=" + String.format("%04x", command)
+                + " len=" + length + " flags=" + flags);
+            off += total;
         }
+        plainConsumed = off;
         if (sceneMapLogged && !sceneLogged && validName(selfName)
             && !npcIds.isEmpty()) {
             sceneLogged = true;
@@ -114,12 +122,6 @@ final class Game6020Monitor {
             ++sceneLines;
             Log.i(TAG, "SCENE-OK map=" + pendingMapId + " self=" + selfName
                 + " npc=" + npcIds.size());
-        }
-        if (consumed > 0) {
-            encrypted.reset();
-            if (consumed < data.length) {
-                encrypted.write(data, consumed, data.length - consumed);
-            }
         }
     }
 
@@ -158,6 +160,29 @@ final class Game6020Monitor {
             }
         }
         return han >= 2;
+    }
+
+    private static String hex(byte[] bytes, int offset, int length) {
+        StringBuilder out = new StringBuilder(length * 2);
+        for (int i = 0; i < length; ++i) {
+            out.append(Character.forDigit((bytes[offset + i] >> 4) & 0xf, 16));
+            out.append(Character.forDigit(bytes[offset + i] & 0xf, 16));
+        }
+        return out.toString();
+    }
+
+    private static byte[] inflate(byte[] data) {
+        try (java.util.zip.InflaterInputStream in =
+                 new java.util.zip.InflaterInputStream(
+                     new java.io.ByteArrayInputStream(data))) {
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            int n;
+            while ((n = in.read(buf)) >= 0) out.write(buf, 0, n);
+            return out.toByteArray();
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private byte[] decrypt(byte[] blocks) {

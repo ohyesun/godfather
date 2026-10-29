@@ -490,3 +490,12 @@ Removed raw scan and used logical `4+len` frame dispatch. Latest cold only
 emitted `GAME-OK 6020 cmd=0a01 len=18`; no `SCENE-MAP` or `SCENE-OK` in this
 run. Therefore no map/self/npc is claimed for T91. Raw:
 `PHASE6-COLD-RUN-T91.log`.
+
+## T91B frame-boundary cold (BLOCKED)
+
+Latest cold emitted valid `GAME-CMD` frames through 6020 but no `SCENE-MAP`
+this run; previous frame-boundary run did emit `SCENE-MAP map=2
+filename=xianyangcheng`. No `SCENE-OK` is claimed. `05/01` probe showed name
+bytes at body offset 38 (`c1d2bbf0bdccb8b8` = 烈火教父), but a stable
+`SCENE-OK` has not been observed in the same run. Raw:
+`PHASE6-COLD-RUN-T91B.log`.
