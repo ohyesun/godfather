@@ -505,3 +505,10 @@ bytes at body offset 38 (`c1d2bbf0bdccb8b8` = 烈火教父), but a stable
 Aligned frame size to `((4+length+7)&~7)` and kept frame-boundary dispatch.
 Latest cold had only one `GAME-CMD` (`0a01`) and no `SCENE-MAP`/`SCENE-OK`;
 no map/self/npc is claimed. Raw: `PHASE6-COLD-RUN-T91C.log`.
+
+## T91D offline pcap replay (BLOCKED)
+
+pcap linktype is Linux SLL (113), server port 6020, S2C 23064 bytes. First
+frame decrypts to `0a01 len=18`; next frame is not parseable from raw capture
+order, so `SCENE-MAP`/`SCENE-OK` are not claimed. Detail:
+`PHASE6-T91D-PCAP.txt`. No pcap/key/ticket committed.

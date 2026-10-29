@@ -1,0 +1,10 @@
+T91D offline pcap replay (Linux SLL linktype 113, server port 6020)
+S2C len=23064
+PLAIN first=120000000a01c90200000c8be36a000000003420c117060000000a023c45be7f
+CMD off=0 cmd=0a01 len=18 flags=0
+SCENE-MAP MISSING
+SCENE-OK NOT_READY map=false self=false name= npc=0
+
+Conclusion: first server frame decrypts correctly; next frame not parseable
+from raw capture-order concatenation (needs TCP sequence reassembly/stream
+completion). No map/self/npc claimed.
