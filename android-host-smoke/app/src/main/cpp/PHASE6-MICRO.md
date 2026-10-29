@@ -389,3 +389,32 @@ and not presented as a 30s-after-HUD result.
 APK debug 55846839B SHA256=`18859ba939da9eff8abc3be16eae17379afa4b33efdf1ec212f6f02b48ccbdee`;
 release 54791322B SHA256=`03971bcf957d93cf7ea09d2cba34c26530d016e39436f221c184b64e33c06bb7`;
 release keystore scan 0.
+
+## T86 optional-sprite retry cold FINAL
+
+Raw: `app/src/main/cpp/PHASE6-COLD-RUN-T86.log`; screenshot `PHASE6-UI-T86.png`.
+
+All remote resources got optional retry 3 times (100/300/700ms) with fetch
+concurrency 8; required keeps 2 retries. Four previously failing ids
+`10396/9968/11069/10255.webp` were directly probed against 18008 five times
+each: **5/5 OK each**.
+
+Cold FINAL:
+
+```text
+MICRO-SCOPE map=xianyangcheng spawn=138,184 duration=30s paths=87 sha256=4a3a5015
+MICRO-RUN-FINAL ok=936 bytes=40099557 uniquePaths=918 fail=0 requiredFail=0 optionalFail=0
+MICRO-FAIL events=0 uniquePaths=0
+MICRO-FAIL-REQUIRED: <empty>
+MICRO-FAIL-OPTIONAL: <empty>
+SCENE-OK=0 05/0c lines=0
+```
+
+All 87 required `MICRO-REQ` lines are present; optional `11199.webp` is
+`MICRO-OK 21106B`. Screenshot shows the actual scene with no “场景贴图读取失败”
+toast. FINAL was emitted at the 180s process timeout, not HUD+30s; this timing
+caveat is explicit, and SCENE-OK is not fabricated.
+
+APK debug 55846872B SHA256=`ba52a6e03c439f87ecc68a10e1d4d0dca85cf9a4727afe1df181788e096c1b06`;
+release 54791322B SHA256=`944a38e65a03867563c788cae13819652d082a6636c206fa1ac451936154428d`;
+release keystore scan 0.

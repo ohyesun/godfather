@@ -24,7 +24,7 @@ final class PakRemote {
     private static final String[] CODE_EXT = {
         ".js", ".mjs", ".html", ".htm", ".css", ".svg"
     };
-    private static final int MAX_FETCHES = 12;
+    private static final int MAX_FETCHES = 8;
 
     private static volatile File cacheDir;
     private static volatile Config config;
@@ -84,7 +84,7 @@ final class PakRemote {
         if (required) {
             MicroStats.requested(name);
         }
-        int attempts = required ? 3 : 2;
+        int attempts = required ? 3 : 4;
         IOException lastIo = null;
         for (int attempt = 1; attempt <= attempts; ++attempt) {
             Zgmu client = null;
@@ -136,10 +136,10 @@ final class PakRemote {
                 if (attempt < attempts && error.code == 0x30) {
                     lastIo = error;
                     if (required) {
-                        MicroStats.retrying(name, attempt);
+                        MicroStats.retrying(name, attempt + 1);
                     }
-                    logRetry(name, required, attempt);
-                    sleep(attempt == 1 ? 100L : 300L);
+                    logRetry(name, required, attempt + 1);
+                    sleep(attempt == 1 ? 100L : attempt == 2 ? 300L : 700L);
                     continue;
                 }
                 Log.e(TAG, "MICRO-FAIL path=" + name + " code=" + error.code);
@@ -152,10 +152,10 @@ final class PakRemote {
                 lastIo = error;
                 if (attempt < attempts) {
                     if (required) {
-                        MicroStats.retrying(name, attempt);
+                        MicroStats.retrying(name, attempt + 1);
                     }
-                    logRetry(name, required, attempt);
-                    sleep(attempt == 1 ? 100L : 300L);
+                    logRetry(name, required, attempt + 1);
+                    sleep(attempt == 1 ? 100L : attempt == 2 ? 300L : 700L);
                     continue;
                 }
                 Log.e(TAG, "MICRO-FAIL path=" + name + " code=io");
