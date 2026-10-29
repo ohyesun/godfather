@@ -79,8 +79,11 @@ topResumedActivity=com.zg335.host/.MainActivity
 I ZG335HOST: state=1 normal=0 overflow=0
 ```
 
-APK: `abeea134853088491a0db15fcf50c69f2dcfb34366b6426dbe1e4b8cb6c6d6c6c`
-(59,077 B). The button and `onCreate` both produce the same line.
+Current WebView APK: `392da36647e84d45a888e40ede04aa78090e4cb3d6d6a3beeb53520221448c46`
+(42 MB with legacy assets). JNI probe still logs the same line. The legacy
+Three.js UI is imported with `tools/import-legacy-assets.sh`; its JSON frame
+path is deliberately not reused, per
+`android-host-smoke/ANDROID-WEBVIEW-BRIDGE.md`.
 
 ## iOS
 
