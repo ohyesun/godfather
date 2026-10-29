@@ -20,7 +20,11 @@ else
   task_destination="platform=iOS Simulator,id=$task_device"
 fi
 mkdir -p "$task_root/build"
+# 模拟器构建必须保留 ad-hoc 签名：关掉签名就没有 application-identifier 权限，
+# Keychain 的 SecItemAdd 会直接返回 errSecMissingEntitlement(-34018)，
+# ZGSecureStorage 于是全部退化成 "unavailable"，Keychain 与 WKWebView 存储桥两条用例必挂。
+# 模拟器不需要真证书、不需要开发者团队，Xcode 用 "-" 就地签名即可。
 xcodebuild -project "$task_root/Zhanguo.xcodeproj" -scheme Zhanguo -configuration Debug \
   -destination "$task_destination" -derivedDataPath "$task_root/DerivedData" \
   -resultBundlePath "$task_root/build/NativeTests-$(date +%Y%m%d-%H%M%S).xcresult" \
-  CODE_SIGNING_ALLOWED=NO test
+  CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=YES CODE_SIGN_IDENTITY=- test

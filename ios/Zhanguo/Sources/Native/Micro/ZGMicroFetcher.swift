@@ -272,16 +272,23 @@ final class ZGMicroFetcher: @unchecked Sendable {
             }
             do {
                 let have = max(0, Self.fileSize(partURL))
+                var requestedOffset = have
+                var requestedLength = 0
                 if have < storedSize {
                     let want = Int(min(Int64(0x7FFF_FF00), storedSize - have))
+                    requestedOffset = have
+                    requestedLength = want
                     try poolWrite(connection: connection, remoteId: remoteId,
                                   offset: have, length: want, to: partURL)
                 }
                 pool.give(connection)
                 let now = max(0, Self.fileSize(partURL))
                 if now >= storedSize { return }
+                // 带上本次请求的两端，否则只看到 "12/30" 无法判断是没发请求、
+                // 请求没回数据，还是写进去了但长度读错。
                 last = ZGMicroFailure.protocolViolation(
-                    "续传未完成 " + String(now) + "/" + String(storedSize))
+                    "续传未完成 \(now)/\(storedSize)"
+                    + "（请求 offset=\(requestedOffset) length=\(requestedLength)）")
                 Self.backoff(attempt)
             } catch {
                 // 出错后帧边界不可信，这条连接不能回池。
@@ -309,18 +316,26 @@ final class ZGMicroFetcher: @unchecked Sendable {
         }
         defer { try? handle.close() }
         do {
-            try handle.seekToEnd()
+            // 按“服务端字节流里的位移”写，而不是无条件 seekToEnd()：
+            // 续传时 offset 才是权威位置，文件末尾只是它的预期值。
+            try handle.seek(toOffset: UInt64(max(0, offset)))
         } catch {
             throw ZGMicroFailure.disk(error.localizedDescription)
         }
+        var written = 0
         try connection.fetch(id: remoteId, offset: offset, length: length) { _, data in
             do {
                 try handle.write(contentsOf: data)
+                written += data.count
             } catch {
                 throw ZGMicroFailure.disk(error.localizedDescription)
             }
         }
         try? handle.synchronize()
+        // 一帧都没写进去等同于没续传，显式报错，别让上层等成静默失败。
+        if written == 0, length > 0 {
+            throw ZGMicroFailure.protocolViolation("续传收到 0 字节，请求长度 \(length)")
+        }
     }
 
     // MARK: 依赖
@@ -431,10 +446,13 @@ final class ZGMicroFetcher: @unchecked Sendable {
         return digest.map { String(format: "%02x", $0) }.joined()
     }
 
+    /// 用 `attributesOfItem` 而不是 `URL.resourceValues`：后者按 URL 实例缓存，
+    /// 在文件刚被写入后可能读到旧的文件长度，让续传判定误以为一个字节都没写进去。
     static func fileSize(_ url: URL) -> Int64 {
-        guard let values = try? url.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey]),
-              values.isRegularFile == true else { return -1 }
-        return Int64(values.fileSize ?? -1)
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+              let kind = attributes[.type] as? FileAttributeType, kind == .typeRegular,
+              let size = attributes[.size] as? NSNumber else { return -1 }
+        return size.int64Value
     }
 
     static func touch(_ url: URL) {

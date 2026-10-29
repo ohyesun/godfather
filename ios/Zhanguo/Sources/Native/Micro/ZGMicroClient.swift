@@ -371,7 +371,9 @@ final class ZGMicroConnection: @unchecked Sendable {
         }
         let block = Int(ZGMicroBytes.u32(payload, 1))
         if block >= 4_096, block <= ZGMicroWire.maxBody - 64 { blockSize = block }
-        manifestSize = Int64(ZGMicroBytes.u64(payload, 7))
+        // HELLO_ACK 布局：status(1) blockSize(4) maxInflight(2) serverTime(8) manifestSize(8) sha256(32)
+        // manifestSize 从 1+4+2+8 = 15 开始；7 是 serverTime，读错会把时间戳当成清单长度。
+        manifestSize = Int64(ZGMicroBytes.u64(payload, 15))
         manifestSHA = Data(payload[23..<ZGMicroWire.helloAckBytes])
     }
 
