@@ -11,10 +11,15 @@
 #define ZG_JSON_MAX_DEPTH 64U
 #define ZG_JSON_MAX_TOKENS UINT32_C(262144)
 #define ZG_JSON_MAX_KEYS UINT32_C(65536)
-#define ZG_RENDER_PACKET_BYTES UINT32_C(117)
-#define ZG_RENDER_PAYLOAD_BYTES UINT32_C(93)
+#define ZG_RENDER_PACKET_BYTES UINT32_C(288)
+#define ZG_RENDER_PAYLOAD_BYTES UINT32_C(264)
 #define ZG_RENDER_MAP_RECORD_BYTES UINT32_C(22)
 #define ZG_RENDER_SELF_RECORD_BYTES UINT32_C(71)
+#define ZG_RENDER_ACTOR_RECORD_BYTES UINT32_C(46)
+#define ZG_RENDER_REMOVE_RECORD_BYTES UINT32_C(12)
+#define ZG_RENDER_EVENT_RECORD_BYTES UINT32_C(29)
+#define ZG_RENDER_HUD_RECORD_BYTES UINT32_C(38)
+#define ZG_RENDER_RECORD_COUNT UINT32_C(7)
 #define ZG_RENDER_MAP_ID UINT32_C(1)
 #define ZG_RENDER_SELF_UID UINT32_C(1)
 
@@ -164,6 +169,64 @@ static uint8_t *write_field_header(uint8_t *out, uint16_t field_id,
     out[3] = 0;
     write_le16(out + 4, value_length);
     return out + 6;
+}
+
+static uint8_t *write_record_header(uint8_t *out, uint16_t type,
+    uint32_t entity_id, uint32_t payload_bytes)
+{
+    write_le16(out + ZG_BRIDGE_RECORD_OFFSET_TYPE, type);
+    write_le16(out + ZG_BRIDGE_RECORD_OFFSET_SCHEMA, 0);
+    write_le32(out + ZG_BRIDGE_RECORD_OFFSET_ENTITY_ID, entity_id);
+    write_le32(out + ZG_BRIDGE_RECORD_OFFSET_PAYLOAD_BYTES, payload_bytes);
+    return out + ZG_BRIDGE_RECORD_HEADER_BYTES;
+}
+
+static void write_actor_upsert(uint8_t *record, uint32_t entity_id,
+    uint8_t name, float x, float z)
+{
+    uint8_t *field = write_record_header(record, UINT16_C(0x0103),
+        entity_id, 34);
+
+    field = write_field_header(field, UINT16_C(0x0001), 1, 1);
+    *field++ = 1; /* schema actor_kind: player */
+
+    field = write_field_header(field, UINT16_C(0x0002), 6, 1);
+    *field++ = name;
+
+    field = write_field_header(field, UINT16_C(0x0010), 5, 4);
+    write_f32(field, x);
+    field += 4;
+
+    field = write_field_header(field, UINT16_C(0x0012), 5, 4);
+    write_f32(field, z);
+}
+
+static void write_event(uint8_t *record)
+{
+    uint8_t *field = write_record_header(record, UINT16_C(0x0105), 0, 17);
+
+    field = write_field_header(field, UINT16_C(0x0050), 3, 4);
+    write_le32(field, 1);
+    field += 4;
+
+    field = write_field_header(field, UINT16_C(0x0051), 1, 1);
+    *field = 1; /* schema event_type: impact */
+}
+
+static void write_hud(uint8_t *record)
+{
+    uint8_t *field = write_record_header(record, UINT16_C(0x0106), 0, 26);
+
+    field = write_field_header(field, UINT16_C(0x0060), 4, 4);
+    write_le32(field, 123);
+    field += 4;
+
+    field = write_field_header(field, UINT16_C(0x0062), 2, 2);
+    write_le16(field, 2);
+    field += 2;
+
+    field = write_field_header(field, UINT16_C(0x0007), 2, 2);
+    write_le16(field, 3);
 }
 
 static int is_control_prefix(const zg_bridge *bridge)
@@ -775,7 +838,8 @@ zg_bridge_status zg_bridge_poll_render(
     write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_BASE_FRAME_ID, 0);
     write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_PAYLOAD_BYTES,
         ZG_RENDER_PAYLOAD_BYTES);
-    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RECORD_COUNT, 2);
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RECORD_COUNT,
+        ZG_RENDER_RECORD_COUNT);
     write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RESERVED, 0);
 
     /* MAP record: 12B header + 10B map_id TLV = 22B. */
@@ -830,6 +894,12 @@ zg_bridge_status zg_bridge_poll_render(
         field = write_field_header(field, UINT16_C(0x0022), 1, 1);
         *field++ = 0;
     }
+
+    write_actor_upsert(dst + 117, UINT32_C(1001), (uint8_t)'A', 3.0f, 4.0f);
+    write_actor_upsert(dst + 163, UINT32_C(1002), (uint8_t)'B', 5.0f, 6.0f);
+    write_record_header(dst + 209, UINT16_C(0x0104), UINT32_C(1002), 0);
+    write_event(dst + 221);
+    write_hud(dst + 250);
 
     bridge->request_full_pending = 0;
     ++bridge->stats.render_packets;

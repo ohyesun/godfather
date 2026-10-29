@@ -53,12 +53,18 @@ public final class MainActivity extends Activity {
         + "fetch('/zg/render',{cache:'no-store'}).then(function(response){"
         + "if(response.status!==200)return null;return response.arrayBuffer();"
         + "}).then(function(buffer){if(!buffer)return;var v=new Uint8Array(buffer);"
-        + "if(v.length!==117)return;var count=u16(v,20),off=24,map=0,self={};"
-        + "for(var i=0;i<count;i++){var type=u16(v,off),payload=u32(v,off+8),end=off+12+payload;"
+        + "if(v.length!==288)return;var count=u16(v,20),off=24,map=0,self={};"
+        + "var actors=new Map(),events=0,hud=0;"
+        + "for(var i=0;i<count;i++){var type=u16(v,off),entity=u32(v,off+4),payload=u32(v,off+8),end=off+12+payload;"
         + "if(type===0x0101){var m=fields(v,off+12,end);map=m[0x0100];}"
-        + "if(type===0x0102)self=fields(v,off+12,end);off=end;}"
-        + "console.log('ZG335JS full='+v.length+' map='+map+' self='+self[0x0002]"
-        + "+' x='+self[0x0010]+' z='+self[0x0012]+' dead='+self[0x0022]);"
+        + "else if(type===0x0102)self=fields(v,off+12,end);"
+        + "else if(type===0x0103){var a=fields(v,off+12,end);actors.set(entity,{kind:a[0x0001],name:a[0x0002],x:a[0x0010],z:a[0x0012]});}"
+        + "else if(type===0x0104)actors.delete(entity);"
+        + "else if(type===0x0105)events++;"
+        + "else if(type===0x0106)hud++;"
+        + "off=end;}"
+        + "console.log('ZG335JS full='+v.length+' records='+count+' actors='+actors.size"
+        + "+' events='+events+' hud='+hud+' map='+map+' self='+self[0x0002]);"
         + "}).catch(function(error){console.log('ZG335JS fetch-error '+error);})"
         + ".then(function(){busy=false;});}"
         + "poll();setInterval(poll,100);"
@@ -204,10 +210,10 @@ public final class MainActivity extends Activity {
         if (bridge == null || bridge.requestFull() != 0) {
             return null;
         }
-        ByteBuffer packet = ByteBuffer.allocateDirect(128)
+        ByteBuffer packet = ByteBuffer.allocateDirect(512)
             .order(ByteOrder.LITTLE_ENDIAN);
         int length = bridge.pollRender(packet);
-        if (length != 117) {
+        if (length != 288) {
             return null;
         }
         byte[] bytes = new byte[length];
