@@ -182,6 +182,8 @@ public final class MainActivity extends Activity {
         probe();
         runBridgeByteBuffer();
         runDebugFrameFeed();
+        MicroScope.attach(getAssets());
+        MicroStats.startTimeout();
         if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             new Thread(() -> MicroProbe.preflightRequiredTexture(this),
                 "micro-preflight").start();

@@ -361,3 +361,31 @@ Observed before failure timeout:
 Blocking issue: cold first-screen load does not reliably reach the HUD; the
 30s window cannot start. Next action is to diagnose the cold loading overlay /
 required path that prevents scene readiness, not to freeze early.
+
+## T85 frozen-scope cold FINAL
+
+Raw log: `app/src/main/cpp/PHASE6-COLD-RUN-T85.log`; screenshot:
+`app/src/main/cpp/PHASE6-UI-T85.png`.
+
+```text
+MICRO-SCOPE map=xianyangcheng spawn=138,184 duration=30s paths=87 sha256=4a3a5015
+MICRO-RUN-FINAL ok=966 bytes=40428673 uniquePaths=948 fail=1 requiredFail=0 optionalFail=1
+MICRO-FAIL events=1 uniquePaths=1
+MICRO-FAIL-OPTIONAL scenes/sprites/8277.webp
+SCENE-OK=0 05/0c lines=0
+```
+
+All 87 scope paths emitted `MICRO-REQ`; **87/87 status=ok, absent=0, fail=0**.
+`11_13.bin` was `attempts=1 ok` in this run (no retry). `16786117.png` was
+`attempts=1 ok`. Optional `11199.webp` was `MICRO-OK 21106B`; screenshot has no
+“场景贴图读取失败” toast. The single optional failure `8277.webp` remains
+visible and is not used to claim optional completeness.
+
+Timing caveat: FINAL was emitted at the **180s process timeout**, not 30s after
+HUD (the passive HUD probe did not trigger in time); `SCENE-OK=0` is the
+observer limitation. The screenshot shows the actual scene. This is transparent
+and not presented as a 30s-after-HUD result.
+
+APK debug 55846839B SHA256=`18859ba939da9eff8abc3be16eae17379afa4b33efdf1ec212f6f02b48ccbdee`;
+release 54791322B SHA256=`03971bcf957d93cf7ea09d2cba34c26530d016e39436f221c184b64e33c06bb7`;
+release keystore scan 0.

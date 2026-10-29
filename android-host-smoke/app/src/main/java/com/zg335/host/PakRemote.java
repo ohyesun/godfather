@@ -67,6 +67,9 @@ final class PakRemote {
         if (cache.isFile() && (storedLen < 0 || cache.length() == storedLen)) {
             Log.i(TAG, "MICRO-OK path=" + name + " bytes=" + cache.length());
             MicroStats.recordOk(name, cache.length());
+            if (isRequired(name)) {
+                MicroStats.ok(name, 1);
+            }
             return wrap(cache, flag);
         }
         if (cache.exists() && !cache.delete()) {
@@ -78,6 +81,9 @@ final class PakRemote {
         }
 
         boolean required = isRequired(name);
+        if (required) {
+            MicroStats.requested(name);
+        }
         int attempts = required ? 3 : 2;
         IOException lastIo = null;
         for (int attempt = 1; attempt <= attempts; ++attempt) {
@@ -122,26 +128,41 @@ final class PakRemote {
                 }
                 Log.i(TAG, "MICRO-OK path=" + name + " bytes=" + cache.length());
                 MicroStats.recordOk(name, cache.length());
+                if (required) {
+                    MicroStats.ok(name, attempt);
+                }
                 return wrap(cache, flag);
             } catch (Zgmu.ProtoError error) {
                 if (attempt < attempts && error.code == 0x30) {
                     lastIo = error;
+                    if (required) {
+                        MicroStats.retrying(name, attempt);
+                    }
                     logRetry(name, required, attempt);
                     sleep(attempt == 1 ? 100L : 300L);
                     continue;
                 }
                 Log.e(TAG, "MICRO-FAIL path=" + name + " code=" + error.code);
                 MicroStats.recordFail(name, error.code);
+                if (required) {
+                    MicroStats.failed(name, attempt);
+                }
                 throw error;
             } catch (IOException error) {
                 lastIo = error;
                 if (attempt < attempts) {
+                    if (required) {
+                        MicroStats.retrying(name, attempt);
+                    }
                     logRetry(name, required, attempt);
                     sleep(attempt == 1 ? 100L : 300L);
                     continue;
                 }
                 Log.e(TAG, "MICRO-FAIL path=" + name + " code=io");
                 MicroStats.recordFail(name, 0x30);
+                if (required) {
+                    MicroStats.failed(name, attempt);
+                }
                 throw error;
             } catch (Throwable error) {
                 Log.e(TAG, "MICRO-FAIL path=" + name + " code=io");
@@ -163,15 +184,7 @@ final class PakRemote {
     }
 
     static boolean isRequired(String name) {
-        if (name.startsWith("native107/textures/")
-            && name.endsWith(".png")) {
-            return true;
-        }
-        if (name.startsWith("native107/") && name.endsWith(".glb")) {
-            return true;
-        }
-        return name.startsWith("scenes/")
-            && (name.endsWith(".bin") || name.endsWith("/map.json"));
+        return MicroScope.isRequired(name);
     }
 
     private static void logRetry(String name, boolean required, int attempt) {
