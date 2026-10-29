@@ -281,6 +281,37 @@ GAME-OK 6020 cmd=0a01 len=18 encrypted=des
 `MICRO-FAIL=0` from T78 QA and T79's 33/31 are different windows; this cold
 FINAL has 37 events/36 paths and must not be collapsed into either.
 
+## T82/T83 final cold evidence
+
+Final cold run with scene-ready freeze (force-stop, `pm clear`, `logcat -c`,
+one 新开四区 enter). Raw sanitized log:
+`app/src/main/cpp/PHASE6-COLD-RUN.log`.
+
+```text
+MICRO-RUN-FINAL ok=26 bytes=549418 uniquePaths=26 fail=0 requiredFail=0 optionalFail=0
+MICRO-FAIL events=0 uniquePaths=0
+MICRO-FAIL-REQUIRED: <empty>
+MICRO-FAIL-OPTIONAL: <empty>
+SCENE-OK=0 05/0c lines=0
+```
+
+The counters freeze at scene-ready, so the later optional-sprite streaming is
+not included in this FINAL. In the same cold run after freeze:
+
+```text
+MICRO-OK path=native107/textures/16786117.png bytes=60548 source=preflight
+MICRO-OK path=scenes/sprites/11199.webp bytes=21106
+```
+
+`16786117.png` required PRE-FLIGHT returned 60548/60548. `11199.webp` loaded
+successfully through the WebView/PakRemote path; no “场景贴图读取失败” toast
+was observed. Screenshot `PHASE6-UI-COLD-FINAL.png` shows the actual scene.
+
+All remote resources now get at least one bounded retry (`MICRO-RETRY
+class=optional attempt=1`), required gets up to two; successful retry logs
+`MICRO-RECOVERED attempts=2`; non-transient errors are not retried. Counters
+do not increment on retry, only final success.
+
 ## Not yet connected
 
 UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
@@ -290,8 +321,8 @@ UI login/selection rerun and the separation of `05/0c` / `SCENE-OK` from
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
-| `app-debug.apk` | 55,843,965 | `0b2a0e38f6bae7f6ed2f7edf9a073861e79c92852fbc6f3b17dffa73291c492b` |
-| `app-release-unsigned.apk` | 54,790,882 | `16a88f63afd1dc170ab5f65260b8b287571ecd055bfe9d9958481e1cd1dc96bf` |
+| `app-debug.apk` | 55,844,860 | `a17ca6e86967ed512251535dcd4c31f9f4f4a2019177a003c01bd2dd3215e38b` |
+| `app-release-unsigned.apk` | 54,790,882 | `1af54f81e71de01eebc27a93650f7ffca76bc7272489754b8ae11de903ad9fe4` |
 
 Release keystore scan: 0 hits for `keystore|zg_test|.p12|.jks`; release remains
 unsigned.
@@ -302,7 +333,7 @@ unsigned.
 |---|---:|---|
 | `Zgmu.java` | 8395 | `39d15fd642a21102e421dd897af511b17768a6bdff7edf74f5a989b352f70882` |
 | `MicroProbe.java` | 4204 | `d4b2755dd6c7a0427f8a5f17149641ddc1dacb9439a6267e09a8b476ceedce31` |
-| `PakRemote.java` | 10302 | `ad648167eeb2dc935c6b4d9547c51cb896e19135f96eb2d61e8d96cffb64b932` |
+| `PakRemote.java` | 10522 | `0f5bb683ad33ed5171af2db99311087b4b13f98bdb7f5d682fb8a00baf859022` |
 | `PackedAssetsPathHandler.java` | 9315 | `3334340dad142242cdb2d9d741053f6454558cb31d7739d8a31f9252aa29e3a1` |
 | `MicroStats.java` | 2593 | `d6dd76e5d250d2fe1c6ce5bae406396ce7b7439eb94571458392503864f04e70` |
 | `Game6020Monitor.java` | 3260 | `3d61df803ef4a7b690014d967b9ba5d7f44109f1c31ec683a2a9e708fbb03bdb` |

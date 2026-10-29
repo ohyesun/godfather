@@ -78,7 +78,7 @@ final class PakRemote {
         }
 
         boolean required = isRequired(name);
-        int attempts = required ? 3 : 1;
+        int attempts = required ? 3 : 2;
         IOException lastIo = null;
         for (int attempt = 1; attempt <= attempts; ++attempt) {
             Zgmu client = null;
@@ -116,13 +116,17 @@ final class PakRemote {
                         throw new IOException("cannot commit cache");
                     }
                 }
+                if (attempt > 1) {
+                    Log.i(TAG, "MICRO-RECOVERED path=" + name
+                        + " attempts=" + attempt);
+                }
                 Log.i(TAG, "MICRO-OK path=" + name + " bytes=" + cache.length());
                 MicroStats.recordOk(name, cache.length());
                 return wrap(cache, flag);
             } catch (Zgmu.ProtoError error) {
-                if (required && attempt < attempts && error.code == 0x30) {
+                if (attempt < attempts && error.code == 0x30) {
                     lastIo = error;
-                    logRetry(name, attempt + 1);
+                    logRetry(name, required, attempt);
                     sleep(attempt == 1 ? 100L : 300L);
                     continue;
                 }
@@ -131,8 +135,8 @@ final class PakRemote {
                 throw error;
             } catch (IOException error) {
                 lastIo = error;
-                if (required && attempt < attempts) {
-                    logRetry(name, attempt + 1);
+                if (attempt < attempts) {
+                    logRetry(name, required, attempt);
                     sleep(attempt == 1 ? 100L : 300L);
                     continue;
                 }
@@ -170,9 +174,10 @@ final class PakRemote {
             && (name.endsWith(".bin") || name.endsWith("/map.json"));
     }
 
-    private static void logRetry(String name, int attempt) {
-        Log.i(TAG, "MICRO-RETRY path=" + name + " attempt=" + attempt
-            + " reason=io");
+    private static void logRetry(String name, boolean required, int attempt) {
+        Log.i(TAG, "MICRO-RETRY path=" + name + " class="
+            + (required ? "required" : "optional")
+            + " attempt=" + attempt);
     }
 
     private static void sleep(long ms) {

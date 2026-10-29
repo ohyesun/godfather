@@ -182,6 +182,10 @@ public final class MainActivity extends Activity {
         probe();
         runBridgeByteBuffer();
         runDebugFrameFeed();
+        if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            new Thread(() -> MicroProbe.preflightRequiredTexture(this),
+                "micro-preflight").start();
+        }
         web.loadUrl(ASSET_ORIGIN + ASSET_INDEX + "?sceneQA=1");
         installSceneReadyProbe(web);
     }

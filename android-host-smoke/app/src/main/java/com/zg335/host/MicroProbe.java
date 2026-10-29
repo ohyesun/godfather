@@ -104,6 +104,32 @@ final class MicroProbe {
         }
     }
 
+    static void preflightRequiredTexture(Context context) {
+        final String path = "native107/textures/16786117.png";
+        final long length = 60548L;
+        try {
+            PakRemote.attach(context);
+            try (InputStream input = PakRemote.openRemote(context.getAssets(),
+                path, length, 0)) {
+                byte[] buffer = new byte[8192];
+                long total = 0;
+                int count;
+                while ((count = input.read(buffer)) >= 0) {
+                    total += count;
+                }
+                if (total != length) {
+                    throw new IOException("preflight length mismatch");
+                }
+            }
+            Log.i(TAG, "MICRO-OK path=" + path + " bytes=" + length
+                + " source=preflight");
+        } catch (Zgmu.ProtoError error) {
+            Log.e(TAG, "MICRO-FAIL path=" + path + " code=" + error.code);
+        } catch (Throwable error) {
+            Log.e(TAG, "MICRO-FAIL path=" + path + " code=io");
+        }
+    }
+
     private static String readText(AssetManager assets, String name) throws Exception {
         InputStream input = assets.open(name);
         try {
