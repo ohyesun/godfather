@@ -11,9 +11,12 @@
 #define ZG_JSON_MAX_DEPTH 64U
 #define ZG_JSON_MAX_TOKENS UINT32_C(262144)
 #define ZG_JSON_MAX_KEYS UINT32_C(65536)
-#define ZG_RENDER_PACKET_BYTES UINT32_C(40)
-#define ZG_TEST_RECORD_TYPE UINT16_C(0x7f01)
-#define ZG_TEST_RECORD_PAYLOAD_BYTES UINT32_C(4)
+#define ZG_RENDER_PACKET_BYTES UINT32_C(117)
+#define ZG_RENDER_PAYLOAD_BYTES UINT32_C(93)
+#define ZG_RENDER_MAP_RECORD_BYTES UINT32_C(22)
+#define ZG_RENDER_SELF_RECORD_BYTES UINT32_C(71)
+#define ZG_RENDER_MAP_ID UINT32_C(1)
+#define ZG_RENDER_SELF_UID UINT32_C(1)
 
 struct zg_bridge {
     zg_bridge_config config;
@@ -26,7 +29,6 @@ struct zg_bridge {
     size_t tx_count;
     uint32_t request_full_pending;
     uint32_t render_frame_id;
-    uint32_t render_seq;
     uint64_t json_tokens;
     uint64_t json_keys;
     zg_bridge_stats stats;
@@ -145,6 +147,23 @@ static void write_le32(uint8_t *out, uint32_t value)
     out[1] = (uint8_t)(value >> 8);
     out[2] = (uint8_t)(value >> 16);
     out[3] = (uint8_t)(value >> 24);
+}
+
+static void write_f32(uint8_t *out, float value)
+{
+    uint32_t bits;
+    memcpy(&bits, &value, sizeof bits);
+    write_le32(out, bits);
+}
+
+static uint8_t *write_field_header(uint8_t *out, uint16_t field_id,
+    uint8_t type, uint16_t value_length)
+{
+    write_le16(out, field_id);
+    out[2] = type;
+    out[3] = 0;
+    write_le16(out + 4, value_length);
+    return out + 6;
 }
 
 static int is_control_prefix(const zg_bridge *bridge)
@@ -755,22 +774,63 @@ zg_bridge_status zg_bridge_poll_render(
         ++bridge->render_frame_id);
     write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_BASE_FRAME_ID, 0);
     write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_PAYLOAD_BYTES,
-        ZG_BRIDGE_RECORD_HEADER_BYTES + ZG_TEST_RECORD_PAYLOAD_BYTES);
-    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RECORD_COUNT, 1);
+        ZG_RENDER_PAYLOAD_BYTES);
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RECORD_COUNT, 2);
     write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RESERVED, 0);
 
-    /* Test-only record; replace with the PC contract record later. */
-    write_le16(dst + ZG_BRIDGE_ENVELOPE_SIZE +
-        ZG_BRIDGE_RECORD_OFFSET_TYPE, ZG_TEST_RECORD_TYPE);
-    write_le16(dst + ZG_BRIDGE_ENVELOPE_SIZE +
-        ZG_BRIDGE_RECORD_OFFSET_SCHEMA, 0);
-    write_le32(dst + ZG_BRIDGE_ENVELOPE_SIZE +
-        ZG_BRIDGE_RECORD_OFFSET_ENTITY_ID, 0);
-    write_le32(dst + ZG_BRIDGE_ENVELOPE_SIZE +
-        ZG_BRIDGE_RECORD_OFFSET_PAYLOAD_BYTES,
-        ZG_TEST_RECORD_PAYLOAD_BYTES);
-    write_le32(dst + ZG_BRIDGE_ENVELOPE_SIZE +
-        ZG_BRIDGE_RECORD_HEADER_BYTES, ++bridge->render_seq);
+    /* MAP record: 12B header + 10B map_id TLV = 22B. */
+    {
+        uint8_t *record = dst + ZG_BRIDGE_ENVELOPE_SIZE;
+        uint8_t *field;
+
+        write_le16(record + ZG_BRIDGE_RECORD_OFFSET_TYPE, UINT16_C(0x0101));
+        write_le16(record + ZG_BRIDGE_RECORD_OFFSET_SCHEMA, 0);
+        write_le32(record + ZG_BRIDGE_RECORD_OFFSET_ENTITY_ID, 0);
+        write_le32(record + ZG_BRIDGE_RECORD_OFFSET_PAYLOAD_BYTES, 10);
+        field = record + ZG_BRIDGE_RECORD_HEADER_BYTES;
+        field = write_field_header(field, UINT16_C(0x0100), 3, 4);
+        write_le32(field, ZG_RENDER_MAP_ID);
+    }
+
+    /* SELF record: 12B header + 59B payload = 71B. */
+    {
+        uint8_t *record = dst + ZG_BRIDGE_ENVELOPE_SIZE +
+            ZG_RENDER_MAP_RECORD_BYTES;
+        uint8_t *field;
+
+        write_le16(record + ZG_BRIDGE_RECORD_OFFSET_TYPE, UINT16_C(0x0102));
+        write_le16(record + ZG_BRIDGE_RECORD_OFFSET_SCHEMA, 0);
+        write_le32(record + ZG_BRIDGE_RECORD_OFFSET_ENTITY_ID,
+            ZG_RENDER_SELF_UID);
+        write_le32(record + ZG_BRIDGE_RECORD_OFFSET_PAYLOAD_BYTES, 59);
+        field = record + ZG_BRIDGE_RECORD_HEADER_BYTES;
+
+        field = write_field_header(field, UINT16_C(0x0002), 6, 1);
+        *field++ = (uint8_t)'T';
+
+        field = write_field_header(field, UINT16_C(0x0010), 5, 4);
+        write_f32(field, 1.0f);
+        field += 4;
+
+        field = write_field_header(field, UINT16_C(0x0012), 5, 4);
+        write_f32(field, 2.0f);
+        field += 4;
+
+        field = write_field_header(field, UINT16_C(0x0003), 6, 1);
+        *field++ = (uint8_t)'m';
+
+        field = write_field_header(field, UINT16_C(0x0013), 5, 4);
+        write_f32(field, 0.0f);
+        field += 4;
+
+        field = write_field_header(field, UINT16_C(0x0007), 2, 2);
+        write_le16(field, 1);
+        field += 2;
+
+        field = write_field_header(field, UINT16_C(0x0022), 1, 1);
+        *field++ = 0;
+    }
+
     bridge->request_full_pending = 0;
     ++bridge->stats.render_packets;
     *out_length = ZG_RENDER_PACKET_BYTES;
