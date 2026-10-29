@@ -1,0 +1,1 @@
+T93: Gradle JavaCompile is fixed to UTF-8, and PcapT91B uses Unicode escapes for the Chinese assertion; default `javac` (without `-encoding`) now yields `SELF_OK=true` and `SCENE-OK ... npc=10` (console GBK display may look garbled, but the in-test equality is true).

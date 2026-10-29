@@ -43,6 +43,10 @@ android {
     }
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
 dependencies {
     implementation "androidx.webkit:webkit:1.9.0"
 }

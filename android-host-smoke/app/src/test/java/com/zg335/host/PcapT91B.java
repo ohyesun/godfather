@@ -1,3 +1,4 @@
+// Build: javac -encoding UTF-8 ...; Windows default GBK can cause a false-negative SELF_OK.
 package com.zg335.host;
 
 import java.io.*;import java.nio.file.*;import java.util.*;import javax.crypto.*;import javax.crypto.spec.SecretKeySpec;
@@ -39,9 +40,9 @@ public class PcapT91B{
   }
   System.out.println("FRAMES="+frames);
   System.out.println("SCENE-MAP "+(map?"map=2 filename=xianyangcheng":"MISSING"));
-  boolean selfOk = "烈火教父".equals(selfName);
+  boolean selfOk = "\u70c8\u706b\u6559\u7236".equals(selfName);
   System.out.println("SELF_OK="+selfOk);
-  System.out.println("SCENE-OK "+((map&&selfOk&&npc==10)?"map=2 self=烈火教父 npc="+npc:"NOT_READY map="+map+" self="+self+" name_ok="+selfOk+" npc="+npc));
+  System.out.println("SCENE-OK "+((map&&selfOk&&npc==10)?"map=2 self=\u70c8\u706b\u6559\u7236 npc="+npc:"NOT_READY map="+map+" self="+self+" name_ok="+selfOk+" npc="+npc));
  }
  static byte[] inflate(byte[]b)throws Exception{try(java.util.zip.InflaterInputStream in=new java.util.zip.InflaterInputStream(new ByteArrayInputStream(b))){ByteArrayOutputStream o=new ByteArrayOutputStream();byte[]x=new byte[4096];int n;while((n=in.read(x))>=0)o.write(x,0,n);return o.toByteArray();}catch(Exception e){return null;}}
  static int u16(byte[]b,int o){return(b[o]&255)|((b[o+1]&255)<<8);}static int u32(byte[]b,int o){return(b[o]&255)|((b[o+1]&255)<<8)|((b[o+2]&255)<<16)|((b[o+3]&255)<<24);}
