@@ -27,6 +27,12 @@ target_include_directories(zg_bridge_test_frame PRIVATE
 target_link_libraries(zg_bridge_test_frame PRIVATE zg_bridge z)
 target_compile_features(zg_bridge_test_frame PRIVATE c_std_11)
 target_compile_options(zg_bridge_test_frame PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
+add_executable(zg_bridge_test_render
+    tests/test_render.c)
+target_link_libraries(zg_bridge_test_render PRIVATE zg_bridge)
+target_compile_features(zg_bridge_test_render PRIVATE c_std_11)
+target_compile_options(zg_bridge_test_render PRIVATE -Wall -Wextra -Wpedantic -Werror)
 set_target_properties(zg_bridge_test_abi PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON

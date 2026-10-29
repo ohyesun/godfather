@@ -22,6 +22,7 @@ struct zg_bridge {
     size_t tx_head;
     size_t tx_count;
     uint32_t request_full_pending;
+    uint32_t render_frame_id;
     uint64_t json_tokens;
     uint64_t json_keys;
     zg_bridge_stats stats;
@@ -126,6 +127,20 @@ static uint32_t peek_le32(const zg_bridge *bridge, size_t offset)
         ((uint32_t)ring_byte(bridge, offset + 1) << 8) |
         ((uint32_t)ring_byte(bridge, offset + 2) << 16) |
         ((uint32_t)ring_byte(bridge, offset + 3) << 24);
+}
+
+static void write_le16(uint8_t *out, uint16_t value)
+{
+    out[0] = (uint8_t)value;
+    out[1] = (uint8_t)(value >> 8);
+}
+
+static void write_le32(uint8_t *out, uint32_t value)
+{
+    out[0] = (uint8_t)value;
+    out[1] = (uint8_t)(value >> 8);
+    out[2] = (uint8_t)(value >> 16);
+    out[3] = (uint8_t)(value >> 24);
 }
 
 static int is_control_prefix(const zg_bridge *bridge)
@@ -717,7 +732,30 @@ zg_bridge_status zg_bridge_poll_render(
         return ZG_BRIDGE_PROTOCOL_ERROR;
     }
     *out_length = 0;
-    return ZG_BRIDGE_AGAIN;
+    if (bridge->request_full_pending == 0) {
+        return ZG_BRIDGE_AGAIN;
+    }
+    if (capacity < ZG_BRIDGE_ENVELOPE_SIZE) {
+        set_error(bridge, ZG_BRIDGE_OVERSIZE);
+        return ZG_BRIDGE_OVERSIZE;
+    }
+
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_MAGIC, ZG_BRIDGE_MAGIC);
+    dst[ZG_BRIDGE_ENVELOPE_OFFSET_VERSION] = ZG_BRIDGE_ENVELOPE_VERSION;
+    dst[ZG_BRIDGE_ENVELOPE_OFFSET_KIND] = ZG_BRIDGE_KIND_CONTROL;
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_FLAGS, 0);
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_HEADER_BYTES,
+        ZG_BRIDGE_ENVELOPE_HEADER_BYTES);
+    write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_FRAME_ID,
+        ++bridge->render_frame_id);
+    write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_BASE_FRAME_ID, 0);
+    write_le32(dst + ZG_BRIDGE_ENVELOPE_OFFSET_PAYLOAD_BYTES, 0);
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RECORD_COUNT, 0);
+    write_le16(dst + ZG_BRIDGE_ENVELOPE_OFFSET_RESERVED, 0);
+    bridge->request_full_pending = 0;
+    ++bridge->stats.render_packets;
+    *out_length = ZG_BRIDGE_ENVELOPE_SIZE;
+    return ZG_BRIDGE_OK;
 }
 
 zg_bridge_status zg_bridge_poll_tx(
