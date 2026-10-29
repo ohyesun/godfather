@@ -88,7 +88,7 @@ int main(void)
     CHECK(le16(packet + 117 + ZG_BRIDGE_RECORD_OFFSET_TYPE) == 0x0103);
     CHECK(le32(packet + 117 + ZG_BRIDGE_RECORD_OFFSET_ENTITY_ID) == 1001);
     CHECK(le32(packet + 117 + ZG_BRIDGE_RECORD_OFFSET_PAYLOAD_BYTES) == 34);
-    CHECK(packet[135] == 1);
+    CHECK(packet[135] == 2);
     CHECK(packet[142] == (uint8_t)'A');
     CHECK(lef32(packet + 149) == 3.0f);
     CHECK(lef32(packet + 159) == 4.0f);

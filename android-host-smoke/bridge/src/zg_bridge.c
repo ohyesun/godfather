@@ -182,13 +182,13 @@ static uint8_t *write_record_header(uint8_t *out, uint16_t type,
 }
 
 static void write_actor_upsert(uint8_t *record, uint32_t entity_id,
-    uint8_t name, float x, float z)
+    uint8_t kind, uint8_t name, float x, float z)
 {
     uint8_t *field = write_record_header(record, UINT16_C(0x0103),
         entity_id, 34);
 
     field = write_field_header(field, UINT16_C(0x0001), 1, 1);
-    *field++ = 1; /* schema actor_kind: player */
+    *field++ = kind;
 
     field = write_field_header(field, UINT16_C(0x0002), 6, 1);
     *field++ = name;
@@ -895,8 +895,8 @@ zg_bridge_status zg_bridge_poll_render(
         *field++ = 0;
     }
 
-    write_actor_upsert(dst + 117, UINT32_C(1001), (uint8_t)'A', 3.0f, 4.0f);
-    write_actor_upsert(dst + 163, UINT32_C(1002), (uint8_t)'B', 5.0f, 6.0f);
+    write_actor_upsert(dst + 117, UINT32_C(1001), 2, (uint8_t)'A', 3.0f, 4.0f);
+    write_actor_upsert(dst + 163, UINT32_C(1002), 1, (uint8_t)'B', 5.0f, 6.0f);
     write_record_header(dst + 209, UINT16_C(0x0104), UINT32_C(1002), 0);
     write_event(dst + 221);
     write_hud(dst + 250);
