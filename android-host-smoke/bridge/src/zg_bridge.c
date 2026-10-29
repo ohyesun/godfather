@@ -9,6 +9,8 @@
 #define ZG_FRAME_ABS_MAX_BYTES (UINT32_C(2) * UINT32_C(1024) * UINT32_C(1024))
 #define ZG_CONTROL_BYTES UINT32_C(24)
 #define ZG_JSON_MAX_DEPTH 64U
+#define ZG_JSON_MAX_TOKENS UINT32_C(262144)
+#define ZG_JSON_MAX_KEYS UINT32_C(65536)
 
 struct zg_bridge {
     zg_bridge_config config;
@@ -151,6 +153,24 @@ typedef struct JsonCursor {
     uint32_t keys;
 } JsonCursor;
 
+static int json_add_token(JsonCursor *cursor)
+{
+    if (cursor->tokens >= ZG_JSON_MAX_TOKENS) {
+        return 0;
+    }
+    ++cursor->tokens;
+    return 1;
+}
+
+static int json_add_key(JsonCursor *cursor)
+{
+    if (cursor->keys >= ZG_JSON_MAX_KEYS) {
+        return 0;
+    }
+    ++cursor->keys;
+    return 1;
+}
+
 static void json_skip_ws(JsonCursor *cursor)
 {
     while (cursor->offset < cursor->length) {
@@ -162,6 +182,92 @@ static void json_skip_ws(JsonCursor *cursor)
     }
 }
 
+static int json_utf8(JsonCursor *cursor)
+{
+    const uint8_t *bytes = cursor->bytes;
+    size_t offset = cursor->offset;
+    size_t length = cursor->length;
+    uint8_t first = bytes[offset];
+
+    if (first < 0x80) {
+        cursor->offset += 1;
+        return 1;
+    }
+    if (first >= 0xc2 && first <= 0xdf) {
+        if (offset + 1 >= length || (bytes[offset + 1] & 0xc0) != 0x80) {
+            return 0;
+        }
+        cursor->offset += 2;
+        return 1;
+    }
+    if (first >= 0xe0 && first <= 0xef) {
+        uint8_t second;
+        if (offset + 2 >= length) {
+            return 0;
+        }
+        second = bytes[offset + 1];
+        if (first == 0xe0 && second < 0xa0) {
+            return 0;
+        }
+        if (first == 0xed && second >= 0xa0) {
+            return 0;
+        }
+        if (second < 0x80 || second > 0xbf ||
+            (bytes[offset + 2] & 0xc0) != 0x80) {
+            return 0;
+        }
+        cursor->offset += 3;
+        return 1;
+    }
+    if (first >= 0xf0 && first <= 0xf4) {
+        uint8_t second;
+        if (offset + 3 >= length) {
+            return 0;
+        }
+        second = bytes[offset + 1];
+        if (first == 0xf0 && second < 0x90) {
+            return 0;
+        }
+        if (first == 0xf4 && second > 0x8f) {
+            return 0;
+        }
+        if (second < 0x80 || second > 0xbf ||
+            (bytes[offset + 2] & 0xc0) != 0x80 ||
+            (bytes[offset + 3] & 0xc0) != 0x80) {
+            return 0;
+        }
+        cursor->offset += 4;
+        return 1;
+    }
+    return 0;
+}
+
+static int json_hex4(JsonCursor *cursor, uint32_t *value)
+{
+    uint32_t out = 0;
+    size_t i;
+
+    if (cursor->offset + 4 > cursor->length) {
+        return 0;
+    }
+    for (i = 0; i < 4; ++i) {
+        uint8_t c = cursor->bytes[cursor->offset + i];
+        out <<= 4;
+        if (c >= '0' && c <= '9') {
+            out |= (uint32_t)(c - '0');
+        } else if (c >= 'a' && c <= 'f') {
+            out |= (uint32_t)(c - 'a' + 10);
+        } else if (c >= 'A' && c <= 'F') {
+            out |= (uint32_t)(c - 'A' + 10);
+        } else {
+            return 0;
+        }
+    }
+    cursor->offset += 4;
+    *value = out;
+    return 1;
+}
+
 static int json_string(JsonCursor *cursor, int is_key)
 {
     if (cursor->offset >= cursor->length ||
@@ -169,21 +275,55 @@ static int json_string(JsonCursor *cursor, int is_key)
         return 0;
     }
     ++cursor->offset;
-    ++cursor->tokens;
+    if (!json_add_token(cursor)) {
+        return 0;
+    }
     while (cursor->offset < cursor->length) {
-        uint8_t value = cursor->bytes[cursor->offset++];
+        uint8_t value = cursor->bytes[cursor->offset];
         if (value == '"') {
-            if (is_key) {
-                ++cursor->keys;
+            ++cursor->offset;
+            if (is_key && !json_add_key(cursor)) {
+                return 0;
             }
             return 1;
         }
         if (value == '\\') {
+            uint8_t escaped;
+            ++cursor->offset;
             if (cursor->offset >= cursor->length) {
                 return 0;
             }
-            ++cursor->offset;
+            escaped = cursor->bytes[cursor->offset++];
+            if (escaped == 'u') {
+                uint32_t codepoint;
+                if (!json_hex4(cursor, &codepoint)) {
+                    return 0;
+                }
+                if (codepoint >= 0xd800 && codepoint <= 0xdbff) {
+                    uint32_t low;
+                    if (cursor->offset + 2 > cursor->length ||
+                        cursor->bytes[cursor->offset] != '\\' ||
+                        cursor->bytes[cursor->offset + 1] != 'u') {
+                        return 0;
+                    }
+                    cursor->offset += 2;
+                    if (!json_hex4(cursor, &low) ||
+                        low < 0xdc00 || low > 0xdfff) {
+                        return 0;
+                    }
+                } else if (codepoint >= 0xdc00 && codepoint <= 0xdfff) {
+                    return 0;
+                }
+            } else if (escaped != '"' && escaped != '\\' && escaped != '/' &&
+                escaped != 'b' && escaped != 'f' && escaped != 'n' &&
+                escaped != 'r' && escaped != 't') {
+                return 0;
+            }
         } else if (value < 0x20) {
+            return 0;
+        } else if (value < 0x80) {
+            ++cursor->offset;
+        } else if (!json_utf8(cursor)) {
             return 0;
         }
     }
@@ -198,8 +338,7 @@ static int json_literal(JsonCursor *cursor, const char *literal)
         return 0;
     }
     cursor->offset += length;
-    ++cursor->tokens;
-    return 1;
+    return json_add_token(cursor);
 }
 
 static int json_value(JsonCursor *cursor, unsigned depth);
@@ -262,8 +401,7 @@ static int json_number(JsonCursor *cursor)
     if (cursor->offset == start) {
         return 0;
     }
-    ++cursor->tokens;
-    return 1;
+    return json_add_token(cursor);
 }
 
 static int json_object(JsonCursor *cursor, unsigned depth)
@@ -272,7 +410,9 @@ static int json_object(JsonCursor *cursor, unsigned depth)
         return 0;
     }
     ++cursor->offset;
-    ++cursor->tokens;
+    if (!json_add_token(cursor)) {
+        return 0;
+    }
     json_skip_ws(cursor);
     if (cursor->offset < cursor->length &&
         cursor->bytes[cursor->offset] == '}') {
@@ -315,7 +455,9 @@ static int json_array(JsonCursor *cursor, unsigned depth)
         return 0;
     }
     ++cursor->offset;
-    ++cursor->tokens;
+    if (!json_add_token(cursor)) {
+        return 0;
+    }
     json_skip_ws(cursor);
     if (cursor->offset < cursor->length &&
         cursor->bytes[cursor->offset] == ']') {
@@ -417,10 +559,13 @@ static zg_bridge_status decode_gzip_json(zg_bridge *bridge,
     stream.avail_out = (uInt)plain_capacity;
     result = inflate(&stream, Z_FINISH);
     plain_length = plain_capacity - stream.avail_out;
+    if (result == Z_STREAM_END && stream.avail_in != 0) {
+        result = Z_DATA_ERROR; /* trailing bytes or concatenated gzip member */
+    }
     inflateEnd(&stream);
     if (result != Z_STREAM_END) {
         free(plain);
-        set_error(bridge, result == Z_BUF_ERROR && plain_length == plain_capacity ?
+        set_error(bridge, plain_length == plain_capacity ?
             ZG_BRIDGE_OVERSIZE : ZG_BRIDGE_PROTOCOL_ERROR);
         return bridge->stats.last_error == ZG_BRIDGE_OVERSIZE ?
             ZG_BRIDGE_OVERSIZE : ZG_BRIDGE_PROTOCOL_ERROR;
@@ -545,6 +690,7 @@ zg_bridge_status zg_bridge_feed(
     }
     if (length > bridge->rx_capacity ||
         length > ring_free(bridge->rx_capacity, bridge->rx_count)) {
+        ring_clear(bridge);
         set_error(bridge, length > bridge->rx_capacity ?
             ZG_BRIDGE_OVERSIZE : ZG_BRIDGE_BACKPRESSURE);
         return bridge->stats.last_error == ZG_BRIDGE_OVERSIZE ?
