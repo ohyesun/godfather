@@ -7,7 +7,9 @@
 
 ## 1. Verdict
 
-**PASS for the real direct-7000 login and role list; the 6020 first-connect timeout followed by retry success was reproduced.**
+**PASS for the real direct-7000 login and role list; CONCERN for the 6020 first-connect timeout/session contention.**
+
+The QA evidence is re-signed against the corrected T72 report at `4e1616d`; that commit changes only `PHASE4-LOGIN-REPORT.md` (8 lines), while the three Java source hashes remain unchanged. The 6020 first-connect timeout was reproduced and is correctly recorded by the author as a session/old-APK contention CONCERN, not as a PASS condition or an RC5 failure.
 
 The device is on the character selection screen with `烈火教父 神农26级` and `战国七雄 神农1级`. The log contains only login metadata (`accid`, game endpoint, ticket length); no password or ticket content is printed. No hardcoded account/password/ticket literals are present in the three inspected Java files.
 
@@ -105,12 +107,21 @@ Current release APK:
 | No password/ticket content logged | PASS: ticket length only |
 | Real 45.124.78.8:7000 login | PASS |
 | LOGIN-OK metadata | PASS: accid1 / game 6020 / 260B |
-| 6020 first timeout + retry success | PASS: reproduced |
+| 6020 first timeout + retry success | CONCERN: session contention, reproduced |
 | Character list | PASS: 烈火教父26 / 战国七雄1 |
 | 68/78/0f/10/02/04 real chain | PASS by successful real login/character list; no fake-key/false account |
 | view51/client/protocol/assets unchanged | PASS: commit scope |
 | release p12/keystore | PASS: 0 |
 
-## 8. Boundary
+## 8. Report revision `4e1616d`
+
+The corrected T72 report at `4e1616d` was independently reviewed:
+
+- It changes only `PHASE4-LOGIN-REPORT.md` (8 insertions/1 deletion), not the three Java source files.
+- The corrected report now says the commit was pushed as `ef7500a`; the stale “no push” line is removed.
+- It records the 6020 first-connect timeout as old-APK/session contention, not as an RC5/68-04 failure; this matches the observed timeout followed by a successful retry.
+- Source hashes remain `ad216a69...` / `4a510ddd...` / `bf57e5c3...`; the role-list screenshot and APK evidence are unchanged.
+
+## 9. Boundary
 
 This is local WebView/socket/APK QA on MuMu x86_64. It does not claim production runtime, iOS, signing, physical device, whole-game acceptance, or credential security beyond the checked log/code paths. No product source, tests, Java or JS was modified; no push was performed.
