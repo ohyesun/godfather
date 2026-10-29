@@ -9,8 +9,8 @@
 #define ZG_FRAME_ABS_MAX_BYTES (UINT32_C(2) * UINT32_C(1024) * UINT32_C(1024))
 #define ZG_CONTROL_BYTES UINT32_C(24)
 #define ZG_JSON_MAX_DEPTH 64U
-#define ZG_JSON_MAX_TOKENS UINT32_C(262144)
-#define ZG_JSON_MAX_KEYS UINT32_C(65536)
+#define ZG_JSON_MAX_TOKENS UINT32_C(65536)
+#define ZG_JSON_MAX_KEYS UINT32_C(16384)
 
 struct zg_bridge {
     zg_bridge_config config;
@@ -688,13 +688,14 @@ zg_bridge_status zg_bridge_feed(
     if (status != ZG_BRIDGE_OK) {
         return status;
     }
-    if (length > bridge->rx_capacity ||
-        length > ring_free(bridge->rx_capacity, bridge->rx_count)) {
+    if (length > bridge->rx_capacity) {
         ring_clear(bridge);
-        set_error(bridge, length > bridge->rx_capacity ?
-            ZG_BRIDGE_OVERSIZE : ZG_BRIDGE_BACKPRESSURE);
-        return bridge->stats.last_error == ZG_BRIDGE_OVERSIZE ?
-            ZG_BRIDGE_OVERSIZE : ZG_BRIDGE_BACKPRESSURE;
+        set_error(bridge, ZG_BRIDGE_OVERSIZE);
+        return ZG_BRIDGE_OVERSIZE;
+    }
+    if (length > ring_free(bridge->rx_capacity, bridge->rx_count)) {
+        set_error(bridge, ZG_BRIDGE_BACKPRESSURE);
+        return ZG_BRIDGE_BACKPRESSURE;
     }
     if (length != 0) {
         ring_append(bridge->rx, bridge->rx_capacity, &bridge->rx_head,

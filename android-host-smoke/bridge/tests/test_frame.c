@@ -139,20 +139,52 @@ int main(void)
     CHECK(stats.last_error == 0);
     zg_bridge_destroy(bridge);
 
-    /* Trailing bytes after gzip member must fail. */
-    CHECK(compressed_length + 7 <= sizeof compressed);
-    memcpy(compressed + compressed_length, "GARBAGE", 7);
-    frame_length = build_frame(compressed, compressed_length + 7, frame,
-        sizeof frame);
-    CHECK(frame_length > 0);
-    bridge = make_bridge(4096, 2U * 1024U * 1024U);
+    /* BACKPRESSURE preserves the accepted partial frame and can recover. */
+    bridge = make_bridge((uint32_t)frame_length, 2U * 1024U * 1024U);
     CHECK(bridge != NULL);
-    CHECK(zg_bridge_feed(bridge, frame, frame_length, 0) ==
-        ZG_BRIDGE_PROTOCOL_ERROR);
+    CHECK(zg_bridge_feed(bridge, frame, frame_length - 1, 0) ==
+        ZG_BRIDGE_OK);
+    CHECK(zg_bridge_feed(bridge, frame + frame_length - 1, 6, 0) ==
+        ZG_BRIDGE_BACKPRESSURE);
+    CHECK(zg_bridge_feed(bridge, frame + frame_length - 1, 1, 0) ==
+        ZG_BRIDGE_OK);
     zg_bridge_get_stats(bridge, &stats);
-    CHECK(stats.frames == 0);
-    CHECK(stats.last_error == ZG_BRIDGE_PROTOCOL_ERROR);
+    CHECK(stats.frames == 1);
+    CHECK(stats.last_error == ZG_BRIDGE_BACKPRESSURE);
     zg_bridge_destroy(bridge);
+
+    /* Trailing bytes after gzip member must fail: GARBAGE, 0x00, second gzip. */
+    {
+        size_t trailing_case;
+        for (trailing_case = 0; trailing_case < 3; ++trailing_case) {
+            compressed_length = gzip_bytes((const uint8_t *)json_text,
+                strlen(json_text), compressed, sizeof compressed);
+            CHECK(compressed_length > 0);
+            if (trailing_case == 0) {
+                memcpy(compressed + compressed_length, "GARBAGE", 7);
+                frame_length = build_frame(compressed, compressed_length + 7,
+                    frame, sizeof frame);
+            } else if (trailing_case == 1) {
+                compressed[compressed_length] = 0;
+                frame_length = build_frame(compressed, compressed_length + 1,
+                    frame, sizeof frame);
+            } else {
+                memcpy(compressed + compressed_length, compressed,
+                    compressed_length);
+                frame_length = build_frame(compressed, compressed_length * 2,
+                    frame, sizeof frame);
+            }
+            CHECK(frame_length > 0);
+            bridge = make_bridge(4096, 2U * 1024U * 1024U);
+            CHECK(bridge != NULL);
+            CHECK(zg_bridge_feed(bridge, frame, frame_length, 0) ==
+                ZG_BRIDGE_PROTOCOL_ERROR);
+            zg_bridge_get_stats(bridge, &stats);
+            CHECK(stats.frames == 0);
+            CHECK(stats.last_error == ZG_BRIDGE_PROTOCOL_ERROR);
+            zg_bridge_destroy(bridge);
+        }
+    }
 
     /* Invalid UTF-8 in a JSON string must fail: 0x80, overlong C0 AF, 0xFF. */
     {
