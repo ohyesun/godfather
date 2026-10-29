@@ -20,6 +20,7 @@ or decompiled-Java changes.
   - logs accumulated bridge stats
 - `app/src/debug/res/raw/zg_test_keystore.p12`
   - debug-only test certificate/key; not packaged in release
+  - test-only declaration: `app/src/debug/TEST-KEYSTORE.md`
 - `app/src/main/java/com/zg335/host/MainActivity.java`
   - debug hook via reflection (test class is absent from release)
 - `app/src/main/AndroidManifest.xml`
@@ -35,6 +36,17 @@ not part of `assets/`.
 Android rejected the first PKCS12 generation (`No installed provider supports
 this key: PKCS12Key`); a legacy-algorithm PKCS12 then loaded. Android also does
 not expose JKS, so JKS was discarded. The final debug path uses PKCS12.
+
+Test-only declaration (`app/src/debug/TEST-KEYSTORE.md`):
+
+- file: `zg_test_keystore.p12`
+- alias `zgtls`, password `changeit`
+- self-signed `CN=127.0.0.1`, SAN `IP:127.0.0.1`, RSA-2048
+- no trust value; not a production credential or real trust anchor
+- SHA-256 `574404a5bc8115280fdbc7b0bc7cf28b64a3630c5579d5fed6565edbcfa77cd9`
+- only under `app/src/debug/res/raw`; release must exclude it
+- no `zg_test_keystore.jks` is used: Android cannot load JKS. The release
+  exclusion check covers `.jks`, `.p12`, `keystore`, and `zg_test` names.
 
 ## Build and device result
 
@@ -76,6 +88,27 @@ APK:
 `JSON.parse` or `JSON.stringify`; the only "JSON" occurrences are comments. The
 reader passes direct `ByteBuffer` bytes to C; the writer accepts `byte[]` only.
 No frame contents are inspected in the test.
+
+## Release keystore exclusion
+
+`./gradlew assembleRelease` succeeded.
+
+Debug APK zip entry:
+
+```text
+res/raw/zg_test_keystore.p12
+```
+
+Release APK (`app-release-unsigned.apk`, 42,794,686 bytes, SHA-256
+`856226ce2266bfa06ccf4abe5b5cb892a09997265898842ba0fb397f71fe3eb7`)
+zip scan for `keystore`, `zg_test`, `.p12`, `.jks`:
+
+```text
+keystore_hits []
+```
+
+Thus the debug test key is absent from release; no `zg_test_keystore.jks`
+exists in either APK.
 
 ## Boundary
 
