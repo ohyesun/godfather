@@ -201,7 +201,10 @@ public final class MainActivity extends Activity {
             web.evaluateJavascript(
                 "(function(){var h=document.getElementById('hud');"
                     + "var l=document.querySelector('.bridgeLoading114');"
-                    + "return !!(h&&!h.classList.contains('hidden')&&!l);})()",
+                    + "var m=document.getElementById('mapName');"
+                    + "var hero=document.getElementById('hero');"
+                    + "return !!(h&&!h.classList.contains('hidden')&&!l&&"
+                    + "m&&m.textContent.trim()&&hero&&hero.textContent.trim());})()",
                 value -> {
                     if ("true".equals(value)) {
                         web.evaluateJavascript(

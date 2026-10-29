@@ -43,7 +43,10 @@ final class MicroStats {
         timeoutTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                summary();
+                synchronized (MicroStats.class) {
+                    if (finalized) return;
+                    Log.e(TAG, "MICRO-BLOCKED reason=hud-timeout");
+                }
             }
         }, 180000L);
     }
@@ -58,6 +61,7 @@ final class MicroStats {
         if (timer != null) {
             timer.cancel();
         }
+        Log.i(TAG, "MICRO-HUD-READY window=HUD+30s");
         Log.i(TAG, SCOPE);
         timer = new Timer("micro-final", true);
         timer.schedule(new TimerTask() {
@@ -77,6 +81,7 @@ final class MicroStats {
         ++ok;
         bytes += Math.max(0, size);
         UNIQUE.add(path);
+        FAIL_PATHS.remove(path);
         schedule();
     }
 
@@ -156,9 +161,11 @@ final class MicroStats {
         }
         Log.i(TAG, SCOPE);
         Log.i(TAG, "MICRO-RUN-FINAL ok=" + ok + " bytes=" + bytes
-            + " uniquePaths=" + UNIQUE.size() + " fail=" + fail
-            + " requiredFail=" + required.size()
-            + " optionalFail=" + optional.size()
+            + " uniquePaths=" + UNIQUE.size()
+            + " failureEvents=" + fail
+            + " requiredFailFinal=" + required.size()
+            + " optionalFailFinal=" + optional.size()
+            + " window=HUD+30s"
             + " start=" + START + " end=" + System.currentTimeMillis());
         for (String path : MicroScope.paths()) {
             Req req = REQUESTS.get(path);

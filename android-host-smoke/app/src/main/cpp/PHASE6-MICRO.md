@@ -418,3 +418,33 @@ caveat is explicit, and SCENE-OK is not fabricated.
 APK debug 55846872B SHA256=`ba52a6e03c439f87ecc68a10e1d4d0dca85cf9a4727afe1df181788e096c1b06`;
 release 54791322B SHA256=`944a38e65a03867563c788cae13819652d082a6636c206fa1ac451936154428d`;
 release keystore scan 0.
+
+## T87/T88 HUD+30s FINAL (semantics fixed)
+
+Semantics fixed: a successful path is removed from the final fail set; the
+historical `failureEvents` counter is retained. FINAL now prints
+`failureEvents`, `requiredFailFinal`, `optionalFailFinal`, and
+`window=HUD+30s`.
+
+`MICRO-HUD-READY window=HUD+30s` fired (new HUD condition requires visible
+`#hud`, nonempty map/hero, and no loading overlay), then FINAL after exactly 30s:
+
+```text
+MICRO-SCOPE map=xianyangcheng spawn=138,184 duration=30s paths=87 sha256=4a3a5015
+MICRO-RUN-FINAL ok=1015 bytes=41880591 uniquePaths=998 failureEvents=0 requiredFailFinal=0 optionalFailFinal=0 window=HUD+30s
+MICRO-FAIL events=0 uniquePaths=0
+MICRO-FAIL-REQUIRED: <empty>
+MICRO-FAIL-OPTIONAL: <empty>
+SCENE-OK=0 05/0c lines=0
+```
+
+- 87/87 scope `MICRO-REQ` lines are in the raw log.
+- `8277.webp` previously failed, then recovered: `MICRO-OK 10399`, and is not
+  in final optional fail.
+- `11199.webp`: `MICRO-OK 21106`, no toast.
+- Screenshot `PHASE6-UI-T88.png` shows the actual scene.
+- `SCENE-OK=0` is the passive observer limitation; not fabricated.
+
+APK debug 55847057B SHA256=`8d6af67e1faa0de238fe026e893b00621a19d8440b3dcdab04c53db9e3e33162`;
+release 54791322B SHA256=`1672ecfbd98e40f21fbcdddd495c4e8c746f34bc82538b1a1c71257520e35911`;
+release keystore scan 0.
