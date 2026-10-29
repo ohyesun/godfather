@@ -69,3 +69,40 @@ workflows:
     - out/android-x86_64/**
     - build-android-x86_64/zg335_probe
     - build-android-x86_64/CMakeCache.txt
+
+  ios-link-smoke:
+    name: iOS device link smoke
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    scripts:
+      - name: Build iOS library
+        script: |
+          set -eu
+          CMAKE_BIN="$(command -v cmake || true)"
+          if [ -z "$CMAKE_BIN" ] && [ -x /opt/homebrew/bin/cmake ]; then CMAKE_BIN=/opt/homebrew/bin/cmake; fi
+          [ -n "$CMAKE_BIN" ] || { echo "cmake not found" >&2; exit 2; }
+          "$CMAKE_BIN" -S design -B build-ios \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$CM_BUILD_DIR/out/ios-device-arm64" \
+            -DZG_LEGACY_ROOT="$CM_BUILD_DIR/vendor/legacy" \
+            -DZG_ADAPTER_ROOT="$CM_BUILD_DIR/vendor/adapter"
+          "$CMAKE_BIN" --build build-ios --target install
+      - name: Link consumer
+        script: |
+          set -eu
+          SDK="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos clang -arch arm64 -isysroot "$SDK" -mios-version-min=13.0 \
+            -Iout/ios-device-arm64/include/zg335 \
+            consumer-smoke/main.c \
+            out/ios-device-arm64/lib/libzg335_portable.a \
+            -o build-ios/zg335_consumer_ios
+          file build-ios/zg335_consumer_ios
+          lipo -info build-ios/zg335_consumer_ios
+          otool -L build-ios/zg335_consumer_ios
+    artifacts:
+      - build-ios/zg335_consumer_ios
+      - out/ios-device-arm64/**
