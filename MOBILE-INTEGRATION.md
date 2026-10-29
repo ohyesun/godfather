@@ -87,9 +87,23 @@ GitHub Actions workflow `.github/workflows/ios-link-smoke.yml` builds the iOS
 library on `macos-14`, then links `consumer-smoke/main.c` with
 `xcrun --sdk iphoneos clang -arch arm64` against the installed static library.
 
-Run `40811767100` on commit `228ef5f` completed with every step `success`,
-including `Build iOS library`, `Link consumer` and `Upload link-smoke
-artifact`. The uploaded artifact is 65,509 B (digest
+Run `40814089191` on HEAD `dab5873` completed with every step `success`.
+The `Record library identity` step asserts:
+
+```text
+git diff --exit-code 4d7c66f -- design vendor
+ios_source_closure = matches 4d7c66f
+```
+
+So the current HEAD has the same C source closure as the Codemagic artifact
+commit. The HEAD rebuild library hash is
+`4a51a3c8848345c88552922c9163ba7fc886590177ba8914e18c53e48076d31b`
+(different from the Codemagic archive hash `d839e3bd...` because the Xcode
+toolchain and archive metadata differ; the source closure is identical).
+`Link consumer` and `Upload link-smoke artifact` also succeeded.
+
+An earlier run `40811767100` on `228ef5f` also passed the Apple link and
+uploaded a 65,509 B artifact (digest
 `sha256:a2b39f2a50b14662bcde47235d302e753643972b0187b0e264d6dd52b2a70aa0`).
 
 This proves the library is consumable by the Apple toolchain; it does not run
