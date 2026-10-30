@@ -33,6 +33,22 @@ import java.util.Collections;
 public final class MainActivity extends Activity {
     private static final String TAG_BRIDGE = "ZG335BRIDGE";
     private static final String TAG_JS = "ZG335JS";
+    private static final String INPUT_GUARD_JS =
+        "(function(){"
+        + "if(document.getElementById('zgInputGuard114'))return;"
+        + "var s=document.createElement('style');s.id='zgInputGuard114';"
+        + "s.textContent='html,body{-webkit-user-select:none;user-select:none;"
+        + "-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}"
+        + "#hud,#hud *,#labels,.label,button,canvas,img{-webkit-user-select:none;user-select:none}"
+        + "input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}"
+        + "img{-webkit-user-drag:none}';"
+        + "document.head.appendChild(s);"
+        + "var editable=function(t){return !!(t&&t.closest&&t.closest('input,textarea,select,[contenteditable]'));};"
+        + "var block=function(e){if(!editable(e.target))e.preventDefault();};"
+        + "document.addEventListener('selectstart',block,true);"
+        + "document.addEventListener('dragstart',block,true);"
+        + "document.addEventListener('contextmenu',block,true);"
+        + "})();";
     private static final String ASSET_ORIGIN = "https://appassets.androidplatform.net";
     private static final String ASSET_INDEX = "/assets/index.html";
     private static final String BRIDGE_ADAPTER =
@@ -159,6 +175,7 @@ public final class MainActivity extends Activity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 Log.i(TAG_BRIDGE, "ui loaded " + url);
+                view.evaluateJavascript(INPUT_GUARD_JS, null);
             }
         });
         web.setWebChromeClient(new WebChromeClient() {
