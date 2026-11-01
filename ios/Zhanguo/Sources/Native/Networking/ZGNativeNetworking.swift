@@ -380,12 +380,12 @@ public final class ZGNativeNetworking {
             guard server, let equal = line.firstIndex(of: "=") else { continue }
             let value = line[line.index(after: equal)...].trimmingCharacters(in: CharacterSet(charactersIn: " \t\"'`"))
             let fields = value.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespaces) }
-            guard fields.count >= 7, !fields[1].isEmpty, !fields[2].isEmpty, let host = ipv4(fields[3]),
+            guard fields.count >= 7, !fields[1].isEmpty, !fields[2].isEmpty, let host = Self.ipv4(fields[3]),
                   let port = Int(fields[4]), ZGConnectionProfile.validPort(port), Int(fields[5]) != nil else { continue }
             output.insert(ZGNetworkEndpoint(host: host, port: port))
             if ZGConnectionProfile.validPort(profile.port) { output.insert(ZGNetworkEndpoint(host: host, port: profile.port)) }
             if fields.count > 7, let port = Int(fields[7]), ZGConnectionProfile.validPort(port) { output.insert(ZGNetworkEndpoint(host: host, port: port)) }
-            if fields.count > 10, let host = ipv4(fields[9]), let port = Int(fields[10]), ZGConnectionProfile.validPort(port) { output.insert(ZGNetworkEndpoint(host: host, port: port)) }
+            if fields.count > 10, let host = Self.ipv4(fields[9]), let port = Int(fields[10]), ZGConnectionProfile.validPort(port) { output.insert(ZGNetworkEndpoint(host: host, port: port)) }
         }
         return output
     }
