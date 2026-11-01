@@ -272,7 +272,7 @@ public final class ZGNativeNetworking {
                                         "message": text.trimmingCharacters(in: .whitespacesAndNewlines)]) }
                                     else {
                                         guard header.status == 0 else { throw ZGNativeNetworkFailure.invalid("区服列表请求被拒绝") }
-                                        self.trustedEndpoints.formUnion(Self.catalogueEndpoints(text)); self.success(ticket, ["configText": text])
+                                        self.trustedEndpoints.formUnion(self.catalogueEndpoints(text)); self.success(ticket, ["configText": text])
                                     }
                                     self.launcherPipes.removeValue(forKey: ticket.id); pipe.close()
                                 } catch { fail(error) }
@@ -360,7 +360,18 @@ public final class ZGNativeNetworking {
         }
         return output.joined(separator: ".")
     }
-    private static func catalogueEndpoints(_ text: String) -> Set<ZGNetworkEndpoint> {
+    /// 解析 996 登录器下发的区服列表文本，产出允许直连的端点集合。
+    ///
+    /// 真实列表行是 9 字段（见 `catalogueEndpoints` 实测样例）：
+    /// `标题|服务器标题|名称|IP|登录网关端口|zone|颜色|标志|标志`
+    /// 例：`251=高防服务器|新开四区|新开四区|45.124.78.8|7000|1000|204|0|0`
+    ///
+    /// 列表只携带登录网关端口（fields[4]，g2/7000）；游戏网关端口（g3）不在这份
+    /// 列表里，而是三端互通架构的全局约定（profile.port，6020）。因此对列表认可的
+    /// 每台机器，除 fields[4] 外还必须放行该机器的 profile.port 端口，否则登录成功
+    /// 后 `/direct/open` 会被自己的白名单拦下（真机复现：g2/7000 能登录，
+    /// g3/6020 报「区服地址不在本地配置或原生区服列表中」）。
+    private func catalogueEndpoints(_ text: String) -> Set<ZGNetworkEndpoint> {
         var server = false, output = Set<ZGNetworkEndpoint>()
         for raw in text.components(separatedBy: .newlines) {
             let line = raw.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -372,6 +383,7 @@ public final class ZGNativeNetworking {
             guard fields.count >= 7, !fields[1].isEmpty, !fields[2].isEmpty, let host = ipv4(fields[3]),
                   let port = Int(fields[4]), ZGConnectionProfile.validPort(port), Int(fields[5]) != nil else { continue }
             output.insert(ZGNetworkEndpoint(host: host, port: port))
+            if ZGConnectionProfile.validPort(profile.port) { output.insert(ZGNetworkEndpoint(host: host, port: profile.port)) }
             if fields.count > 7, let port = Int(fields[7]), ZGConnectionProfile.validPort(port) { output.insert(ZGNetworkEndpoint(host: host, port: port)) }
             if fields.count > 10, let host = ipv4(fields[9]), let port = Int(fields[10]), ZGConnectionProfile.validPort(port) { output.insert(ZGNetworkEndpoint(host: host, port: port)) }
         }
