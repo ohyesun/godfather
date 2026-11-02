@@ -45,8 +45,45 @@
    begin(row,{kind:'storage',id,operation,...(operation==='record'?{body:value}:{})});
   }catch(error){reject(error);}
  });}
+ let microBar=null,microLabel=null,microHideTimer=null;
+ function fmtBytes(n){if(!(n>=0))return '0 B';const u=['B','KB','MB','GB'];let i=0,v=n;while(v>=1024&&i<u.length-1){v/=1024;i++;}return (v>=100?v.toFixed(0):v>=10?v.toFixed(1):v.toFixed(2))+' '+u[i];}
+ function ensureMicroUI(){
+  if(microBar&&document.body&&document.body.contains(microBar))return;
+  microBar=document.createElement('div');microBar.id='zgMicroBar';
+  microBar.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;height:4px;background:rgba(255,255,255,.14);display:none;';
+  const fill=document.createElement('div');fill.style.cssText='height:100%;width:0;background:#4db8ff;transition:width .15s linear;';microBar.append(fill);
+  microLabel=document.createElement('div');microLabel.id='zgMicroLabel';
+  microLabel.style.cssText='position:fixed;top:8px;left:0;right:0;z-index:99999;text-align:center;font:12px/1.4 system-ui,sans-serif;color:#dfe8ff;text-shadow:0 1px 2px #000;display:none;pointer-events:none;';
+  (document.body||document.documentElement).append(microBar,microLabel);
+ }
+ function showMicro(label,percent){
+  if(!document.body){document.addEventListener('DOMContentLoaded',()=>showMicro(label,percent),{once:true});return;}
+  ensureMicroUI();
+  microBar.style.display='block';
+  microBar.firstChild.style.width=(percent==null?100:Math.max(0,Math.min(100,percent)))+'%';
+  microLabel.textContent=label;microLabel.style.display='block';
+  if(microHideTimer){clearTimeout(microHideTimer);microHideTimer=null;}
+ }
+ function hideMicro(delay){
+  if(microHideTimer)clearTimeout(microHideTimer);
+  microHideTimer=setTimeout(()=>{if(microBar)microBar.style.display='none';if(microLabel)microLabel.style.display='none';},delay??1500);
+ }
+ function handleMicro(message){
+  if(message.type==='download-progress'){
+   const total=Number(message.total)||0,loaded=Number(message.loaded)||0;
+   const pct=total>0?Math.round(Math.min(100,Math.max(0,loaded*100/total))):null;
+   const name=String(message.name??'').slice(-40);
+   showMicro('资源下载 '+name+' '+(pct==null?fmtBytes(loaded):pct+'% ('+fmtBytes(loaded)+' / '+fmtBytes(total)+')'),pct);
+   if(pct!=null&&pct>=100)hideMicro(1200);
+  }else if(message.type==='micro-connection'){
+   showMicro('⚠ '+String(message.message??'微端服务器连接失败')+'，正在重试…',null);
+   hideMicro(4000);
+  }
+ }
  function receive(message){
-  if(closed||!message||message.v!==1||message.nonce!==nonce||!['request95','storage'].includes(message.kind))return false;
+  if(closed||!message||message.v!==1)return false;
+  if(message.kind==='micro'){handleMicro(message);return true;}
+  if(message.nonce!==nonce||!['request95','storage'].includes(message.kind))return false;
   const row=pending.get(key(message.kind,message.id));if(!row)return false;
   remove(row);
   if(message.ok!==true){const e=message.error;rejectRow(row,bridgeError(typeof e?.message==='string'?e.message:'iOS原生操作失败',

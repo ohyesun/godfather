@@ -74,6 +74,30 @@ final class ZGMicroFetcher: @unchecked Sendable {
     private var attemptedLoad = false
     private var injectedFactory: ZGChannelFactory?
 
+    /// 微端下载进度 / 连接事件回调。bridge 接线后把事件推给页面，
+    /// 驱动载入进度条与「微端服务器连接失败」提示。payload 键：
+    /// type=download-progress {id,name,loaded,total} | type=micro-connection {message}
+    var onMicroEvent: (([String: Any]) -> Void)?
+    private var lastProgressPushAt = Date.distantPast
+
+    private func pushMicroEvent(_ payload: [String: Any]) {
+        onMicroEvent?(payload)
+    }
+
+    /// 下载进度推送。节流 150ms（每秒至多 ~6 条），force 用于终点帧立即送达。
+    private func notifyProgress(_ remoteId: String, loaded: Int64, total: Int64, force: Bool) {
+        let now = Date()
+        guard force || now.timeIntervalSince(lastProgressPushAt) >= 0.15 else { return }
+        lastProgressPushAt = now
+        let name = remoteId.split(separator: "/").last.map(String.init) ?? remoteId
+        pushMicroEvent(["type": "download-progress", "id": remoteId,
+                        "name": String(name.suffix(44)), "loaded": loaded, "total": total])
+    }
+
+    private func notifyConnection(_ message: String) {
+        pushMicroEvent(["type": "micro-connection", "message": message])
+    }
+
     private enum Slot {
         case running
         case done(URL)
@@ -267,6 +291,7 @@ final class ZGMicroFetcher: @unchecked Sendable {
             } catch {
                 last = error
                 if let micro = error as? ZGMicroFailure, !micro.isRetryable { throw micro }
+                notifyConnection("微端服务器连接失败，正在重试")
                 Self.backoff(attempt)
                 continue
             }
@@ -283,7 +308,10 @@ final class ZGMicroFetcher: @unchecked Sendable {
                 }
                 pool.give(connection)
                 let now = max(0, Self.fileSize(partURL))
-                if now >= storedSize { return }
+                if now >= storedSize {
+                    notifyProgress(remoteId, loaded: storedSize, total: storedSize, force: true)
+                    return
+                }
                 // 带上本次请求的两端，否则只看到 "12/30" 无法判断是没发请求、
                 // 请求没回数据，还是写进去了但长度读错。
                 last = ZGMicroFailure.protocolViolation(
@@ -292,6 +320,7 @@ final class ZGMicroFetcher: @unchecked Sendable {
                 Self.backoff(attempt)
             } catch {
                 // 出错后帧边界不可信，这条连接不能回池。
+                notifyConnection("微端下载中断，正在重试")
                 pool.drop(connection)
                 if let micro = error as? ZGMicroFailure {
                     if !micro.isRetryable { throw micro }
@@ -323,13 +352,15 @@ final class ZGMicroFetcher: @unchecked Sendable {
             throw ZGMicroFailure.disk(error.localizedDescription)
         }
         var written = 0
-        try connection.fetch(id: remoteId, offset: offset, length: length) { _, data in
+        try connection.fetch(id: remoteId, offset: offset, length: length) { [weak self] _, data in
             do {
                 try handle.write(contentsOf: data)
                 written += data.count
             } catch {
                 throw ZGMicroFailure.disk(error.localizedDescription)
             }
+            self?.notifyProgress(remoteId, loaded: offset + Int64(written),
+                                 total: Int64(length), force: false)
         }
         try? handle.synchronize()
         // 一帧都没写进去等同于没续传，显式报错，别让上层等成静默失败。

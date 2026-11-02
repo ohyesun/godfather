@@ -21,7 +21,26 @@ final class ZGScriptBridge: NSObject, WKScriptMessageHandler {
         networking.replaceOwner(nonce)
     }
 
-    func attach(_ view: WKWebView) { webView = view }
+    func attach(_ view: WKWebView) {
+        webView = view
+        // 微端下载进度 / 连接失败事件 → 页面进度浮层。
+        // 回调可能来自微端队列线程，evaluateJavaScript 必须回主线程。
+        ZGMicroFetcher.shared.onMicroEvent = { [weak self, weak view] payload in
+            guard let self, self.active, let view, view === self.webView,
+                  Self.permittedDocument(view.url) else { return }
+            DispatchQueue.main.async {
+                guard view === self.webView, self.active else { return }
+                var event = payload
+                event["v"] = 1
+                event["kind"] = "micro"
+                guard let data = try? JSONSerialization.data(withJSONObject: event, options: [.fragmentsAllowed]),
+                      var json = String(data: data, encoding: .utf8) else { return }
+                json = json.replacingOccurrences(of: "\u{2028}", with: "\\u2028")
+                    .replacingOccurrences(of: "\u{2029}", with: "\\u2029")
+                view.evaluateJavaScript("window.ZgNativeIOS && window.ZgNativeIOS.receive(\(json));", completionHandler: nil)
+            }
+        }
+    }
 
     func userScript(source: String) throws -> WKUserScript {
         let marker = "__ZG_IOS_BOOTSTRAP_JSON__"
@@ -121,6 +140,7 @@ final class ZGScriptBridge: NSObject, WKScriptMessageHandler {
         guard active else { return }
         active = false; pending.removeAll(); performanceValues.removeAll()
         networking.cancelAll()
+        ZGMicroFetcher.shared.onMicroEvent = nil
         webView = nil
     }
 }
