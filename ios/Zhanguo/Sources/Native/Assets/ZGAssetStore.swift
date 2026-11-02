@@ -168,8 +168,10 @@ final class ZGAssetStore: @unchecked Sendable {
         guard let record = packed[path] else { return nil }
         if record.offset < 0 {
             // 最小包里没有这段：交给微端通道按原始存储字节取回。
+            // 用 "path:" 前缀的虚拟 id，与安卓/PC 的取值口径一致；服务端按 pak 内路径寻址。
             return ZGAssetSource(fileURL: nil, offset: -1, storedSize: record.storedSize,
-                size: record.size, codec: record.codec, sha256: record.sha256, remoteId: path)
+                size: record.size, codec: record.codec, sha256: record.sha256,
+                remoteId: "path:" + path)
         }
         guard record.offset <= packSize, record.storedSize <= packSize - record.offset else { return nil }
         return ZGAssetSource(fileURL: packURL, offset: record.offset, storedSize: record.storedSize,
