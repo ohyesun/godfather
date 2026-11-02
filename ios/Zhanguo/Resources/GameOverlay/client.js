@@ -3449,7 +3449,7 @@ class DirectAppSession {
         if (action.type === 'create') {
             if (this.characterCreateTransaction || this.characterCreate.unknown)
                 throw new Error('上次创建结果尚未确认，请先核对角色列表');
-            if (this.selectedIndex !== null || this.scene || this.me)
+            if (this.scene || this.me)
                 throw new Error('请返回选角界面后创建角色');
             const name = String(action.name || '').trim();
             if (!name)
@@ -247631,10 +247631,12 @@ function parseClientIP(body) {
     let ip = '';
     for (let i = 6; i < body.length && body[i]; i++)
         ip += String.fromCharCode(body[i]);
-    // 旧服回显IPv4后额外带一个点; getClientIP()实际用于密码解码时不含它。
-    if (ip.endsWith('.'))
-        ip = ip.slice(0, -1);
-    if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(ip) || ip.split('.').some(x => Number(x) > 255)) {
+    // 服务端 getClientIP 每段补到 3 位、每段追加点，回显是 16 字节键（末尾带点）。
+    // PC 原生客户端保留完整 16 字节并以其为异或周期（0x419f6f..0x419f84 四次 movsd、
+    // XOR 循环在 0x10 回绕）。删掉尾点会让周期变 15，密码第 8 个字符起编码错误，
+    // 表现为「超过 7 位的密码登不上」。校验只看地址，返回仍用完整回显。
+    const address = ip.endsWith('.') ? ip.slice(0, -1) : ip;
+    if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(address) || address.split('.').some(x => Number(x) > 255)) {
         throw new Error('登录服务器未返回有效的客户端IP');
     }
     return ip;
